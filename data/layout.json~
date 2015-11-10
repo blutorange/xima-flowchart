@@ -1,0 +1,69 @@
+{
+	"diagram" : {
+		"direction" : "RIGHT",
+		"nodePlace" : "BRANDES_KOEPF",
+		"edgeRouting" : "ORTHOGONAL",
+		"scaleMin" : 0.1,
+		"scaleMax" : 5.0
+	},
+	"popupText" : {
+		"fadeIn": 200,
+		"fadeOut": 200
+	},
+	"edgeStatus" : {
+		"dashArray": "1,3"
+	},
+    "status": {
+        "main": {
+            "svg": "img/statusNode.svg",
+			"selectors": {
+				"MAIN" : "#layer1",
+				"containerBody": "#container-body",
+				"textTitle": "#text-title>tspan>tspan",
+				"textTitleBBox" : "#text-title-bbox",
+				"textTitleEllipsis" : "#text-title-ellipsis>tspan",
+				"buttonExpand": "#button-expand",
+				"iconDeletableFalse": "#icon-deletable-false",
+				"iconDeletableTrue": "#icon-deletable-true",
+				"iconOnErrorStop": "#icon-onerror-stop",
+				"iconOnErrorNext": "#icon-onerror-next",
+				"portOutAuto": "#port-out-auto",
+				"portOutManual": "#port-out-manual",
+				"portOutTimed": "#port-out-timed",
+				"portInAuto": "#port-in",
+				"portInManual": "#port-in",
+				"portInTimed": "#port-in",
+				"textActionNew": [
+					"#text-action-new-0 tspan",
+					"#text-action-new-1 tspan",
+					"#text-action-new-2 tspan",
+					"#text-action-new-3 tspan",
+					"#text-action-new-4 tspan",
+					"#text-action-new-5 tspan",
+					"#text-action-new-6 tspan",
+					"#text-action-new-7 tspan"
+				],
+				"textActionEdit": [
+					"#text-action-edit-0 tspan",
+					"#text-action-edit-1 tspan",
+					"#text-action-edit-2 tspan",
+					"#text-action-edit-3 tspan",
+					"#text-action-edit-4 tspan"
+				],
+				"textActionRun": [
+					"#text-action-run-0 tspan",
+					"#text-action-run-1 tspan",
+					"#text-action-run-2 tspan",
+					"#text-action-run-3 tspan",
+					"#text-action-run-4 tspan",
+					"#text-action-run-5 tspan",
+					"#text-action-run-6 tspan",
+					"#text-action-run-7 tspan",
+					"#text-action-run-8 tspan",
+					"#text-action-run-9 tspan",
+					"#text-action-run-10 tspan"
+				]
+			}
+		}
+    }
+}

@@ -1,0 +1,113 @@
+/*
+@font-face {
+    font-family: ximaSentinel;
+    src: url(../font/ximaSentinel.ttf);
+}
+*/
+@font-face {
+  font-family: 'ximaSentinel';
+  src: url("/formcycle/javax.faces.resource/fonts/sentinel.eot.xhtml?ln=sentinel-layout");
+  src: url("/formcycle/javax.faces.resource/fonts/sentinel.eot.xhtml?ln=sentinel-layout#iefix") format('embedded-opentype'),
+       url("/formcycle/javax.faces.resource/fonts/sentinel.woff.xhtml?ln=sentinel-layout") format('woff'),
+       url("/formcycle/javax.faces.resource/fonts/sentinel.ttf.xhtml?ln=sentinel-layout") format('truetype'),
+       url("/formcycle/javax.faces.resource/fonts/sentinel.svg.xhtml?ln=sentinel-layout#fontello") format('svg');
+  src: url("../font/ximaSentinel.ttf") format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Yanone Kaffeesatz';
+  src: url('../font/YanoneKaffeesatz-Bold.ttf');
+  src: url('../font/YanoneKaffeesatz-Bold.otf') format('opentype'),
+       url('../font/YanoneKaffeesatz-Bold.ttf') format('truetype'),
+       url('../font/YanoneKaffeesatz-Bold.woff') format('woff'),
+      url('../font/YanoneKaffeesatz-Bold.svg') format('svg');
+    
+  font-weight: bold;
+  font-style: normal;
+}
+
+html {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+div#paper {
+    width: 1920px;
+    height:1080px;
+    border-width: 2px;
+    border-color: #000;
+    border-style: dotted;
+    overflow: hidden;
+    background-color: #f7f7f7;
+}
+
+
+h1 {
+    max-height: 3vh;
+    margin: 2vh;
+}
+
+/* Hide bounding boxes, only used internally */
+.id-text-title-bbox, .id-port-out-auto, .id-port-out-manual, .id-port-out-timed, .id-port-out-in {
+    opacity: 0 !important;
+}
+
+/* Tooltip for action icon inside statusbox */
+#actionTooltip #displayName {
+    font-size: 1.2em;
+    font-weight: 700;
+}
+#actionTooltip .tooltip-action-status-name {
+    font-weight: 700;
+}
+
+/* Transitions between status nodes */
+.edge-status>path.edge-path {
+    stroke-width: 1;
+    stroke: darkgray;
+    transition: all 0.3s ease;
+}
+.edge-status.is-mouseover>.edge-path {
+    stroke: red;
+    opacity: 0.9 !important;
+}
+.edge-status.is-mouseover>.edge-path-highlight {
+    stroke-width: 10;
+    opacity: 0.1 !important;
+    stroke: yellow;
+}
+
+/* Action icons inside status node */
+.text-action-on-error-next-action {
+    fill: orange !important;
+}
+.text-action-has-condition {
+    fill: forestgreen !important;
+}
+.text-action-on-error-next-action.text-action-has-condition {
+    fill: red !important;
+}
+    
+
+/* Load Bar */
+#loadDialogBar>div{
+    transition: all 0.3s linear;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s linear; 
+}
+#loadBlock {
+    width : 100vw;
+    height : 100vh;
+    background-color : #EEE;
+    opacity : 0.99;
+    z-index : 5;
+    position : fixed;
+    top : 0;
+    left : 0;
+}
+.dialog-no-close .ui-dialog-titlebar-close {
+  display: none;
+}

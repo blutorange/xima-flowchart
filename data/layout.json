@@ -1,0 +1,96 @@
+{
+	"diagram" : {
+		"direction" : "DOWN",
+		"nodePlace" : "BRANDES_KOEPF",
+        "nodeLayering" : "NETWORK_SIMPLEX",
+		"edgeRouting" : "ORTHOGONAL",
+        "interactiveReferencePoint": "TOP_LEFT",
+        "thoroughness": 1,
+        "edgeSpacingFactor": 0.5,
+        "spacing": 40,
+		"scaleMin" : 0.1,
+		"scaleMax" : 5.0
+	},
+	"popupText" : {
+		"fadeIn": 200,
+		"fadeOut": 200
+	},
+	"edgeStatus" : {
+        "highlightMode": "ALL",
+		"dashArray": "",
+        "patternPoints" : [{"x":0,"y":0},{"x":200,"y":0},{"x":200,"y":1.5},{"x":210,"y":0},{"x":200,"y":-1.5}],
+        "patternDirection" : {"x":210,"y":0},
+        "patternOrigin" : {"x":0,"y":0}
+	},
+    "status": {
+        "main": {
+            "svg": "img/statusNode.svg",
+            "maxPortsIn" : 1,
+            "maxPortsOut" : {"AUTO":1,"MANUAL":1,"TIMED":1},
+			"selectors": {
+				"MAIN" : "#layer1",
+				"containerBody": "#container-body",
+                "containerToolbar" : "#container-toolbar",
+				"textTitle": "#text-title>tspan>tspan",
+				"textTitleBBox" : "#text-title-bbox",
+				"textTitleEllipsis" : "#text-title-ellipsis>tspan",
+                "buttons" : {
+                    "expand" : {
+                        "normal" : "#button-expand",
+                        "hover" : "#button-expand-hover"
+                    }
+                },
+				"iconDeletableFalse": "#icon-deletable-false",
+				"iconDeletableTrue": "#icon-deletable-true",
+				"iconOnErrorStop": "#icon-onerror-stop",
+				"iconOnErrorNext": "#icon-onerror-next",
+				"portOutAuto": "#port-out-auto",
+				"portOutManual": "#port-out-manual",
+				"portOutTimed": "#port-out-timed",
+				"portInAuto": "#port-in",
+				"portInManual": "#port-in",
+				"portInTimed": "#port-in",
+                "textActionGeneralMain": "#text-action-general-main",
+                "textActionGeneralSub": "#text-action-general-sub",
+				"textActionGeneralIconsMain": [
+					"#text-action-general-0 tspan",
+					"#text-action-general-1 tspan",
+					"#text-action-general-2 tspan",
+					"#text-action-general-3 tspan",
+					"#text-action-general-4 tspan",
+					"#text-action-general-5 tspan",
+					"#text-action-general-6 tspan",
+					"#text-action-general-7 tspan",
+					"#text-action-general-8 tspan",
+					"#text-action-general-9 tspan",
+					"#text-action-general-10 tspan",
+					"#text-action-general-11 tspan",
+					"#text-action-general-12 tspan",
+					"#text-action-general-13 tspan",
+					"#text-action-general-14 tspan",
+					"#text-action-general-15 tspan",
+					"#text-action-general-16 tspan",
+					"#text-action-general-17 tspan",
+					"#text-action-general-18 tspan",
+					"#text-action-general-19 tspan",
+					"#text-action-general-20 tspan",
+					"#text-action-general-21 tspan",
+					"#text-action-general-22 tspan",
+					"#text-action-general-23 tspan",
+					"#text-action-general-24 tspan",
+					"#text-action-general-25 tspan",
+					"#text-action-general-26 tspan"
+				],
+				"textActionGeneralIconsSub": [
+					"#text-action-general-sub-0 tspan",
+					"#text-action-general-sub-1 tspan",
+					"#text-action-general-sub-2 tspan",
+					"#text-action-general-sub-3 tspan",
+					"#text-action-general-sub-4 tspan",
+					"#text-action-general-sub-5 tspan",
+					"#text-action-general-sub-6 tspan"
+				]                
+			}
+		}
+    }
+}
