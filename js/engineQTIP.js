@@ -12,19 +12,19 @@
 // https://storiesfailedentrepreneur.files.wordpress.com/2012/08/the-procrastination-flow-chart.png
 // https://plumsail.com/blog/2014/07/how-to-use-javascript-and-css-for-conditional-formatting-in-sharepoint-org-chart/
 
-XV = function (folder,servlet,viewport,dimensionsCallback) {
+XV = function (folder,servlet,viewport) {
     var self = this
-    dimensionsCallback = dimensionsCallback || $.noop
-D = this // debug
-    self.viewportNode = viewport
+    D = this
+    
+    self.viewportNode = viewport,
     self.viewport = d3.select(viewport)
-    self.dimensionsCallback = dimensionsCallback
-    var dimensions = self.getDimensions()
     self.folder = folder
     self.paper = $(self.viewportNode).find("#paper")[0]
+    self.paperWidth = self.paper.clientWidth
+    self.paperHeight = self.paper.clientHeight
     self.svg = d3.select(paper).select('#paper-svg')
-        .attr("width", dimensions.width)
-        .attr("height", dimensions.height)
+        .attr("width", self.paperWidth)
+        .attr("height", self.paperHeight)
     self.svgDefs = []
     self.svgG = self.svg.append("g").attr("id","paper-g")
     self.svgDefs = self.svgG.append("defs").attr("id","paper-defs")
@@ -88,68 +88,6 @@ XV.prototype.handleError = function (error){
     )
     $('#viewport').css("overflow","scroll")
     $(self.paper).trigger("error")
-}
-
-// Fix for svg elements.
-XV.jWidth = $.fn.width
-XV.jHeight = $.fn.height
-XV.jOuterWidth = $.fn.outerWidth
-XV.jOuterHeight = $.fn.outerHeight
-$.fn.outerWidth = function(){
-    if (this[0]) {
-        if (this[0] instanceof SVGElement) {
-            var wC = this[0].getBoundingClientRect().width // width
-            return (wC&&wC!==0) ? wC : XV.jOuterWidth.apply(this,arguments)
-        }
-        else {
-            return XV.jOuterWidth.apply(this,arguments)
-        }
-    }
-    else {
-        return null
-    }
-}
-$.fn.outerHeight = function(){
-    if (this[0]) {
-        if (this[0] instanceof SVGElement) {
-            var hC = this[0].getBoundingClientRect().height // height
-            return (hC&&hC!==0) ? hC : XV.jOuterHeight.apply(this,arguments)
-        }
-        else {
-            return XV.jOuterHeight.apply(this,arguments)
-        }
-    }
-    else {
-        return null
-    }
-}
-$.fn.width = function(){
-    if (this[0]) {
-        if (this[0] instanceof SVGElement) {
-            var wC = this[0].getBoundingClientRect().width // width
-            return (wC&&wC!==0) ? wC : XV.jWidth.apply(this,arguments)
-        }
-        else {
-            return XV.jWidth.apply(this,arguments)
-        }
-    }
-    else {
-        return null
-    }
-}
-$.fn.height = function(){
-    if (this[0]) {
-        if (this[0] instanceof SVGElement) {
-            var hC = this[0].getBoundingClientRect().height // height
-            return (hC&&hC!==0) ? hC : XV.jHeight.apply(this,arguments)
-        }
-        else {
-            return XV.jHeight.apply(this,arguments)
-        }
-    }
-    else {
-        return null
-    }
 }
 
 XV.MODE_VIEW = 0
@@ -277,17 +215,17 @@ XV.setClassListAdd = function() {
         }        
     }
     else {
-        // IE fix, d3 works with IE as well        
         avail = false
+        // IE fix
         XV.addClass = function(el,clazz){
             //var list = {}
             //list.clazz = true
-            d3.select(el).classed(clazz,true)
-    }        
-        XV.removeClass = function(el,clazz){
+            d3.select(el).classed(el,true)
+        }
+        XV.addClass = function(el,clazz){
             //var list = {}
             //list.clazz = false
-            d3.select(el).classed(clazz,false)
+            d3.select(el).classed(el,false)
         }        
         /*
         XV.addClass = function(el,clazz) {
@@ -838,78 +776,7 @@ XV.getElementIDSelector = function(el) {
 XV.getIFrameContentDocument = function(el) {
     return (el.contentWindow) ? el.contentWindow : (el.contentDocument.document) ? el.contentDocument.document : el.contentDocument
 }
-XV.getPositionFromMouse = function(x,y,svgGNode){
-    var translate = XV.getTranslate(svgGNode)
-    var scale = XV.getScale(svgGNode)
-    var offset = svgGNode.parentNode.offset()
-    var pX = x || d3.event.pageX
-    var pY = y || d3.event.pageY
-    return {x:(pX-offset.left-translate.x)/scale.x,y:(pY-offset.top-translate.y)/scale.y}
-}
-// Parameters:
-//  - bBox : the bounding box of the graph or any other bounding box; {x1,x2,y1,y2}
-//  - svgGNode : the <svg><g> element used for zooming
-//  - zoom: d3 zooming behaviour for this element
-//  - positionX,positionY : how to center the graph, 0 left/top, 1 right/bottom
-//  - scaleXY: do not scale to boundaries but set newScale = oldScale*scaleXY
-//  - callback: called after computing the new transform, for custom animations
-//  - unlockedScales: do not lock zooming factor x and y
-XV.zoomGraphToBoundaries = function (bBox,svgGNode,zoom,positionX,positionY,scaleXY,callback,unlockedRatio) {
-    container = svgGNode.parentNode
-    positionX = parseFloat(typeof(positionX)==="number" ? positionX : 0.5,10)
-    positionY = parseFloat(typeof(positionY)==="number" ? positionY : 0.5,10)
-
-    var scaleCurrent = XV.getScale(svgGNode)
-    var scm = Math.sqrt((scaleCurrent.x*scaleCurrent.x+scaleCurrent.y*scaleCurrent.y)/2) // average area
-    
-    var paperX = $(container).width()
-    var paperY = $(container).height()
-    var minX = bBox.x1-0.1*paperX
-    var maxX = bBox.x2+0.1*paperX
-    var minY = bBox.y1-0.1*paperY
-    var maxY = bBox.y2+0.1*paperY
-    var scale, scaleX, scaleY
-    if (scaleXY) {
-        // pre-defined zooming factor
-        scaleX = scaleCurrent.x*scaleXY
-        scaleY = scaleCurrent.y*scaleXY
-        scale = Math.min(scaleCurrent.x,scaleCurrent.y)*scaleXY
-    }
-    else {
-        scaleX = paperX/(maxX-minX)
-        scaleY = paperY/(maxY-minY)
-        scale = Math.min(scaleX,scaleY)
-    }
-    
-    if (!unlockedRatio) {
-        scaleX = scale
-        scaleY = scale
-    }
-    
-    var width = (maxX-minX)*scaleX
-    var height= (maxY-minY)*scaleY
-    var scr = (scale*scale)/(scm*scm)
-
-    var dx = ((paperX-width)*positionX-minX-0.05*paperX)/scaleX
-    var dy = ((paperY-height)*positionY-minY-0.05*paperY)/scaleY
-    var transform = 'scale(' + scaleX + ',' + scaleY + '),translate(' + dx + ',' + dy + ')'
-
-    zoom.translate([dx*scaleX,dy*scaleY])    
-    zoom.scale(scale)
-
-    if (callback) {
-        callback.call(d3.select(svgGNode),transform)
-    }
-    else {
-        d3.select(svgGNode).transition()
-            .duration(scr>1 ? (scr>10 ? 2000 : scr*200) : 2000-scr*1800)
-            .attr("transform",transform)        
-    }
-    
-    return transform
-}
-
-XV.tableWidget = function(el,displayNames) {
+XV.tableWidget = function(el) {
     el = $(el)
     var children = el.children()
     var rows = []
@@ -917,23 +784,24 @@ XV.tableWidget = function(el,displayNames) {
     for (var i=0; i<children.length-1; i+=2) {
         var elLeft = $(children[i])
         var elRight = $(children[i+1])
+        console.log(elLeft)
         var idLeft = elLeft.attr("id")
         var idRight = elRight.attr("id")
         elsHash[idLeft] = elLeft
         elsHash[idRight] = elRight
-        elLeft.removeAttr("id").addClass(idLeft).attr("original-id",idLeft)
-        elRight.removeAttr("id").addClass(idRight).attr("original-id",idRight)
+        elLeft.removeAttr("id").addClass(idLeft)
+        elRight.removeAttr("id").addClass(idRight)
         elLeft.find("[id]").each(function(){
             var self = $(this)
             var id = self.attr("id")
             elsHash[id] = self
-            self.removeAttr("id").addClass(id).attr("original-id",id)
+            self.removeAttr("id").addClass(id)
         })
         elRight.find("[id]").each(function(){
             var self = $(this)
             var id = self.attr("id")
             elsHash[id] = self
-            self.removeAttr("id").addClass(id).attr("original-id",id)
+            self.removeAttr("id").addClass(id)
         })        
         rows.push([
             {id: idLeft, element: elLeft.detach()},
@@ -941,27 +809,18 @@ XV.tableWidget = function(el,displayNames) {
         ])
     }
     el.empty()
-    this.displayNames = displayNames || XV.tableWidget.displayNames
     this.elsHash = elsHash
     this.rows = rows
-    this.rowsHash = {}
-    this.colsHash = {}
     this.container = el
 }
 XV.tableWidget.prototype.widget = function() {
     return this.container
 }
-XV.tableWidget.prototype.setDisplayNames = function () {
-    var self = this
-    self.container.find('.use-display-name').each(function(){
-        this.textContent = self.displayNames[this.getAttribute('original-id')]
-    })
-}
 XV.tableWidget.prototype.update = function(setupCallback){
-    ;(setupCallback || $.noop).call(this.elsHash,this.rowsHash)
+    ;(setupCallback || $.noop).call(this.elsHash)
 }
 XV.tableWidget.prototype.asTable = function(clone,setupCallback){
-    this.container.empty().append(this._asABC("tr","td","td",$('<table class="tableWidgetTable"></table>'),clone,setupCallback))
+    this.container.empty().append(this._asABC("tr","td","td",$("<table>"),clone,setupCallback))
     return this
 }
 XV.tableWidget.prototype.asDivDiv = function(clone,setupCallback){
@@ -974,16 +833,12 @@ XV.tableWidget.prototype.asDivSpan = function(clone,setupCallback){
 }
 XV.tableWidget.prototype._asABC = function(a,b,c,container,clone,setupCallback) {
     var self = this
+    ;(setupCallback || $.noop).call(self.elsHash)
     container.empty()
     self.rows.forEach(function(row){
-        var tr = $('<' + a +' class="tableWidgetRow ' + row[0].id + ' ' + row[1].id + '"></' + a +'>')
+        var tr = $('<' + a +' class="tableWidgetRow"></' + a +'>')
         var tdLeft = $('<' + b + ' class="tableWidgetLeft ' + row[0].id + '"></' + b + '>')
         var tdRight = $('<' + c + ' class="tableWidgetRight ' + row[1].id + '"></' + c + '>')
-        self.rowsHash[row[0].id] = tr
-        self.rowsHash[row[1].id] = tr
-        self.colsHash[row[0].id] = tdLeft
-        self.colsHash[row[1].id] = tdRight
-        ;(setupCallback || $.noop).call(self.elsHash,self.rowsHash)           
         if (clone) {
             tdLeft.append(row[0].element.clone(false,true))
             tdRight.append(row[1].element.clone(false,true))
@@ -995,16 +850,10 @@ XV.tableWidget.prototype._asABC = function(a,b,c,container,clone,setupCallback) 
         tr.append(tdLeft)
         tr.append(tdRight)
         container.append(tr)
-    }) 
+    })
     return container    
 }
 
-XV.prototype.getDimensions = function() {
-    var dims = this.dimensionsCallback(this.viewportNode) || {}
-    dims.width = dims.width || window.innerWidth
-    dims.height = dims.height || window.innerHeight
-    return dims
-}
 // Get svg coordinates corresponding to the current mouse position.
 XV.prototype.getPositionFromMouse = function(x,y){
     var svgGNode = this.svgGNode
@@ -1268,8 +1117,36 @@ XV.prototype.setWrappedText = function(elText,elBBox,elEllipsis,text,callbackMou
     }
     return isOverflow
 }
-XV.prototype.zoomToKGraphBoundaries = function (positionX,positionY,scaleXY,callback) {
-    return XV.zoomGraphToBoundaries(this.kGraphBBox,this.svgGNode,this.svgGZoom,positionX,positionY,scaleXY,callback)
+XV.prototype.zoomToKGraphBoundaries = function () {
+    var self = this
+    
+    var scaleCurrent = XV.getScale(self.svgGNode)
+    var scm = Math.sqrt((scaleCurrent.x*scaleCurrent.x+scaleCurrent.y*scaleCurrent.y)/2) // average area
+    
+    var paperX = self.paperWidth
+    var paperY = self.paperHeight
+    var minX = self.kGraphBBox.x1
+    var maxX = self.kGraphBBox.x2
+    var minY = self.kGraphBBox.y1
+    var maxY = self.kGraphBBox.y2
+    var scaleX = paperX/(maxX-minX+0.1*paperX)
+    var scaleY = paperY/(maxY-minY+0.1*paperY)
+    var scale = Math.min(scaleX,scaleY)
+    var scr = (scale*scale)/(scm*scm)
+    var width = (maxX-minX)*scale
+    var height= (maxY-minY)*scale
+    
+    var dx = ((paperX-width)/2-minX)/scale
+    var dy = ((paperY-height)/2-minY)/scale
+    var transform = 'scale(' + scale + '),translate(' + dx + ',' + dy + ')'
+
+    self.svgGZoom.translate([dx*scale,dy*scale])    
+    self.svgGZoom.scale(scale)
+        
+    self.svgG.transition()
+        .duration(scr>1 ? (scr>10 ? 2000 : scr*200) : 2000-scr*1800)
+        .attr("transform",transform)
+    
 }
 // Quantized grid for computing all edges within a certain radius quickly.
 XV.prototype.createKGraphEdgeGrid = function() {
@@ -1499,6 +1376,7 @@ XV.prototype.setTooltipTimedTransitionIcon = function(){
             track: true,
             content: function(){
                 var d = d3.select(this).datum()
+                console.log(d)
                 var displayName = self.layout.status.displayNameTimedTransition
                 var transitionAfter = d[0].properties["de.xima.fc.transition.details"].transitionAfter
                 var onlyForUnread = d[0].properties["de.xima.fc.transition.details"].onlyForUnread
@@ -1931,10 +1809,9 @@ XV.prototype.setTooltipActionCondition = function() {
 }
 XV.prototype.setTooltipActionDetails = function() {
     var self = this
-    var displayNames = self.layout.action.displayNames
-    var actionDetailsTooltipDimensions = self.layout.action.actionDetailsTooltipDimensions
-    
-    // Tooltip element.
+    var layoutAction = self.layout.action
+
+    // Tooltip elements.
     var jTooltip = $('#actionDetailsTooltip').detach()
 
     var jDisplayName = jTooltip.find('.displayName')
@@ -1953,27 +1830,25 @@ XV.prototype.setTooltipActionDetails = function() {
     var jDetailsExportXml = jTooltip.find('.detailsExportXml')
     var jDetailsExternalResource= jTooltip.find('.detailsExternalResource')
     var jDetailsWriteToForm= jTooltip.find('.detailsWriteToForm')
-    var jDetailsStopBatch = jTooltip.find('.detailsStopBatch')
-    var jDetailsRenewProcessId = jTooltip.find('.detailsRenewProcessId')
-    var jDetailsDeleteBatch = jTooltip.find('.detailsDeleteBatch')
     
-    // Setup table.    
-    XV.tableWidget.displayNames = displayNames
-    var tShowTemplate = (new XV.tableWidget(jDetailsShowTemplate)).asTable()
-    var tAttachFileToBatch = (new XV.tableWidget(jDetailsAttachFileToBatch)).asTable()
-    var tReturnFile = (new XV.tableWidget(jDetailsReturnFile)).asDivSpan()
-    var tDbSqlStatement = (new XV.tableWidget(jDetailsDbSqlStatement)).asDivDiv()
-    var tEMail = (new XV.tableWidget(jDetailsEMail)).asDivDiv()
-    var tExportPersistence = (new XV.tableWidget(jDetailsExportPersistence)).asTable()
-    var tExportXml = (new XV.tableWidget(jDetailsExportXml)).asTable()
-    var tExternalResource = (new XV.tableWidget(jDetailsExternalResource)).asTable()
-    var tWriteToForm = (new XV.tableWidget(jDetailsWriteToForm)).asTable()
-    var tStopBatch = (new XV.tableWidget(jDetailsStopBatch)).asTable()
-    var tRenewProcessId = (new XV.tableWidget(jDetailsRenewProcessId)).asTable()
-    var tDeleteBatch = (new XV.tableWidget(jDetailsDeleteBatch)).asTable()
-
-    // Setup code syntax highlighting.
-    var cmDbSqlStatement = CodeMirror(jDetailsDbSqlStatement.find('.dbSqlStatementEditor')[0], {
+    // Elements in each details container.
+    var jShowTemplateName = jTooltip.find('.showTemplateName')
+    var jShowTemplateContent = jTooltip.find('.showTemplateContent')
+    var jShowTemplateNamePrefix = jTooltip.find('.showTemplateNamePrefix')
+    
+    var jAttachFileToBatchDisplayName = jTooltip.find('.attachFileToBatchDisplayName')
+    var jAttachFileToBatchItemList = jTooltip.find('.attachFileToBatchItemList')
+    var jAttachFileToBatchItem = jTooltip.find('.attachFileToBatchItem')
+    
+    var jReturnFileDisplayName = jTooltip.find('.returnFileDisplayName')
+    var jReturnFileItemList = jTooltip.find('.returnFileItemList')
+    var jReturnFileItem = jTooltip.find('.returnFileItem')
+    var jReturnFileForceDownloadDisplayName = jTooltip.find('.returnFileForceDownloadDisplayName')
+    var jReturnFileForceDownloadBoolYes = jTooltip.find('.returnFileForceDownloadBoolYes')
+    var jReturnFileForceDownloadBoolNo = jTooltip.find('.returnFileForceDownloadBoolNo')
+    
+    var jDbSqlStatementEditor = jTooltip.find('.dbSqlStatementEditor')
+    var cmDbSqlStatement = CodeMirror(jDbSqlStatementEditor[0], {
         value: "",
         mode: "text/x-mysql",
         theme: "eclipse",
@@ -1981,7 +1856,33 @@ XV.prototype.setTooltipActionDetails = function() {
         lineNumbers: true,
         readOnly: true
     })
-    var cmExportXml = CodeMirror(jDetailsExportXml.find('.exportXmlPreviewEditor')[0], {
+    
+    var jEMailToLeft = jTooltip.find('.eMailToLeft')
+    var jEMailToRight = jTooltip.find('.eMailToRight')
+    var jEMailFromLeft = jTooltip.find('.eMailFromLeft')
+    var jEMailFromRight = jTooltip.find('.eMailFromRight')
+    var jEMailSubjectLeft = jTooltip.find('.eMailSubjectLeft')
+    var jEMailSubjectRight = jTooltip.find('.eMailSubjectRight')
+    var jEMailContentLeft = jTooltip.find('.eMailContentLeft')
+    var jEMailContentRight = jTooltip.find('.eMailContentRight')
+    var jEMailAttachmentsRow = jTooltip.find('.eMailAttachmentsRow')
+    var jEMailAttachmentsLeft = jTooltip.find('.eMailAttachmentsLeft')
+    var jEMailAttachmentsRight = jTooltip.find('.eMailAttachmentsRight')
+    var jEMailAttachmentsRightItemList =   jTooltip.find('.eMailAttachmentsRightItemList')
+    var jEMailAttachmentsRightItem = jTooltip.find('.eMailAttachmentsRightItem')
+
+    var jExportPersistenceDisplayName = jTooltip.find('.exportPersistenceDisplayName')
+    var jExportPersistenceFileName = jTooltip.find('.exportPersistenceFileName')
+    
+    var jExportXmlNameLeft = jTooltip.find('.exportXmlNameLeft')
+    var jExportXmlNameRight = jTooltip.find('.exportXmlNameRight')
+    var jExportXmlTemplateNameLeft = jTooltip.find('.exportXmlTemplateNameLeft')
+    var jExportXmlTemplateNameRight = jTooltip.find('.exportXmlTemplateNameRight')
+    var jExportXmlCleanupLeft = jTooltip.find('.exportXmlCleanupLeft')
+    var jExportXmlCleanupRightYes = jTooltip.find('.exportXmlCleanupRightYes')
+    var jExportXmlCleanupRightNo = jTooltip.find('.exportXmlCleanupRightNo')
+    var jExportXmlEditor = jTooltip.find('.exportXmlEditor')
+    var cmExportXml = CodeMirror(jExportXmlEditor[0], {
         value: "",
         mode: "text/xml",
         theme: "eclipse",
@@ -1990,327 +1891,317 @@ XV.prototype.setTooltipActionDetails = function() {
         readOnly: true
     })
     
+    var tExternalResource = (new XV.tableWidget(jDetailsExternalResource)).asTable()    
+    var tWriteToForm = (new XV.tableWidget(jDetailsWriteToForm)).asTable()
+                                    
     // Get additional data.
-    var ajaxRequest = null
+    var displayNameActionTypePrefix = layoutAction.displayNameActionTypePrefix
 
+    var displayNameShowTemplateNamePrefix = layoutAction.displayNameShowTemplateNamePrefix
+
+    var displayNameAttachFileToBatchLoadFrom = layoutAction.displayNameAttachFileToBatchLoadFrom
+
+    var displayNameReturnFileLoadFrom = layoutAction.displayNameReturnFileLoadFrom
+    var displayNameReturnFileForceDownload = layoutAction.displayNameReturnFileForceDownload
+    var displayNameReturnFileForceDownloadYes = layoutAction.displayNameReturnFileForceDownloadYes
+    var displayNameReturnFileForceDownloadNo = layoutAction.displayNameReturnFileForceDownloadNo
+    
+    var displayNameEMailHeaderTo = layoutAction.displayNameEMailHeaderTo
+    var displayNameEMailHeaderFrom = layoutAction.displayNameEMailHeaderFrom
+    var displayNameEMailHeaderSubject = layoutAction.displayNameEMailHeaderSubject
+    var displayNameEMailBody = layoutAction.displayNameEMailBody
+    var displayNameEMailLoadFrom = layoutAction.displayNameEMailLoadFrom
+    
+    var displayNameExportPesistenceSaveAs = layoutAction.displayNameExportPesistenceSaveAs
+    
+    var displayNameExportXmlSaveAs = layoutAction.displayNameExportXmlSaveAs
+    var displayNameExportXmlTemplate = layoutAction.displayNameExportXmlTemplate
+    var displayNameExportXmlCleanup = layoutAction.displayNameExportXmlCleanup
+    var displayNameExportXmlCleanupYes = layoutAction.displayNameExportXmlCleanupYes
+    var displayNameExportXmlCleanupNo = layoutAction.displayNameExportXmlCleanupNo
+    
+    var displayNames = layoutAction.displayNames
+    
     // Set tooltip for each action node.
     self.statusNodes.forEach(function(statusNode){
         statusNode.actions.forEach(function(actionNode){        
             var actionMain = self.getActionNodeLayout(actionNode)
-
-            var nodeBody = $(actionMain.classSelectors.nodeBody,actionNode.svgGNode)
-            var nodeBodyNode = $(nodeBody,actionNode.svgGNode)[0]
-            var nodeBodyIDSelector = XV.getElementIDSelector(nodeBodyNode)
             
             var containerActionNodeMouseover = actionMain.classSelectors.containerActionNodeMouseover
             var containerActionNodeMouseoverNode = $(containerActionNodeMouseover,actionNode.svgGNode)[0]
             var containerActionNodeMouseoverIDSelector = XV.getElementIDSelector(containerActionNodeMouseoverNode)
-            var tooltipDimensions = actionDetailsTooltipDimensions[actionNode.ximaAction.properties["de.xima.fc.action.type"]]
             
             actionNode.svgG.select(containerActionNodeMouseover).data([actionNode])
             
-            $(containerActionNodeMouseoverIDSelector).tooltip({
-                items: containerActionNodeMouseoverIDSelector,
-                close: function(event,ui){
-                    ui.tooltip.hover(
-                        function() {
-                            $(this).stop(true).fadeTo(600, 1)
-                        },
-                        function() {
-                            $(this).fadeOut(600, function() {
-                                $(this).remove()
-                                if (ajaxRequest){ajaxRequest.abort()}
-                                ajaxRequest = null
-                            })
-                        }
-                    )
-                },
-                position: {
-                    my: "left top",
-                    at: "right+10 top",
-                    of: nodeBodyIDSelector,
-                    collision: "none",
-                    using: function(position,dimensions) {
-                        var me = $(this)
-                        me.css(tooltipDimensions)
-                        dimensions.element.width = me.outerWidth()
-                        dimensions.element.height = me.outerHeight()
-                        screenW = window.innerWidth
-                        screenH = window.innerHeight
-                        var onTheFarRight = position.left+dimensions.element.width/2>screenW
-                        var fitsLeftButNotRight = (position.left+dimensions.element.width>screenW) && (position.left>=0)
-                        if (onTheFarRight || fitsLeftButNotRight) {
-                            // put element to the left
-                            position.left = dimensions.target.left-dimensions.element.width-10
-                        }
-                        else {
-                            // no changes needed
-                        }
-                        if (position.top < 0) {
-                            position.top = 0
-                        }
-                        else if (position.top+dimensions.element.height>screenH) {
-                            position.top = screenH-dimensions.element.height
-                        }
-                        $(this).css(position)
-                    }                    
-                },
-                open: function(event,ui){
-                    // Prevent tooltip from closing on mouseover over tooltip content.
-                    if (event.originalEvent === undefined) {
-                        return false;
-                    }
-                    var $id = $(ui.tooltip).attr('id');
-                    // close any lingering tooltips
-                    $('div.ui-tooltip').not('#' + $id).remove();
-                    
-                    var d = d3.select(this).datum()
-                    var ximaProps = d.ximaAction.properties
-                    var actionDetails = ximaProps["de.xima.fc.action.details"]
-                    
-                    // Make tooltip draggable (useful for large tooltips).
-                    ui.tooltip.draggable()
-                    
-                    // Setup data and event handlers after the tooltip has been
-                    // loaded to the DOM.
-                    switch (ximaProps["de.xima.fc.action.type"]) {
-                        case 0:
-                            //ui.tooltip.css("max-width","70vw")                            
-                            // Update iframe with content
-                            tShowTemplate.update(function(){
-                                var iFrame = this.showTemplatePreviewRight[0]
+            $(containerActionNodeMouseoverIDSelector).qtip({
+                events:{
+                    open: function(event,api) {
+                        var self = $(this[0])
+                        var d = d3.select(this[0]).datum()
+                        var ximaProps = d.ximaAction.properties
+                        var actionDetails = ximaProps["de.xima.fc.action.details"]
+
+                        
+                        // Make tooltip draggable (useful for large tooltips).
+                        self.draggable()
+
+                        // Setup data and event handlers after the tooltip has been
+                        // loaded to the DOM.
+                        switch (ximaProps["de.xima.fc.action.type"]) {
+                            case 0:
+                                // Update iframe with content
+                                var iFrame = self.find('iframe.showTemplateContent')[0]
                                 var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
                                 var htmlResource = self.getHtmlResource(actionDetails.targetTemplate)
                                 iFrameDoc.open()
                                 iFrameDoc.write(htmlResource.html)
-                                iFrameDoc.close()
-                            })
-                            break;
-                        case 4:
-                            //ui.tooltip.css("max-width","70vw")
-                            // Update text editor with the sql statement.
-                            cmDbSqlStatement.setValue(actionDetails.sqlStatement)
-                            cmDbSqlStatement.refresh()
-                            break;
-                        case 5:
-                            //ui.tooltip.css("max-width","70vw")
-                            // Update iframe with content
-                            tEMail.update(function(){
-                                var iFrame = this.eMailBodyRight[0]
+                                iFrameDoc.close()                            
+                                break;
+                            case 4:
+                                self.css("max-width","70vw")
+                                // Update text editor with the sql statement.
+                                cmDbSqlStatement.setValue(actionDetails.sqlStatement)
+                                cmDbSqlStatement.refresh()
+                                break;
+                            case 5:
+                                self.css("max-width","70vw")
+                                // Update iframe with content
+                                var iFrame = ui.tooltip.find('.eMailContentRight')[0]
                                 var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
+                                var htmlResource = self.getHtmlResource(actionDetails.targetTemplate)                            
                                 iFrameDoc.open()
                                 iFrameDoc.write(actionDetails.body)
-                                iFrameDoc.close()
-                            })
-                            break;
-                        case 7:
-                            //ui.tooltip.css("max-width","70vw")
-                            // Update text editor with the xsl statement.
-                            cmExportXml.setValue(self.getXslResource(actionDetails.xslTemplate).xsl)
-                            cmExportXml.refresh()                            
-                            break;
-                        case 8:
-                            //ui.tooltip.css("max-width","70vw")
-                            tExternalResource.update(function(){
-                                var iFrame = this.externalResourcePreviewRight[0]
-                                var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
-                                ajaxRequest = $.ajax({
-                                    async: true,
-                                    error: function(jqXHR, textStatus, errorThrown){
-                                        iFrameDoc.open()
-                                        iFrameDoc.write('<h1>'+jqXHR.status+': '+textStatus+'</h1><pre>'+errorThrown+'</pre>')
-                                        iFrameDoc.close()
-                                    },
-                                    method: 'GET',
-                                    success: function(data) {
-                                        iFrameDoc.open()
-                                        iFrameDoc.write(data)
-                                        iFrameDoc.close()
-                                    },
-                                    url: actionDetails.resourceURL
-                                })
-                            })
-
-                            break;                            
+                                iFrameDoc.close()                            
+                                break;
+                            case 7:
+                                self.css("max-width","70vw")
+                                // Update text editor with the xsl statement.
+                                var xslResource = self.getXslResource(actionDetails.xslTemplate)
+                                cmExportXml.setValue(xslResource.xsl)
+                                cmExportXml.refresh()                   
+                                break;
+                        }
                     }
                 },
-                content: function(){
-                    var d = d3.select(this).datum()
-                    var ximaProps = d.ximaAction.properties
-                    var actionDetails = ximaProps["de.xima.fc.action.details"]
-                    
-                    jDisplayName.text(ximaProps["de.xima.fc.action.name"])
-                    jActionTypePrefix.text(displayNames.actionDetailsTypeLeft)
-                    jActionTypeDisplayName.text(ximaProps["de.xima.fc.action.displayName"])
-                    jDetails.hide()
-                    
-                    switch (ximaProps["de.xima.fc.action.type"]) {
-                        case 0:
-                            tShowTemplate.widget().show()
-                            tShowTemplate.setDisplayNames()
-                            tShowTemplate.update(function(){
-                                this.showTemplateNameRight.text(self.getHtmlResource(actionDetails.targetTemplate).name)
-                            })
-                            break;
-                            
-
-                        case 1:
-                            jDetailsCallback.show()
-                            break;
-                            
-                            
-                        case 2:
-                            tAttachFileToBatch.widget().show()
-                            tAttachFileToBatch.setDisplayNames()
-                            tAttachFileToBatch.update(function(rows){
-                                var _this = this
-                                _this.attachFileToBatchFilesRight.empty()
-                                actionDetails.loadFrom.length===0 ? rows.attachFileToBatchFilesLeft.hide() : rows.attachFileToBatchFilesLeft.show()
-                                actionDetails.loadFrom.forEach(function(actionID){
-                                    var action = self.getActionResource(actionID)
-                                    _this.attachFileToBatchFilesItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.attachFileToBatchFilesRight.append(_this.attachFileToBatchFilesItem.clone(false,true))
-                                })
-                            })
-                            break;
-                            
-                            
-                        case 3:
-                            tReturnFile.widget().show()
-                            tReturnFile.setDisplayNames()
-                            tReturnFile.update(function(rows){
-                                var _this = this
-                                actionDetails.forceDownload && _this.returnFileForceDownloadYes.show() && _this.returnFileForceDownloadNo.hide()
-                                !actionDetails.forceDownload && _this.returnFileForceDownloadYes.hide() && _this.returnFileForceDownloadNo.show()
-                                actionDetails.loadFrom.length===0 ? rows.returnFileSaveAsLeft.hide() : rows.returnFileSaveAsLeft.show()
-                                _this.returnFileSaveAsRight.empty()
-                                actionDetails.loadFrom.forEach(function(actionID){
-                                    var action = self.getActionResource(actionID)
-                                    _this.returnFileSaveAsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.returnFileSaveAsRight.append(_this.returnFileSaveAsItem.clone(false,true))
-                                })                                
-                            })
-                            break;
-                            
-                            
-                        case 4:
-                            tDbSqlStatement.widget().show()
-                            tDbSqlStatement.setDisplayNames()
-                            break;
-                            
-                            
-                        case 5:
-                            tEMail.widget().show()
-                            tEMail.setDisplayNames()
-                            tEMail.update(function(rows) {
-                                var _this = this
-                                this.eMailToRight.text(actionDetails.headerTo)
-                                this.eMailFromRight.text(actionDetails.headerFrom)
-                                this.eMailSubjectRight.text(actionDetails.headerSubject)
-                                this.eMailAttachmentsRight.empty()
-                                actionDetails.loadFrom.length===0 ? rows.eMailAttachmentsLeft.hide() : rows.eMailAttachmentsLeft.show()
-                                actionDetails.loadFrom.forEach(function(actionID) {
-                                    var action = self.getActionResource(actionID)                                
-                                    _this.eMailAttachmentsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.eMailAttachmentsRight.append(_this.eMailAttachmentsItem.clone(false,true))
-                                })
-                            })
-                            break;
-                            
-                            
-                        case 6:
-                            tExportPersistence.widget().show()
-                            tExportPersistence.setDisplayNames()
-                            tExportPersistence.update(function(){this.exportPersistenceSaveAsRight.text(actionDetails.saveAs)})
-                            break;
-                            
-                            
-                        case 7:
-                            tExportXml.widget().show()
-                            tExportXml.setDisplayNames()
-                            tExportXml.update(function(){
-                                this.exportXmlSaveAsRight.text(actionDetails.saveAs)
-                                this.exportXmlTemplateNameRight.text(self.getXslResource(actionDetails.xslTemplate).name)
-                                actionDetails.sanitizeOutput && this.exportXmlCleanupYes.show() && this.exportXmlCleanupNo.hide()
-                                !actionDetails.sanitizeOutput && this.exportXmlCleanupYes.hide() && this.exportXmlCleanupNo.show()
-                            })
-                            break;
-                            
-                            
-                        case 8:
-                            tExternalResource.widget().show()
-                            tExternalResource.setDisplayNames()
-                            tExternalResource.update(function(){
-                              this.externalResourceUrlRight.text(actionDetails.resourceURL)
-                              this.externalResourceSaveAsRight.text(actionDetails.saveAs)
-                            })
-                            break;
-                            
-                            
-                        case 9:
-                            tWriteToForm.widget().show()
-                            tWriteToForm.setDisplayNames()
-                            tWriteToForm.update(function(){
-                                var _this = this
-                                _this.writeToFormValuesRight.empty()
-                                actionDetails.formChanges.forEach(function(formChange){
-                                    _this.writeToFormValuesKey.text(formChange.key)
-                                    _this.writeToFormValuesValue.text(formChange.value)
-                                    _this.writeToFormValuesRight.append(_this.writeToFormValuesRow.clone(false,true))
-                                })
-                            })
-                            break;
-                            
-                            
-                        case 10:
-                            break;
-                            
-                            
-                        case 11:
-                            break;
-                        case 12:
-                            break;
-                        case 13:
-                            break;
-                        case 14:
-                            break;
-                        case 15:
-                            break;
-                        case 16:
-                            break;
-                        case 17:
-                            break;
-                        case 18:
-                            tStopBatch.widget().show()
-                            tStopBatch.setDisplayNames()                            
-                            break;
-                        case 19:
-                            break;
-                        case 20:
-                            tRenewProcessId.widget().show()
-                            tRenewProcessId.setDisplayNames()                        
-                            break;
-                            
-                            
-                        case 21:
-                            break;
-                        case 22:
-                            break;
-                        case 23:
-                            tDeleteBatch.widget().show()
-                            tDeleteBatch.setDisplayNames()                            
-                            break;
-                            
-                            
-                        case 24:
-                            break;
-                        case 25:
-                            break;
-                        case 26:
-                            break;
+                style: {
+                    widget: true,
+                },
+                position: {
+                    target: "mouse",
+                    adjust: {
+                        mouse: false
                     }
-                    
-                    return jTooltip
+                },
+                show: {
+                    effect: function(){$(this).fadeIn(400)}
+                },
+                hide: {
+                    effect: function(){$(this).fadeOut(400)},
+                    fixed: true
+                },
+                content: {
+                    text: function(event,api){
+                        var d = d3.select(this[0]).datum()
+                        var ximaProps = d.ximaAction.properties
+                        var actionDetails = ximaProps["de.xima.fc.action.details"]
+
+                        jDisplayName.text(ximaProps["de.xima.fc.action.name"])
+                        jActionTypePrefix.text(displayNameActionTypePrefix)
+                        jActionTypeDisplayName.text(ximaProps["de.xima.fc.action.displayName"])
+                        jDetails.hide()
+
+                        switch (ximaProps["de.xima.fc.action.type"]) {
+                            case 0:
+                                jDetailsShowTemplate.show()
+
+                                var htmlResource = self.getHtmlResource(actionDetails.targetTemplate)
+                                jShowTemplateName.text(htmlResource.name)
+                                jShowTemplateNamePrefix.text(displayNameShowTemplateNamePrefix)                                
+                                break;
+
+
+                            case 1:
+                                jDetailsCallback.show()
+                                break;
+
+
+                            case 2:
+                                jDetailsAttachFileToBatch.show()
+
+                                jAttachFileToBatchItemList.empty()                            
+                                jAttachFileToBatchDisplayName.text(displayNameAttachFileToBatchLoadFrom)
+                                if (actionDetails.loadFrom.length===0) {
+                                    jAttachFileToBatchItemList.hide()
+                                }
+                                else {
+                                    jAttachFileToBatchItemList.show()
+                                    actionDetails.loadFrom.forEach(function(actionID){
+                                        var action = self.getActionResource(actionID)
+                                        var elItem = jAttachFileToBatchItem.clone(false,true)
+                                        elItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                        jAttachFileToBatchItemList.append(elItem)
+                                    })
+                                }
+                                break;
+
+
+                            case 3:
+                                jDetailsReturnFile.show()
+
+                                jReturnFileDisplayName.text(displayNameReturnFileLoadFrom)
+                                jReturnFileForceDownloadDisplayName.text(displayNameReturnFileForceDownload)
+                                jReturnFileForceDownloadBoolYes.text(displayNameReturnFileForceDownloadYes)
+                                jReturnFileForceDownloadBoolNo.text(displayNameReturnFileForceDownloadNo)
+                                jReturnFileItemList.empty()
+                                if (actionDetails.forceDownload) {
+                                    jReturnFileForceDownloadBoolYes.show()
+                                    jReturnFileForceDownloadBoolNo.hide()
+                                }
+                                else {
+                                    jReturnFileForceDownloadBoolYes.hide()
+                                    jReturnFileForceDownloadBoolNo.show()
+                                }
+                                if (actionDetails.loadFrom.length===0) {
+                                    jReturnFileItemList.hide()
+                                }
+                                else {
+                                    jReturnFileItemList.show()
+                                    actionDetails.loadFrom.forEach(function(actionID){
+                                        var action = self.getActionResource(actionID)
+                                        var elItem = jReturnFileItem.clone(false,true)
+                                        elItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                        jReturnFileItemList.append(elItem)
+                                    })
+                                }
+                                break;
+
+
+                            case 4:
+                                jDetailsDbSqlStatement.show()
+                                break;
+
+
+                            case 5:
+                                jDetailsEMail.show()
+
+                                jEMailToLeft.text(displayNameEMailHeaderTo)
+                                jEMailFromLeft.text(displayNameEMailHeaderFrom)
+                                jEMailSubjectLeft.text(displayNameEMailHeaderSubject)
+                                jEMailContentLeft.text(displayNameEMailBody)
+                                jEMailAttachmentsLeft.text(displayNameEMailLoadFrom)
+
+                                jEMailToRight.text(actionDetails.headerTo)
+                                jEMailFromRight.text(actionDetails.headerFrom)
+                                jEMailSubjectRight.text(actionDetails.headerSubject)
+                                jEMailAttachmentsRightItemList.empty()
+                                if (actionDetails.loadFrom.length===0) {
+                                    jEMailAttachmentsRow.hide()
+                                }
+                                else {
+                                    jEMailAttachmentsRow.show()
+                                    actionDetails.loadFrom.forEach(function(actionID){
+                                        var action = self.getActionResource(actionID)
+                                        var elItem = jEMailAttachmentsRightItem.clone(false,true)
+                                        elItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                        jEMailAttachmentsRightItemList.append(elItem)
+                                    })
+                                }
+                                break;
+
+
+                            case 6:
+                                jDetailsExportPersistence.show()
+
+                                jExportPersistenceDisplayName.text(displayNameExportPesistenceSaveAs)
+                                jExportPersistenceFileName.text(actionDetails.saveAs)
+                                break;
+                            case 7:
+                                jDetailsExportXml.show()
+
+                                jExportXmlNameLeft.text(displayNameExportXmlSaveAs)
+                                jExportXmlNameRight.text(actionDetails.saveAs)
+                                jExportXmlTemplateNameLeft.text(displayNameExportXmlTemplate)
+                                jExportXmlTemplateNameRight.text(self.getXslResource(actionDetails.xslTemplate).name)
+                                jExportXmlCleanupLeft.text(displayNameExportXmlCleanup)
+                                jExportXmlCleanupRightYes.text(displayNameExportXmlCleanupYes)
+                                jExportXmlCleanupRightNo.text(displayNameExportXmlCleanupNo)
+                                if (actionDetails.sanitizeOutput) {
+                                    jExportXmlCleanupRightYes.show()
+                                    jExportXmlCleanupRightNo.hide()
+                                }
+                                else {
+                                    jExportXmlCleanupRightYes.hide()
+                                    jExportXmlCleanupRightNo.show()
+                                }
+                                break;
+
+
+                            case 8:
+                                jDetailsExternalResource.show()
+
+                                tExternalResource.update(function(){
+                                  this.externalResourceUrlLeft.text(displayNames.externalResourceUrlLeft)
+                                  this.externalResourceSaveAsLeft.text(displayNames.externalResourceSaveAsLeft)
+                                  this.externalResourcePreviewLeft.text(displayNames.externalResourcePreviewLeft)
+
+                                  this.externalResourceUrlRight.text(actionDetails.resourceURL)
+                                  this.externalResourceSaveAsRight.text(actionDetails.saveAs)
+                                  this.externalResourcePreviewRight.attr("src",actionDetails.resourceURL)
+                                })
+                                break;
+
+
+                            case 9:
+                                jDetailsWriteToForm.show()
+
+                                tWriteToForm.update(function(){
+                                    var self = this
+                                    self.writeToFormValuesLeft.text(displayNames.writeToFormValuesLeft)
+                                    self.writeToFormValuesRight.empty()
+                                    actionDetails.formChanges.forEach(function(formChange){
+                                        self.writeToFormValuesKey.text(formChange.key)
+                                        self.writeToFormValuesValue.text(formChange.value)
+                                        self.writeToFormValuesRight.append(self.writeToFormValuesRow.clone(false,true))
+                                    })
+                                })
+                                break;
+                            case 10:
+                                break;
+                            case 11:
+                                break;
+                            case 12:
+                                break;
+                            case 13:
+                                break;
+                            case 14:
+                                break;
+                            case 15:
+                                break;
+                            case 16:
+                                break;
+                            case 17:
+                                break;
+                            case 18:
+                                break;
+                            case 19:
+                                break;
+                            case 20:
+                                break;
+                            case 21:
+                                break;
+                            case 22:
+                                break;
+                            case 23:
+                                break;
+                            case 24:
+                                break;
+                            case 25:
+                                break;
+                            case 26:
+                                break;
+                        }
+                        return jTooltip
+                    }
                 }
             })
         })
@@ -2693,9 +2584,6 @@ XV.prototype.setupActionsDialog = function() {
                 "width": width < 0 ? 0 : width,
                 "height": height < 0 ? 0 : height
             })
-            XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom,0.0,0.0,1,function(transform) {
-                this.attr({transform: transform})
-            })
         }
         actionSvg.attr({
             "width": initialWidth,
@@ -2708,19 +2596,12 @@ XV.prototype.setupActionsDialog = function() {
             autoOpen: false,
             buttons: [
                 {
-                    "text": self.layout.action.displayNameActionsGraphZoom,
-                    "icon": "ui-icon-zoomin",
-                    "click": function() {
-                        XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom)
-                    }
-                },                
-                {
                     text: self.layout.action.displayNameActionsGraphClose,
                     icon: "ui-icon-close",
                     click: function(){
                         $(this).dialog("close")
                     }
-                }
+                },         
             ],
             closeOnEscape: true,
             closeText: self.layout.action.displayNameActionsGraphClose,
@@ -2742,21 +2623,6 @@ XV.prototype.setupActionsDialog = function() {
             title: self.layout.action.displayNameTitleActionsGraph.replace('###STATUS###',statusNode.ximaNode.properties["de.xima.fc.status.name"]),
             width: initialWidth,
             // callbacks
-            open: function(){
-                if (statusNode.actionsDialogInitial){
-                    statusNode.actionsDialogInitial = false
-                    $(this).parent().promise().done(function(){
-                        statusNode.actionsDialog.dialogExtend("maximize")
-                        XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom,0.5,0.5,null,function(transform){
-                            console.log(transform)
-                            this.attr({opacity: 0.0, transform: transform})
-                                .transition()
-                                .duration(400)
-                                .attr("opacity",1.0)
-                        })
-                    })
-                }
-            },
             resizeStop: onResize
         })
         .dialogExtend({
@@ -2904,7 +2770,6 @@ XV.prototype.getXslResource = function(id) {
 // Button callback (navigation etc.)
 XV.prototype.callbackButtonExpand = function(statusNode){
     if (statusNode.actionsDialog.dialog("isOpen")){
-        statusNode.actionsDialog.dialogExtend("restore")
         statusNode.actionsDialog.dialog("moveToTop")
         statusNode.actionsDialog.parent().effect("shake", {
             direction: "left",
@@ -2914,7 +2779,7 @@ XV.prototype.callbackButtonExpand = function(statusNode){
     }
     else {
         if (statusNode.actionsDialogInitial){
-            statusNode.actionsDialog.dialogExtend("maximize")
+            statusNode.actionsDialogInitial = false
         }
         statusNode.actionsDialog.dialog("open")
     }
@@ -3193,8 +3058,6 @@ XV.prototype.prepareLayoutLayered = function () {
             MANUAL : svgGTarget.select(classSelectorsTarget.portInManual),
             TIMED : svgGTarget.select(classSelectorsTarget.portInTimed)
         }
-        A=svgGSource
-        console.log(classSelectorsSource.portOutAuto)
         var portsOutBBox = {
             AUTO : self.getBBoxFix(portsOut.AUTO.node()),
             MANUAL : self.getBBoxFix(portsOut.MANUAL.node()),
@@ -3794,11 +3657,10 @@ XV.prototype.setupGlobalEventsLayered = function(){
     self.setMainToolbar()
     
     $(window).on("resize",function(event){
-        var dims = self.getDimensions()
-        self.svg.attr({
-            width: dims.width+"px",
-            height: dims.height+"px"
-        })
+        self.paperWidth = self.paper.clientWidth
+        self.paperHeight = self.paper.clientHeight
+        self.svg.attr("width", self.paperWidth)
+            .attr("height", self.paperHeight)
         self.onResize.forEach(function(handler){handler(event)})
     })
     
@@ -4166,7 +4028,7 @@ XV.prototype.generateActionsGraphLayered = function() {
             })
 
             // Get graph boundaries.
-            statusNode.actionsKGraphBBox = self.getKGraphBBox(actionNodes,transitionEdges)
+            statusNode.kGraphBBox = self.getKGraphBBox(actionNodes,transitionEdges)
 
             // Generate lines from edge vertices.
             transitionEdges.forEach(function(edge){
@@ -4195,13 +4057,24 @@ XV.prototype.generateActionsGraphLayered = function() {
             }
         }
 
-
-        var layouter = $klay.layout({
-            graph: kGraph,
-            options : {},
-            success : onSuccess,
-            error : function(error){self.handleError(error)}
-        })
+        // Start layouter.
+        if (false && Worker) {
+            var layouter = new Worker("js/klay.js")
+            layouter.addEventListener("error", function(event){self.handleError(event)}, false)
+            layouter.addEventListener('message', function(graph){onSuccess(graph.data)}, false)
+            layouter.postMessage({
+                graph: kGraph,
+                options: []
+            })            
+        }
+        else {
+            var layouter = $klay.layout({
+                graph: kGraph,
+                options : {},
+                success : onSuccess,
+                error : function(error){self.handleError(error)}
+            })
+        }
     })
 }
 XV.prototype.unhideNodeActionD3Layered = function(nodeD3) {

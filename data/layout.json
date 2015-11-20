@@ -5,12 +5,35 @@
         "nodeLayering" : "NETWORK_SIMPLEX",
 		"edgeRouting" : "ORTHOGONAL",
         "interactiveReferencePoint": "TOP_LEFT",
-        "thoroughness": 1,
-        "edgeSpacingFactor": 0.5,
-        "spacing": 40,
+        "thoroughness": 5,
+        "edgeSpacingFactor": 1,
+        "spacing": 90,
+        "borderSpacing": 20,        
 		"scaleMin" : 0.1,
-		"scaleMax" : 5.0
+		"scaleMax" : 5.0,
+        "edgeHighlightCheckInterval" : 500,
+        "edgeHighlightCheckIntervalAlgorithm" : "GRID",
+        "mouseEdgeProximityAccuracy" : 0.5,
+        "highlightStatusNodesOnEdgeMouseover" : true
 	},
+    "actionsDiagram" : {
+		"direction" : "DOWN",
+		"nodePlace" : "BRANDES_KOEPF",
+        "nodeLayering" : "NETWORK_SIMPLEX",
+		"edgeRouting" : "ORTHOGONAL",
+        "interactiveReferencePoint": "TOP_LEFT",
+        "thoroughness": 5,        
+        "edgeSpacingFactor": 2,
+        "spacing": 10,
+        "borderSpacing": 10
+    },
+    "toolbar" : {
+        "tooltipDelay": 800,
+        "tooltipFade": 300,
+        "legendFade": 500,
+        "displayNameLegendClose": "Schließen",
+        "edgeNodeArrowsFade": 500
+    },
 	"popupText" : {
 		"fadeIn": 200,
 		"fadeOut": 200
@@ -22,24 +45,354 @@
         "patternDirection" : {"x":210,"y":0},
         "patternOrigin" : {"x":0,"y":0}
 	},
-    "status": {
-        "main": {
-            "svg": "img/statusNode.svg",
-            "maxPortsIn" : 1,
-            "maxPortsOut" : {"AUTO":1,"MANUAL":1,"TIMED":1},
+    "action": {
+        "displayNameActionsGraphZoom": "An Graph heranzoomen",
+        "displayNameActionsGraphClose" : "Schließen",
+        "displayNameActionsGraphMinimize": "Minimieren",
+        "displayNameActionsGraphMaximize": "Maximieren",
+        "displayNameActionsGraphRestore": "Wiederherstellen",
+        "displayNameActionsGraphCollapse": "Einklappen",
+        
+        "displayNameMismatchTransition": "Wenn Bedingung nicht erfüllt",        
+        "displayNameErrorTransition": "Bei Fehler",
+        "displayNameStandardTransition": "Nach Ausführung der Aktion",
+        "displayNameStandardTransitionProceed": "nächste Aktion",
+        "displayNameStandardTransitionStop": "Verarbeitung abbrechen",
+        "displayNameConditionFormElement": "Formularelement",
+    
+        "displayNames" : {
+            "actionDetailsTypeLeft": "Art: ",
+            
+            "showTemplateNameLeft": "Template-Name",
+            "showTemplatePreviewLeft": "Vorschau",
+            
+            "attachFileToBatchFilesLeft": "Anzuhängende Dateien",
+            
+            "returnFileSaveAsLeft": "Auszuliefernde Dateien: ",
+            "returnFileForceDownloadLeft": "Rückgabe als Dateidownload erzwingen: ",
+            "returnFileForceDownloadYes": "Ja",
+            "returnFileForceDownloadNo": "Nein",
+            
+            "dbSqlStatementLeft": "Statement",
+            
+            "eMailToLeft": "E-Mail an",
+            "eMailFromLeft": "E-Mail von",
+            "eMailSubjectLeft": "Betreff",
+            "eMailBodyLeft": "Inhalt",
+            "eMailAttachmentsLeft": "Anzuhängende Dateien",
+            
+            "exportPersistenceSaveAsLeft": "Name der Ausgabedatei",
+            
+            "exportXmlSaveAsLeft": "Name der Ausgabedatei",
+            "exportXmlTemplateNameLeft": "XSL-Template",
+            "exportXmlCleanupLeft": "HTML-konforme Bereinigung und Ausgabe",
+            "exportXmlCleanupYes": "Ja",
+            "exportXmlCleanupNo": "Nein",
+            "exportXmlPreviewLeft": "Vorschau",
+            
+            "externalResourceUrlLeft": "Ressourcen-URL",
+            "externalResourceSaveAsLeft": "Name der Ausgabedatei",
+            "externalResourcePreviewLeft": "Vorschau",
+            
+            "writeToFormValuesLeft": "Schreibe",
+            
+            "stopBatchWarningRight": "Bitte beachten Sie, dass die Verarbeitung abgebrochen wird und alle folgenden Aktionen nicht durchgeführt werden!",
+            
+            "renewProcessIdWarningRight": "Bitte beachten Sie, beim Ändern der ProzessID können eventuell bestehende Verknüpfungen mit anderen Systemen verloren gehen und das Formular nicht mehr über zuvor generierte Formularlinks aufgerufen werden.",
+            
+            "deleteBatchWarningRight": "Bitte beachten Sie, dass beim Löschen des Vorgangs die Verarbeitung abgebrochen wird und alle Daten verloren gehen!"
+        },
+        
+        "actionDetailsTooltipCloseTimeout": 500,
+        "displayNameTitleActionsGraph": "Aktionen im Status ###STATUS###",
+        "effectInActionsGraph": {
+            "effect": "clip",
+            "duration": 400,
+            "direction": "vertical",
+            "delay": 0
+        },
+        "effectOutActionsGraph": {
+            "effect": "clip",
+            "duration": 400,
+            "direction": "vertical",
+            "delay": 0
+        },
+        "actionDetailsTooltipDimensions": [
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
+            {"maxWidth": "800px"}
+        ],          
+        "mainWithoutCondition": {
+            "svg": "img/actionNodeWithoutCondition.svg",
 			"selectors": {
 				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                                
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerNoCondition": "#container-nocondition",
+                "containerActionNodeMouseover" : "#container-action-node-mouseover",
+                "textAction": "#text-action>tspan",
+                "textTitle": "#text-title>tspan",
+                "textTitleBBox": "#text-title-bbox",
+                "textTitleEllipsis": "#text-title-ellipsis",
+                "nodeHighlight": "#node-highlight",
+                "iconOnErrorStop": "#icon-on-error-stop",
+                "iconOnStandardStop": "#icon-on-standard-stop",
+                "ports": {
+                    "OUT": {
+                        "STANDARD": {
+                            "icon": "#port-out-standard-icon",
+                            "attach": "#port-out-standard",
+                            "mouseover": "#port-out-standard-mouseover"
+                        },
+                        "MISMATCH": {
+                            "icon": "#port-out-mismatch-icon",
+                            "attach": "#port-out-mismatch",
+                            "mouseover": "#port-out-mismatch-mouseover"
+                        },       
+                        "ERROR": {
+                            "icon": "#port-out-error-icon",
+                            "attach": "#port-out-error",
+                            "mouseover": "#port-out-error-mouseover"
+                        }                        
+                    },
+                    "IN": {
+                        "icon": "#port-in-icon",
+                        "attach": "#port-in",
+                        "mouseover": "#port-in"
+                    }
+                }              
+			}
+		},
+        "mainWithCondition": {
+            "svg": "img/actionNodeWithCondition.svg",
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerCondition": "#container-condition",
+                "containerConditionNode": "#container-condition-node",
+                "containerConditionNodeMouseover": "#container-condition-node-mouseover",                
+                "containerActionNodeMouseover" : "#container-action-node-mouseover",
+                "textAction": "#text-action>tspan",
+                "textTitle": "#text-title>tspan",
+                "textTitleBBox": "#text-title-bbox",
+                "textTitleEllipsis": "#text-title-ellipsis",
+                "nodeHighlight": "#node-highlight",
+                "iconOnErrorStop": "#icon-on-error-stop",
+                "iconOnMismatchStop": "#icon-on-mismatch-stop",
+                "iconOnStandardStop": "#icon-on-standard-stop",
+                "textConditionTypeFormvalue": "#text-condition-type-formvalue",
+                "textConditionTypeRegexp": "#text-condition-type-regexp",
+                "iconsCondition": "#icon-condition-operator",
+                "iconCondition": {
+                    "EMPTY": "#icon-condition-empty",
+                    "NONEMPTY": "#icon-condition-nonempty",
+                    "EQUAL": "#icon-condition-equal",
+                    "NOTEQUAL": "#icon-condition-notequal",
+                    "CONTAINS": "#icon-condition-contains",
+                    "GREATER": "#icon-condition-greater",
+                    "SMALLER": "#icon-condition-smaller",
+                    "STARTSWITH": "#icon-condition-startswith",
+                    "ENDSON": "#icon-condition-endson",
+                    "MATCHES": "#icon-condition-matches"
+                },
+                "ports": {
+                    "OUT": {
+                        "STANDARD": {
+                            "icon": "#port-out-standard-icon",
+                            "attach": "#port-out-standard",
+                            "mouseover": "#port-out-standard-mouseover"
+                        },
+                        "MISMATCH": {
+                            "icon": "#port-out-mismatch-icon",
+                            "attach": "#port-out-mismatch",
+                            "mouseover": "#port-out-mismatch-mouseover"
+                        },       
+                        "ERROR": {
+                            "icon": "#port-out-error-icon",
+                            "attach": "#port-out-error",
+                            "mouseover": "#port-out-error-mouseover"
+                        }                        
+                    },
+                    "IN": {
+                        "icon": "#port-in-icon",
+                        "attach": "#port-in",
+                        "mouseover": "#port-in"
+                    }
+                }
+			}
+		}        
+    },
+    "status": {
+        "displayNameTimedTransition" : "Zeitgesteuerter Statuswechsel",
+        "displayNameManualTransition" : "Manueller Statuswechsel",        
+        "displayNameAutoTransition" : "Statuswechsel durch System", 
+        "displayNameOnlyForUnread" : "(nur für ungelesene Vorgänge anwenden)",
+        "displayNameDeletableIcon" : "Vorgänge in diesem Status können durch Sachbearbeiter gelöscht werden.",
+        "displayNameActionDeactivated" : "deaktiviert",
+        "displayNameNoStatusDescriptionAvailable" : "",
+        "toolbarFadeDuration" : 300,
+        "actionsGraphPortsInMax" : 1,
+        "hideUnusedPorts" : true,
+        "maxPortsIn" : 1,
+        "maxPortsOut" : {"AUTO":1,"MANUAL":1,"TIMED":1},
+        "buttons" : {
+            "expand" : {
+                "fadeDuration": 300,
+                "pointerEvents" : "all"
+            },
+            "editManual" : {
+                "fadeDuration": 300,
+                "pointerEvents" : "all"
+            }            
+        },        
+        "edgeNodeInboundNorth" : {
+            "active": true,
+            "svg": "img/edgeNodeInboundNorth.svg",
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeInboundEast" : {
+            "active": true,
+            "svg": "img/edgeNodeInboundEast.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeInboundSouth" : {
+            "active": true,
+            "svg": "img/edgeNodeInboundSouth.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeInboundWest" : {
+            "active": true,
+            "svg": "img/edgeNodeInboundWest.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeOutboundNorth" : {
+            "active": false,
+            "svg": "img/edgeNodeOutboundNorth.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeOutboundEast" : {
+            "active": false,
+            "svg": "img/edgeNodeOutboundEast.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeOutboundSouth" : {
+            "active": false,
+            "svg": "img/edgeNodeOutboundSouth.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeOutboundWest" : {
+            "active": false,
+            "svg": "img/edgeNodeOutboundWest.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "edgeNodeTwoboundNorth" : {
+            "active": false,
+            "svg": "img/edgeNodeTwoboundNorth.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },        
+        "edgeNodeTwoboundSouth" : {
+            "active": false,
+            "svg": "img/edgeNodeTwoboundSouth.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },        
+        "edgeNodeTwoboundEast" : {
+            "active": false,
+            "svg": "img/edgeNodeTwoboundEast.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },        
+        "edgeNodeTwoboundWest" : {
+            "active": false,
+            "svg": "img/edgeNodeTwoboundWest.svg"  ,
+            "selectors" : {
+                "MAIN" : "#container-body",
+                "iconArrow": "#icon-arrow"
+            }
+        },
+        "mainResubmission": {
+            "svg": "img/statusNodeVar2.svg",
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                
+                "nodeHighlight" : "#node-highlight",
 				"containerBody": "#container-body",
                 "containerToolbar" : "#container-toolbar",
 				"textTitle": "#text-title>tspan>tspan",
 				"textTitleBBox" : "#text-title-bbox",
-				"textTitleEllipsis" : "#text-title-ellipsis>tspan",
+				"textTitleEllipsis" : "#text-title-ellipsis",
                 "buttons" : {
                     "expand" : {
                         "normal" : "#button-expand",
-                        "hover" : "#button-expand-hover"
-                    }
+                        "hover" : "#button-expand-hover",
+                        "normalBBox" : "#button-expand-bbox",
+                        "hoverBBox" : "#button-expand-hover-bbox"                   
+                    },
+                    "editManual" : {
+                        "normal" : "#button-edit-manual",
+                        "hover" : "#button-edit-manual-hover",
+                        "normalBBox" : "#button-edit-manual-bbox",
+                        "hoverBBox" : "#button-edit-manual-hover-bbox"                   
+                    }  
                 },
+				"disableMaskEditManual": "#disable-mask-edit-manual",
 				"iconDeletableFalse": "#icon-deletable-false",
 				"iconDeletableTrue": "#icon-deletable-true",
 				"iconOnErrorStop": "#icon-onerror-stop",
@@ -50,6 +403,180 @@
 				"portInAuto": "#port-in",
 				"portInManual": "#port-in",
 				"portInTimed": "#port-in",
+                "portOutTimedIcon" : "#port-out-timed-icon",
+                "portOutAutoIcon" : "#port-out-auto-icon",
+                "portOutManualIcon" : "#port-out-manual-icon",
+                "portOutAutoMouseover" : "#port-out-auto-mouseover",
+                "portOutManualMouseover" : "#port-out-manual-mouseover",
+                "portOutTimedMouseover" : "#port-out-timed-mouseover",
+                "textActionGeneralMain": "#text-action-general-main",
+                "textActionGeneralSub": "#text-action-general-sub",
+				"textActionGeneralIconsMain": [
+					"#text-action-general-0 tspan",
+					"#text-action-general-1 tspan",
+					"#text-action-general-2 tspan",
+					"#text-action-general-3 tspan",
+					"#text-action-general-4 tspan",
+					"#text-action-general-5 tspan",
+					"#text-action-general-6 tspan",
+					"#text-action-general-7 tspan",
+					"#text-action-general-8 tspan",
+					"#text-action-general-9 tspan",
+					"#text-action-general-10 tspan",
+					"#text-action-general-11 tspan",
+					"#text-action-general-12 tspan",
+					"#text-action-general-13 tspan",
+					"#text-action-general-14 tspan",
+					"#text-action-general-15 tspan",
+					"#text-action-general-16 tspan",
+					"#text-action-general-17 tspan",
+					"#text-action-general-18 tspan",
+					"#text-action-general-19 tspan",
+					"#text-action-general-20 tspan",
+					"#text-action-general-21 tspan",
+					"#text-action-general-22 tspan",
+					"#text-action-general-23 tspan",
+					"#text-action-general-24 tspan",
+					"#text-action-general-25 tspan",
+					"#text-action-general-26 tspan"
+				],
+				"textActionGeneralIconsSub": [
+					"#text-action-general-sub-0 tspan",
+					"#text-action-general-sub-1 tspan",
+					"#text-action-general-sub-2 tspan",
+					"#text-action-general-sub-3 tspan",
+					"#text-action-general-sub-4 tspan",
+					"#text-action-general-sub-5 tspan",
+					"#text-action-general-sub-6 tspan"
+				]                
+			}
+		}, 
+        "mainSubmission": {
+            "svg": "img/statusNodeVar3.svg",
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerToolbar" : "#container-toolbar",
+				"textTitle": "#text-title>tspan>tspan",
+				"textTitleBBox" : "#text-title-bbox",
+				"textTitleEllipsis" : "#text-title-ellipsis",
+                "buttons" : {
+                    "expand" : {
+                        "normal" : "#button-expand",
+                        "hover" : "#button-expand-hover",
+                        "normalBBox" : "#button-expand-bbox",
+                        "hoverBBox" : "#button-expand-hover-bbox"                   
+                    },
+                    "editManual" : {
+                        "normal" : "#button-edit-manual",
+                        "hover" : "#button-edit-manual-hover",
+                        "normalBBox" : "#button-edit-manual-bbox",
+                        "hoverBBox" : "#button-edit-manual-hover-bbox"                   
+                    }  
+                },
+				"disableMaskEditManual": "#disable-mask-edit-manual",
+				"iconDeletableFalse": "#icon-deletable-false",
+				"iconDeletableTrue": "#icon-deletable-true",
+				"iconOnErrorStop": "#icon-onerror-stop",
+				"iconOnErrorNext": "#icon-onerror-next",
+				"portOutAuto": "#port-out-auto",
+				"portOutManual": "#port-out-manual",
+				"portOutTimed": "#port-out-timed",
+				"portInAuto": "#port-in",
+				"portInManual": "#port-in",
+				"portInTimed": "#port-in",
+                "portOutTimedIcon" : "#port-out-timed-icon",
+                "portOutAutoIcon" : "#port-out-auto-icon",
+                "portOutManualIcon" : "#port-out-manual-icon",
+                "portOutAutoMouseover" : "#port-out-auto-mouseover",
+                "portOutManualMouseover" : "#port-out-manual-mouseover",
+                "portOutTimedMouseover" : "#port-out-timed-mouseover",
+                "textActionGeneralMain": "#text-action-general-main",
+                "textActionGeneralSub": "#text-action-general-sub",
+				"textActionGeneralIconsMain": [
+					"#text-action-general-0 tspan",
+					"#text-action-general-1 tspan",
+					"#text-action-general-2 tspan",
+					"#text-action-general-3 tspan",
+					"#text-action-general-4 tspan",
+					"#text-action-general-5 tspan",
+					"#text-action-general-6 tspan",
+					"#text-action-general-7 tspan",
+					"#text-action-general-8 tspan",
+					"#text-action-general-9 tspan",
+					"#text-action-general-10 tspan",
+					"#text-action-general-11 tspan",
+					"#text-action-general-12 tspan",
+					"#text-action-general-13 tspan",
+					"#text-action-general-14 tspan",
+					"#text-action-general-15 tspan",
+					"#text-action-general-16 tspan",
+					"#text-action-general-17 tspan",
+					"#text-action-general-18 tspan",
+					"#text-action-general-19 tspan",
+					"#text-action-general-20 tspan",
+					"#text-action-general-21 tspan",
+					"#text-action-general-22 tspan",
+					"#text-action-general-23 tspan",
+					"#text-action-general-24 tspan",
+					"#text-action-general-25 tspan",
+					"#text-action-general-26 tspan"
+				],
+				"textActionGeneralIconsSub": [
+					"#text-action-general-sub-0 tspan",
+					"#text-action-general-sub-1 tspan",
+					"#text-action-general-sub-2 tspan",
+					"#text-action-general-sub-3 tspan",
+					"#text-action-general-sub-4 tspan",
+					"#text-action-general-sub-5 tspan",
+					"#text-action-general-sub-6 tspan"
+				]                
+			}
+		},       
+        "main": {
+            "svg": "img/statusNode.svg",
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerToolbar" : "#container-toolbar",
+				"textTitle": "#text-title>tspan>tspan",
+				"textTitleBBox" : "#text-title-bbox",
+				"textTitleEllipsis" : "#text-title-ellipsis",
+                "buttons" : {
+                    "expand" : {
+                        "normal" : "#button-expand",
+                        "hover" : "#button-expand-hover",
+                        "normalBBox" : "#button-expand-bbox",
+                        "hoverBBox" : "#button-expand-hover-bbox"                   
+                    },
+                    "editManual" : {
+                        "normal" : "#button-edit-manual",
+                        "hover" : "#button-edit-manual-hover",
+                        "normalBBox" : "#button-edit-manual-bbox",
+                        "hoverBBox" : "#button-edit-manual-hover-bbox"                   
+                    }  
+                },
+				"disableMaskEditManual": "#disable-mask-edit-manual",
+				"iconDeletableFalse": "#icon-deletable-false",
+				"iconDeletableTrue": "#icon-deletable-true",
+				"iconOnErrorStop": "#icon-onerror-stop",
+				"iconOnErrorNext": "#icon-onerror-next",
+				"portOutAuto": "#port-out-auto",
+				"portOutManual": "#port-out-manual",
+				"portOutTimed": "#port-out-timed",
+				"portInAuto": "#port-in",
+				"portInManual": "#port-in",
+				"portInTimed": "#port-in",
+                "portOutTimedIcon" : "#port-out-timed-icon",
+                "portOutAutoIcon" : "#port-out-auto-icon",
+                "portOutManualIcon" : "#port-out-manual-icon",
+                "portOutAutoMouseover" : "#port-out-auto-mouseover",
+                "portOutManualMouseover" : "#port-out-manual-mouseover",
+                "portOutTimedMouseover" : "#port-out-timed-mouseover",
                 "textActionGeneralMain": "#text-action-general-main",
                 "textActionGeneralSub": "#text-action-general-sub",
 				"textActionGeneralIconsMain": [

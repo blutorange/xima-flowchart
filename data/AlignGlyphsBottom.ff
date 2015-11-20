@@ -1,0 +1,9 @@
+Print("Usage: <font-in> <-font-out> <Y>");
+Print("Moves all glyphs so that the bottom of their bounding boxes align at Y.");
+Open($1);
+SelectWorthOutputting();
+foreach
+    Move(0,-GlyphInfo("BBox")[1]+Strtol($3));
+endloop
+Generate($2);
+Quit(0);

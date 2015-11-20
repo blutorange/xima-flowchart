@@ -52,7 +52,8 @@
         de.xima.fc.status.deletable              : <BOOL>   # Whether transaction with this status may be deleted.
         de.xima.fc.status.hasTimedTransition     : <BOOL>   # Whether there is a timed transition. True iff there exists
                                                             # any edge with the de.xima.fc.transitionType property set to AUTO.
-        de.xima.fc.status.statusAfterResubmission: <STRING> # ID of the status after resubmitting a form.
+        de.xima.fc.status.statusOnResubmission   : <STRING> # ID of the status after resubmitting a form.
+        de.xima.fc.status.statusOnSubmission     : <STRING> # ID of the status after submitting a form.
 
 
 		de.xima.fc.status.timedTransitionTarget  : <STRING>
@@ -101,11 +102,15 @@
             error     : <STRING> # ID of the image used as an icon for the error of this action.
         ]>
         
-        de.xima.fc.action.providesFile  : <BOOL> # True if the action may create (a) new file(s). See below for a list.
-                                                 # Must be set tot true even if this particular action does not provide
-                                                 # a file.
-        de.xima.fc.action.requiresFile  : <BOOL> # True if the action may need (a) local file(s). See below for a list.
-                                                 # Must be set to true even if this particular action does not load any files.
+        de.xima.fc.action.providesFile    : <BOOL>  # True if the action may create (a) new file(s). See below for a list.
+                                                    # Must be set tot true even if this particular action does not provide
+                                                    # a file.
+        de.xima.fc.action.requiresFile    : <BOOL>  # True if the action may need (a) local file(s). See below for a list.
+                                                    # Must be set to true even if this particular action does not load any files.
+		de.xima.fc.action.stopsWorkflow : <BOOL>    # True if this action stops the workflow, ie. no further actions
+													# will get executed if this action is executed without error.
+													# Currently, this should be set to true only for the actions
+													# <ACTION-VERARBEITUNGABBRECHEN> and <ACTION-VORGANGLOSCHEN>
         
         de.xima.fc.action.active        : <BOOL>             # Whether the action has been set to active.
         de.xima.fc.action.type          : <POSITIVE_INTEGER> # Identifier of the action, starting at 0.
@@ -186,6 +191,7 @@
 }
 
 * RESOURCE-FILE *
+* DEPRECATED. CURRENTLY NOT USED *
 {
     id : "de.xima.fc.resource.file-<UNIQUE_ID>" # Unique id for the file resource.
     name : null | <STRING> # Name of the file. This is the name given when configuring an action that gets a file.
@@ -231,9 +237,10 @@
 
 * CONDITION *
 {
-    type : NONE | FORM | REGEXP # Type of the condition.
-    displayName : <STRING> # Localized name of the condition.
-    details : <OBJECT> # Condition details. See below.
+    type                  : NONE | FORM | REGEXP # Type of the condition.
+    displayName           : <STRING> # Localized name of the condition.
+    nextActionDisplayName : <STRING> # Localized name of the type of action to take if the condition is not met.
+    details               : <OBJECT> # Condition details. See below.
 }
 
 * CONDITION-DETAILS-NONE *
@@ -258,6 +265,12 @@
 * CONDITION-DETAILS-REGEXP *
 {
     regexp : <STRING> # Regexp that gets checked.
+    nextAction        : STOP | NEXT | <STRING> # Action taken if condition is not met. May be either
+                                        # STOP (do not proceed to any further action), 
+                                        # NEXT (proceed to the next action) or the 
+                                        # id of an action that is to be executed.
+                                        # Note that action ids take the "de.xima.fc.action-"
+                                        # prefix, thus there cannot be any name collisions.	
 }
 
 
@@ -273,12 +286,12 @@
 
 * ACTION-DETAILS-DATEIANVORGANGANHANGEN *
 {
-    loadFrom : <ARRAY[STRING]> # IDs of the files to be attached.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to be attached.
 }
 
 * ACTION-DETAILS-DATEIAUSLIEFERN *
 {
-    loadFrom : <ARRAY[STRING]> # IDs of the files to be attached.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to be sent.
     forceDownload : <BOOL> # Whether the browser may decide how to handle the file.
 }
 
@@ -293,17 +306,17 @@
     headerFrom : <STRING> # Mail FROM.
     headerSubject : <STRING> # Mail SUBJECT.
     body : <STRING> # Mail BODY (as HTML).
-    loadFrom : <ARRAY[STRING]> # IDs of the files to be attached.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to be attached.
 }
 
 * ACTION-DETAILS-EXPORTPERSISTENCE *
 {
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-EXPORTXML *
 {
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
     xslTemplate : <STRING> # ID of the xsl template to use.
     sanitizeOutput : <BOOL> # Whether the output should be sanitzed so that it conform to html specification.
 }
@@ -311,30 +324,30 @@
 * ACTION-DETAILS-EXTERNERESOURCE *
 {
     resourceURL : <STRING> # External url of the resource.
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-FORMULARANDERN *
 {
      formChanges : <ARRAY[
         {
-            selector : <STRING> # Text of the form input field selector.
-            newValue : <STRING> # New value to be assigned to the form input field.
+            key   : <STRING> # Text of the form input field selector.
+            value : <STRING> # New value to be assigned to the form input field.
         }
     ]>
 }
 
 * ACTION-DETAILS-KOMPRIMIEREN *
 {
-    saveAs : <STRING> # ID of the file created.
-    loadFrom : <ARRAY[STRING]> # List of IDs of the files to compress.   
+    saveAs : <STRING> # Name of the file created.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to compress.
 }
 
 * ACTION-DETAILS-PDFFILL *
 {
     sourceType : EXTERNAL | TENANT | FORM # Resource type to use.
     resourceName : <STRING> # URL or file name of the resource.
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-POSTREQUEST *
@@ -364,7 +377,7 @@
 * ACTION-DETAILS-SPEICHERN *
 {
     targetDirectory : <STRING> # Name of the target directory, may contain form input fields selector.
-    loadFrom : <ARRAY[STRING]> # IDs of the files to be saved.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to save.
     usePID : <BOOL> # Whether the process id should be used.
 }
 
@@ -376,13 +389,13 @@
 * ACTION-DETAILS-TEXTDATEIERZEUGEN *
 {
     textContent : <STRING> # Content of the text file.
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-UPLOADBEREITSTELLEN *
 {
     uploadElementName : <ARRAY[STRING]> # Name of the formcycle upload element.
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-VERARBEITUNGABBRECHEN *
@@ -425,12 +438,12 @@
 {
     sourceType : EXTERNAL | TENANT | FORM # Resource type to use.
     resourceName : <STRING> # URL or file name of the resource.
-    saveAs : <STRING> # ID of the file created.
+    saveAs : <STRING> # Name of the file created.
 }
 
 * ACTION-DETAILS-XMLEINLESENUNDFORMULARFELDERSETZEN *
 {
-    loadFrom : <ARRAY[STRING]> # ID of the file interpreted as xml.
+    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to be interpreted as XML.
     xslTemplate : <STRING> # ID of the xsl template used.
     xpath       : <ARRAY[
         key   : <STRING> # Field name, may contain form input field selector(s).

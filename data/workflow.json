@@ -24,6 +24,8 @@
 
 
 
+    
+
 
 {
     "children": [
@@ -36,6 +38,7 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2409"},
@@ -45,12 +48,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Statuswechsel Beantragt",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Statuswechsel Beantragt"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 },
                 {
@@ -60,21 +64,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-968"},
                         "de.xima.fc.action.displayName": "Abschlussseite (Template)",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-1",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "test1",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 0,
-                        "de.xima.fc.status.name": "test1"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
                     }
                 },
                 {
@@ -84,21 +90,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
                         "de.xima.fc.action.displayName": "Abschlussseite (Template)",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-1",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "test2",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 0,
-                        "de.xima.fc.status.name": "test2"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
                     }
                 },
                 {
@@ -108,13 +116,14 @@
                         "de.xima.fc.action.condition": {
                             "details": {
                                 "conditionLHS": "klkllk",
-                                "conditionOperator": "EMPTY",
-                                "conditionRHS": "",
-                                "displayNameConditionOperator": "Leer",
-                                "hasRHS": false,
-                                "nextAction": "de.xima.fc.action-2359"
+                                "conditionOperator": "CONTAINS",
+                                "conditionRHS": "345",
+                                "displayNameConditionOperator": "Enthält",
+                                "hasRHS": true,
+                                "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
@@ -124,12 +133,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "test3",
                         "de.xima.fc.action.onError": "de.xima.fc.action-2359",
                         "de.xima.fc.action.onErrorDisplayName": "konfigurierte Aktion",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 17,
-                        "de.xima.fc.status.name": "test3"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 17
                     }
                 },
                 {
@@ -139,13 +149,14 @@
                         "de.xima.fc.action.condition": {
                             "details": {
                                 "conditionLHS": "cbDokument_Gas_ok",
-                                "conditionOperator": "NONEMPTY",
-                                "conditionRHS": "",
-                                "displayNameConditionOperator": "Nicht Leer",
-                                "hasRHS": false,
-                                "nextAction": "NEXT"
+                                "conditionOperator": "SMALLER",
+                                "conditionRHS": "7655",
+                                "displayNameConditionOperator": "Kleiner",
+                                "hasRHS": true,
+                                "nextAction": "de.xima.fc.action-2851"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "konfigurierte Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
@@ -155,12 +166,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "tttt",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 10,
-                        "de.xima.fc.status.name": "tttt"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 10
                     }
                 },
                 {
@@ -168,9 +180,17 @@
                     "properties": {
                         "de.xima.fc.action.active": true,
                         "de.xima.fc.action.condition": {
-                            "details": {},
-                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
-                            "type": "NONE"
+                            "details": {
+                                "conditionLHS": "dg346",
+                                "conditionOperator": "MATCHES",
+                                "conditionRHS": "sd4",
+                                "displayNameConditionOperator": "Regulärer Ausdruck",
+                                "hasRHS": true,
+                                "nextAction": "NEXT"
+                            },
+                            "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Upload bereitstellen",
@@ -179,12 +199,279 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "asddsa",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 17,
-                        "de.xima.fc.status.name": "asddsa"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 17
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2650",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.displayName": "Vorgang eine neue Prozess-ID vergeben",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-4",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "test9",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 20
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2651",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.displayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-5",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "test8",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
+                        "de.xima.fc.action.type": 18
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2652",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "body": "<p><span style=\"background-color:#FFFF00;\">Das ist&nbsp;<\/span><\/p>\n\n<p><span style=\"color:#FF0000;\">werzzzu<\/span><\/p>\n\n<p><span style=\"font-size:24px;\"><u><em><strong>Dies ist auch<\/strong><\/em><\/u><\/span><\/p>\n\n<p><a href=\"http://234\">http://234<\/a><\/p>\n\n<ul>\n\t<li style=\"text-align: center;\"><span style=\"font-size:8px;\"><u><em><strong>q23<\/strong><\/em><\/u><\/span><\/li>\n\t<li style=\"text-align: center;\"><span style=\"font-size:8px;\"><u><em><strong>24<\/strong><\/em><\/u><\/span><\/li>\n<\/ul>\n",
+                            "headerFrom": "qwefds",
+                            "headerSubject": "asd234",
+                            "headerTo": "wqe",
+                            "loadFrom": [
+                                "de.xima.fc.action-2303",
+                                "de.xima.fc.action-2359",
+                                "de.xima.fc.action-2550"
+                            ]
+                        },
+                        "de.xima.fc.action.displayName": "E-Mail",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-6",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "78jh",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2653",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-1",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "crash",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2654",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {
+                                "nextAction": "NEXT",
+                                "regexp": "123456"
+                            },
+                            "displayName": "Regulärer Ausdruck",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "REGEXP"
+                        },
+                        "de.xima.fc.action.details": {"formChanges": [
+                            {
+                                "key": "bye",
+                                "value": "world"
+                            },
+                            {
+                                "key": "hallo",
+                                "value": "welt"
+                            }
+                        ]},
+                        "de.xima.fc.action.displayName": "Formular ändern",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-7",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "win",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 9
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2701",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.displayName": "Vorgang löschen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-8",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Löschen",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
+                        "de.xima.fc.action.type": 23
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2850",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"loadFrom": [
+                            "de.xima.fc.action-2359",
+                            "de.xima.fc.action-2550"
+                        ]},
+                        "de.xima.fc.action.displayName": "Datei an Vorgang anhängen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-9",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Datei anhängen",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 2
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2851",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "sanitizeOutput": false,
+                            "saveAs": "XMLDatei",
+                            "xslTemplate": "de.xima.fc.resource.xsl-51"
+                        },
+                        "de.xima.fc.action.displayName": "Export (XML-Datei)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-10",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Ausgeliefert",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 7
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2852",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "resourceURL": "http://naiad.formcloud.de/formcycle/flowchart.jsp?pid=2015&pretty=4",
+                            "saveAs": "Google"
+                        },
+                        "de.xima.fc.action.displayName": "Externe Ressource",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-11",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ExResource",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 8
                     }
                 }
             ],
@@ -217,21 +504,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"sqlStatement": "CREATE TABLE IF NOT EXISTS `COUNTER_S` (`PID` INT NOT NULL, `COUNT_S` INT NOT NULL);\ninsert into `COUNTER_S` VALUES(1,0); insert into `COUNTER_S` (Select 1, `COUNT_S` + 1 from `COUNTER_S` where PID=1 GROUP BY COUNT_S); delete from `COUNTER_S` where PID=1 and COUNT_S < ( SELECT MAXO FROM (SELECT MAX(count_s) AS MAXO FROM `COUNTER_S` WHERE PID=1) AS TMP);"},
                         "de.xima.fc.action.displayName": "Datenbank (SQL Statement)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-4",
+                            "action": "de.xima.fc.resource.image.font-12",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "counter",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 4,
-                        "de.xima.fc.status.name": "counter"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 4
                     }
                 },
                 {
@@ -241,21 +530,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"sqlStatement": "select PID, COUNT_S from `COUNTER_S`;"},
                         "de.xima.fc.action.displayName": "Datenbank (SQL Statement)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-4",
+                            "action": "de.xima.fc.resource.image.font-12",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "counter2",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 4,
-                        "de.xima.fc.status.name": "counter2"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 4
                     }
                 },
                 {
@@ -265,44 +556,51 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"formChanges": [{
+                            "key": "tfVID",
+                            "value": "S-2015-[%$counter2.RESULT[0].COUNT_S%]"
+                        }]},
                         "de.xima.fc.action.displayName": "Formular ändern",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-5",
+                            "action": "de.xima.fc.resource.image.font-7",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "vID schreiben",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 9,
-                        "de.xima.fc.status.name": "vID schreiben"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 9
                     }
                 },
                 {
                     "id": "de.xima.fc.action-2233",
                     "properties": {
-                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.active": false,
                         "de.xima.fc.action.condition": {
                             "details": {
                                 "conditionLHS": "tf_email",
                                 "conditionOperator": "NONEMPTY",
-                                "conditionRHS": "mail",
+                                "conditionRHS": "",
                                 "displayNameConditionOperator": "Nicht Leer",
-                                "hasRHS": true,
+                                "hasRHS": false,
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
-                            "body": "[%cbSendMailToMeister%]<br><br>Sehr geehrte Kundin, sehr geehrter Kunde,<br><br>Ihr Antrag auf einen Schachtschein ist bei uns eingegangen.<br>Vielen Dank für Ihren Auftrag. In den nächsten Tagen erhalten Sie einen Link zugeschickt, um Ihre Unterlagen herunterladen zu können.<br><br>Mit freundlichen Grüßen<br><br>Ihre Elektroenergieversorgung Cottbus GmbH<br><br>Über diesen Link können Sie&nbsp;jederzeit ein Formular, vorausgefüllt mit Ihren Kontaktdaten, für einen weiteren Antrag&nbsp;aufrufen:<br><a href=\"https://onlineservice.stadtwerke-cottbus.de/formcycle/form/provide/1?[%tfURIParams%]\">https://onlineservice.stadtwerke-cottbus.de/formcycle/form/provide/1?[%tfURIParams%]<\/a><br><br>",
+                            "body": "<p>[%cbSendMailToMeister%]<br />\n<br />\nSehr geehrte Kundin, sehr geehrter Kunde,<br />\n<br />\nIhr Antrag auf einen Schachtschein ist bei uns eingegangen.<br />\nVielen Dank f&uuml;r Ihren Auftrag. In den n&auml;chsten Tagen erhalten Sie einen Link zugeschickt, um Ihre Unterlagen herunterladen zu k&ouml;nnen.<br />\n<br />\nMit freundlichen Gr&uuml;&szlig;en<br />\n<br />\nIhre Elektroenergieversorgung Cottbus GmbH<br />\n<br />\n&Uuml;ber diesen Link k&ouml;nnen Sie&nbsp;jederzeit ein Formular, vorausgef&uuml;llt mit Ihren Kontaktdaten, f&uuml;r einen weiteren Antrag&nbsp;aufrufen:<br />\n<a href=\"https://onlineservice.stadtwerke-cottbus.de/formcycle/form/provide/1?[%tfURIParams%]\">https://onlineservice.stadtwerke-cottbus.de/formcycle/form/provide/1?[%tfURIParams%]<\/a><br />\n&nbsp;<\/p>\n",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Eingangsbestätigung Ihres Antrages auf einen Schachtschein",
-                            "headerTo": "[%tf_email%]"
+                            "headerTo": "[%tf_email%]",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -310,12 +608,65 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Kunden",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Kunden"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2700",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.displayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-5",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Abbrechen",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
+                        "de.xima.fc.action.type": 18
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2802",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-7"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-1",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Wird nie ausgeführt",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
                     }
                 }
             ],
@@ -370,21 +721,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
-                        "de.xima.fc.action.onError": "NEXT",
+                        "de.xima.fc.action.name": "In Postfach Meisterblick",
+                        "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "In Postfach Meisterblick"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 },
                 {
@@ -401,21 +754,23 @@
                                 "nextAction": "de.xima.fc.action-2224"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "konfigurierte Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Textdatei erzeugen",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-8",
+                            "action": "de.xima.fc.resource.image.font-14",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "goToEnd",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 14,
-                        "de.xima.fc.status.name": "goToEnd"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 14
                     }
                 },
                 {
@@ -432,13 +787,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "<font face=\"tahoma, arial, verdana, sans-serif\"><span style=\"font-size: 12px;\"><p>Sehr geehrter Herr Siering,<br>im Schachtscheinportal ist für Sie der Vorgang<br><br>\" [%tfVID%] [%tf_bauvorhaben%] \"<br><br>zur Bestätigung bzw. Ergänzung eingegangen. Bitte bearbeiten Sie den Vorgang im Interesse unserer Kunden schnell.<br>Vielen Dank.<\/p><\/span><\/font><br>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Neuer Eintrag im Schachtschein-Portal",
-                            "headerTo": "ralf.siering@stadtwerke-cottbus.de,daniel.fritzsche@stadtwerke-cottbus.de"
+                            "headerTo": "ralf.siering@stadtwerke-cottbus.de,daniel.fritzsche@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -446,12 +803,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Meister Strom",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Meister Strom"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -468,13 +826,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "text ....<br>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Neuer Eintrag für Meister Netz",
-                            "headerTo": "joerg.huber@stadtwerke-cottbus.de"
+                            "headerTo": "joerg.huber@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -482,12 +842,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Meister Netz",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Meister Netz"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -504,13 +865,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "<p>Sehr geehrter Herr Nicklau,<br>im Schachtscheinportal ist für Sie der Vorgang<br>&nbsp;<br>\" [%tfVID%] [%tf_bauvorhaben%] \"<br>&nbsp;<br>zur Bestätigung bzw. Ergänzung eingegangen. Bitte bearbeiten Sie den Vorgang im Interesse unserer Kunden schnell.<br>Vielen Dank.<\/p>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Neuer Eintrag im Schachtschein-Portal",
-                            "headerTo": "frank.nicklau@stadtwerke-cottbus.de, thomas.wulf@stadtwerke-cottbus.de,joerg.huber@stadtwerke-cottbus.de"
+                            "headerTo": "frank.nicklau@stadtwerke-cottbus.de, thomas.wulf@stadtwerke-cottbus.de,joerg.huber@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -518,12 +881,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Meister FW",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Meister FW"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -540,13 +904,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "<p>Sehr geehrter Herr Bott,<br>im Schachtscheinportal ist für Sie der Vorgang<br>&nbsp;<br>\"&nbsp;[%tfVID%] [%tf_bauvorhaben%] [%tf_ort_bauvorhaben%] \"<br>&nbsp;<br>zur Bestätigung bzw. Ergänzung eingegangen. Bitte bearbeiten Sie den Vorgang im Interesse unserer Kunden schnell.<br>Vielen Dank.<\/p>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Neuer Eintrag im Schachtschein-Portal",
-                            "headerTo": "andreas.bott@stadtwerke-cottbus.de,olaf.mikolajczak@stadtwerke-cottbus.de,joerg.huber@stadtwerke-cottbus.de"
+                            "headerTo": "andreas.bott@stadtwerke-cottbus.de,olaf.mikolajczak@stadtwerke-cottbus.de,joerg.huber@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -554,12 +920,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Meister Gas",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Meister Gas"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -576,13 +943,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "Sehr geehrter Herr Halko,<br>im Schachtscheinportal ist für Sie der Vorgang<br>&nbsp;<br>\" [%tfVID%] [%tf_bauvorhaben%] [%tf_ort_bauvorhaben%] \"<br>&nbsp;<br>zur Bestätigung bzw. Ergänzung eingegangen. Bitte bearbeiten Sie den Vorgang im Interesse unserer Kunden schnell.<br>Vielen Dank.",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Neuer Eintrag im Schachtschein-Portal",
-                            "headerTo": "andreas.halko@cottbusverkehr.de,joerg.huber@stadtwerke-cottbus.de"
+                            "headerTo": "andreas.halko@cottbusverkehr.de,joerg.huber@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -590,12 +959,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Meister Verkehr",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Meister Verkehr"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -605,21 +975,26 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"formChanges": [{
+                            "key": "tfStatus_Mail_send_ok",
+                            "value": "ok"
+                        }]},
                         "de.xima.fc.action.displayName": "Formular ändern",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-5",
+                            "action": "de.xima.fc.resource.image.font-7",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "setze Mail send",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 9,
-                        "de.xima.fc.status.name": "setze Mail send"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 9
                     }
                 },
                 {
@@ -627,8 +1002,12 @@
                     "properties": {
                         "de.xima.fc.action.active": true,
                         "de.xima.fc.action.condition": {
-                            "details": {"regexp": "REGEX([%cb_meisterblick_ok_fernw%]=on) REGEX([%cb_meisterblick_ok_strom%]=on) REGEX([%cb_meisterblick_ok_gas%]=on) REGEX([%cb_meisterblick_ok_netz%]=on) REGEX([%cb_meisterblick_ok_verkehr%]=on)"},
+                            "details": {
+                                "nextAction": "NEXT",
+                                "regexp": "REGEX([%cb_meisterblick_ok_fernw%]=on) REGEX([%cb_meisterblick_ok_strom%]=on) REGEX([%cb_meisterblick_ok_gas%]=on) REGEX([%cb_meisterblick_ok_netz%]=on) REGEX([%cb_meisterblick_ok_verkehr%]=on)"
+                            },
                             "displayName": "Regulärer Ausdruck",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "REGEXP"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2402"},
@@ -638,12 +1017,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Status zu Postausgang",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Status zu Postausgang"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 }
             ],
@@ -689,13 +1069,15 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {
                             "body": "Sehr geehrte Kundin, sehr geehrter Kunde,<br>Ihr Antrag auf einen Schachtschein [%tfVID%] für das Bauvorhaben<br>[%tf_bauvorhaben%]<br>[%tf_ort_bauvorhaben%]<br>liegt bearbeitet zum&nbsp;Download bereit.<br><br>Öffnen Sie bitte nachfolgenden Link, um die Dokumente zu laden:<br>[%$FORM_PROZESS_LINK%]<br><br>Bitte beachten Sie: Die Unterlagen können nur 1x heruntergeladen werden. Ein zweiter Download ist nicht möglich!<br><br>Sollte sich die Seite über diesen Link nicht öffnen, kopieren Sie ihn bitte in die Adresszeile Ihres Browsers.<br><br>Sollten Sie trotzdem Probleme mit dem Download haben, prüfen Sie bitte, ob folgende Fehlerausschrift erscheint: \"Zur optimalen Darstellung des Formulars ist aktiviertes JavaScript erforderlich!\". In diesem Fall aktivieren Sie bitte JavaScript in Ihrem Internet-Browser.<br><br>Sollten die Probleme weiterhin auftreten, wenden Sie sich bitte an Petra Sobiech 0355/351-310.<br><br>Danke für Ihren Auftrag.<br>Mit freundlichen Grüßen<br>Ihre Elektroenergieversorgung Cottbus GmbH<br>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Ihre Antragsunterlagen [%tfVID%] [%tf_bauvorhaben%] sind fertig!",
-                            "headerTo": "[%tf_email%]"
+                            "headerTo": "[%tf_email%]",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -703,12 +1085,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Antragssteller Download der Dokumente",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Antragssteller Download der Dokumente"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -725,21 +1108,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Postfach Unbestaetigt verschieben",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "Postfach Unbestaetigt verschieben"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 },
                 {
@@ -756,21 +1141,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Postfach Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "Postfach Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 }
             ],
@@ -802,21 +1189,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "In Postfach Archiv",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "In Postfach Archiv"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 },
                 {
@@ -826,21 +1215,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-10"},
                         "de.xima.fc.action.displayName": "Abschlussseite (Template)",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-1",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Zeige Dokumente",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 0,
-                        "de.xima.fc.status.name": "Zeige Dokumente"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
                     }
                 }
             ],
@@ -877,9 +1268,10 @@
                                 "conditionRHS": "loadDoku",
                                 "displayNameConditionOperator": "Gleich",
                                 "hasRHS": true,
-                                "nextAction": "NEXT"
+                                "nextAction": "STOP"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "Verarbeitung abbrechen",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2405"},
@@ -889,12 +1281,13 @@
                             "condition": "",
                             "error": ""
                         },
-                        "de.xima.fc.action.onError": "STOP",
-                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.name": "Zu Status Sendebestaetigung erfolgreich",
+                        "de.xima.fc.action.onError": "de.xima.fc.action-2215",
+                        "de.xima.fc.action.onErrorDisplayName": "konfigurierte Aktion",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Zu Status Sendebestaetigung erfolgreich"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 },
                 {
@@ -911,6 +1304,7 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2408"},
@@ -920,12 +1314,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "zu Status GIS Beantragt",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "zu Status GIS Beantragt"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 },
                 {
@@ -942,6 +1337,7 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2407"},
@@ -951,12 +1347,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Sachbearbeiter Zu Status Meisterblick",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Sachbearbeiter Zu Status Meisterblick"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 },
                 {
@@ -973,6 +1370,7 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2401"},
@@ -982,12 +1380,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Meister Zu Status Meisterblick",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Meister Zu Status Meisterblick"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 }
             ],
@@ -1019,13 +1418,15 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {
                             "body": "Sehr geehrte Frau Oelschlägel,<br>bitte Rechnung erstellen<br> für:<br><br>Registriernummer: [%tfVID%]<br>[%tf_bauvorhaben%]<br>[%tf_ort_bauvorhaben%]<br><br> an:<br><br>Antragsteller:<br>[%tf_name%]<br>[%tf_ansprechpartner%]<br>[%tf_strasse_nr%]<br>[%tf_plz%] [%tf_ort%]<br><br>abweichender Rechnungsempfänger:<br><br>[%tf_hag_name%]<br>[%tf_hag_strasse_nr%]<br>[%tf_hag_plz%] [%tf_hag_ort%]<br><br>Betrag:<br><br>[%tfKosten%]<br><br>Danke.<br>Mit freundlichen Grüßen<br>TP-GIS<br>",
                             "headerFrom": "petra.sobiech@stadtwerke-cottbus.de",
                             "headerSubject": "Bitte Rechnung für Schachtschein [%tfVID%] erstellen",
-                            "headerTo": "anka.oelschlaegel@stadtwerke-cottbus.de"
+                            "headerTo": "anka.oelschlaegel@stadtwerke-cottbus.de",
+                            "loadFrom": []
                         },
                         "de.xima.fc.action.displayName": "E-Mail",
                         "de.xima.fc.action.icons": {
@@ -1033,12 +1434,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Mail an Fibu",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 5,
-                        "de.xima.fc.status.name": "Mail an Fibu"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 5
                     }
                 },
                 {
@@ -1048,21 +1450,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "In Archiv",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "In Archiv"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 }
             ],
@@ -1094,21 +1498,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-7",
+                            "action": "de.xima.fc.resource.image.font-13",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Vorgang in Postfach Postausgang",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 22,
-                        "de.xima.fc.status.name": "Vorgang in Postfach Postausgang"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
                     }
                 },
                 {
@@ -1125,21 +1531,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Gas Mail",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Gas Mail"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1156,21 +1564,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Gas Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Gas Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1187,21 +1597,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Strom Mail",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Strom Mail"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1218,21 +1630,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Texxteil Strom Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Texxteil Strom Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1249,21 +1663,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Netzschutz Mail",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Netzschutz Mail"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1280,21 +1696,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Netzschutz Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Netzschutz Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1311,21 +1729,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Fernw Mail",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Fernw Mail"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1342,21 +1762,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Fernw Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Fernw Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1373,21 +1795,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Verkehr Mail",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Verkehr Mail"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1404,21 +1828,23 @@
                                 "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {},
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-9",
+                            "action": "de.xima.fc.resource.image.font-15",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Textteil Verkehr Abholung",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 25,
-                        "de.xima.fc.status.name": "Textteil Verkehr Abholung"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
                     }
                 },
                 {
@@ -1428,21 +1854,34 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"loadFrom": [
+                            "de.xima.fc.action-2211",
+                            "de.xima.fc.action-2210",
+                            "de.xima.fc.action-2209",
+                            "de.xima.fc.action-2208",
+                            "de.xima.fc.action-2207",
+                            "de.xima.fc.action-2206",
+                            "de.xima.fc.action-2205",
+                            "de.xima.fc.action-2204",
+                            "de.xima.fc.action-2203",
+                            "de.xima.fc.action-2202"
+                        ]},
                         "de.xima.fc.action.displayName": "Datei an Vorgang anhängen",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-10",
+                            "action": "de.xima.fc.resource.image.font-9",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Dokumente an Vorgang",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": true,
-                        "de.xima.fc.action.type": 2,
-                        "de.xima.fc.status.name": "Dokumente an Vorgang"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 2
                     }
                 }
             ],
@@ -1477,8 +1916,12 @@
                     "properties": {
                         "de.xima.fc.action.active": true,
                         "de.xima.fc.action.condition": {
-                            "details": {"regexp": "REGEX([%cb_meisterblick_ok_fernw%]=on) REGEX([%cb_meisterblick_ok_strom%]=on) REGEX([%cb_meisterblick_ok_gas%]=on) REGEX([%cb_meisterblick_ok_netz%]=on) REGEX([%cb_meisterblick_ok_verkehr%]=on)"},
+                            "details": {
+                                "nextAction": "NEXT",
+                                "regexp": "REGEX([%cb_meisterblick_ok_fernw%]=on) REGEX([%cb_meisterblick_ok_strom%]=on) REGEX([%cb_meisterblick_ok_gas%]=on) REGEX([%cb_meisterblick_ok_netz%]=on) REGEX([%cb_meisterblick_ok_verkehr%]=on)"
+                            },
                             "displayName": "Regulärer Ausdruck",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "REGEXP"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2402"},
@@ -1488,12 +1931,13 @@
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "Status zu Postausgang",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 15,
-                        "de.xima.fc.status.name": "Status zu Postausgang"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 15
                     }
                 },
                 {
@@ -1503,21 +1947,23 @@
                         "de.xima.fc.action.condition": {
                             "details": {},
                             "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
                         "de.xima.fc.action.displayName": "Abschlussseite (Template)",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-1",
                             "condition": "",
                             "error": ""
                         },
+                        "de.xima.fc.action.name": "test",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.type": 0,
-                        "de.xima.fc.status.name": "test"
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
                     }
                 }
             ],
@@ -1571,7 +2017,7 @@
             "id": "de.xima.fc.transition-timed_1",
             "properties": {
                 "de.xima.fc.transition.details": {
-                    "onlyForUnread": 68400,
+                    "onlyForUnread": true,
                     "transitionAfter": 68400
                 },
                 "de.xima.fc.transition.type": "TIMED"
@@ -1818,14 +2264,34 @@
     "properties": {
         "de.xima.fc.diagramType": "LAYERED",
         "de.xima.fc.resources": {
-            "file": {},
             "font": {"de.xima.fc.resource.font-0": {
                 "id": "de.xima.fc.resource.font-0",
                 "mime": "",
                 "sourceData": "de.xima.fc.resource.font.sentinel",
                 "sourceType": "FAMILY"
             }},
-            "html": {},
+            "html": {
+                "de.xima.fc.resource.html-10": {
+                    "html": "<style type=\"text/css\">h1 {  font-size: 30px; margin: 20px 0 15px 0; font-weight: normal; color: #6a0034; padding-left: 20px;}h2 {font-size: 16px;font-weight: normal;color: #767676;padding-left: 20px;}<\/style><br><a href=\"http://www.xima.de\" target=\"_blank\">http://www.xima.de<\/a>",
+                    "id": "de.xima.fc.resource.html-10",
+                    "name": "Informationen / Information"
+                },
+                "de.xima.fc.resource.html-2": {
+                    "html": "<style type=\"text/css\">h1, h2 {font-weight: normal;padding-left: 20px;color: #767676;} h1 {font-size: 30px; margin-bottom: 15px; color: #6a0034;} h2 {font-size: 16px;}<\/style><div lang=\"de\"><h1>Allgemeiner Fehler<\/h1><h2>Es ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter noch einmal.<\/h2><\/div><div lang=\"en\"><h1>General Error<\/h1><h2>An error has occurred. Please try again later.<\/h2><\/div>",
+                    "id": "de.xima.fc.resource.html-2",
+                    "name": "Allgemeiner Fehler / General Error"
+                },
+                "de.xima.fc.resource.html-7": {
+                    "html": "<style type=\"text/css\">h1, h2 {font-weight: normal;padding-left: 20px;color: #767676;} h1 {font-size: 30px; margin-bottom: 15px; color: #6a0034;} h2 {font-size: 16px;}<\/style><div lang=\"de\"><h1>Fehler<\/h1><h2>Die Anmeldung ist fehlgeschlagen.<\/h2><\/div><div lang=\"en\"><h1>Error<\/h1><h2>Login failed.<\/h2><\/div>",
+                    "id": "de.xima.fc.resource.html-7",
+                    "name": "Anmeldung fehlgeschlagen / Authentication failed"
+                },
+                "de.xima.fc.resource.html-968": {
+                    "html": "<p><span style=\"font-size:26px;\"><span style=\"color: rgb(193, 2, 43);\">Die Bezahlung wurde erfolgreich durchgef&uuml;hrt<\/span><\/span><\/p>\r\n\r\n<p>Vielen Dank f&uuml;r Ihre Bestellung und das Interesse an unseren Produkten.<\/p>\r\n\r\n<p>Die Lieferung erfolgt nach Best&auml;tigung des Zahlungseingangs.<\/p>\r\n\r\n<p><strong>F&uuml;r Fragen zu Ihrer Bestellung wenden Sie sich bitte an<\/strong><\/p>\r\n\r\n<p><strong>Herrn Ell, Presse- und &Ouml;ffentlichkeitsarbeit<\/strong><\/p>\r\n\r\n<p><strong>Tel. 0911/9773-1003<\/strong><\/p>\r\n\r\n<p><strong>Mail: <\/strong><strong><a href=\"mailto:bestellung@lra-fue.bayern.de\"><strong>bestellung@lra-fue.bayern.de<\/strong><\/a><\/strong><\/p>\r\n",
+                    "id": "de.xima.fc.resource.html-968",
+                    "name": "ZahlungErfolgreich EPayment Webservice"
+                }
+            },
             "image": {
                 "font": {
                     "de.xima.fc.resource.image.font-0": {
@@ -1841,10 +2307,40 @@
                         "id": "de.xima.fc.resource.image.font-1"
                     },
                     "de.xima.fc.resource.image.font-10": {
-                        "codepoint": 59884,
+                        "codepoint": 59687,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-10"
+                    },
+                    "de.xima.fc.resource.image.font-11": {
+                        "codepoint": 60044,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-11"
+                    },
+                    "de.xima.fc.resource.image.font-12": {
+                        "codepoint": 59513,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-12"
+                    },
+                    "de.xima.fc.resource.image.font-13": {
+                        "codepoint": 59901,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-13"
+                    },
+                    "de.xima.fc.resource.image.font-14": {
+                        "codepoint": 59714,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-14"
+                    },
+                    "de.xima.fc.resource.image.font-15": {
+                        "codepoint": 59718,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-15"
                     },
                     "de.xima.fc.resource.image.font-2": {
                         "codepoint": 59679,
@@ -1859,13 +2355,13 @@
                         "id": "de.xima.fc.resource.image.font-3"
                     },
                     "de.xima.fc.resource.image.font-4": {
-                        "codepoint": 59513,
+                        "codepoint": 60221,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-4"
                     },
                     "de.xima.fc.resource.image.font-5": {
-                        "codepoint": 59694,
+                        "codepoint": 59972,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-5"
@@ -1877,19 +2373,19 @@
                         "id": "de.xima.fc.resource.image.font-6"
                     },
                     "de.xima.fc.resource.image.font-7": {
-                        "codepoint": 59901,
+                        "codepoint": 59694,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-7"
                     },
                     "de.xima.fc.resource.image.font-8": {
-                        "codepoint": 59714,
+                        "codepoint": 59711,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-8"
                     },
                     "de.xima.fc.resource.image.font-9": {
-                        "codepoint": 59718,
+                        "codepoint": 59884,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-9"
@@ -1919,8 +2415,13 @@
                     "users": []
                 }
             },
-            "xsl": {}
+            "xsl": {"de.xima.fc.resource.xsl-51": {
+                "id": "de.xima.fc.resource.xsl-51",
+                "name": "postfach",
+                "xsl": "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n<?mso-application progid=\"Excel.Sheet\"?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:html=\"http://www.w3.org/TR/REC-html40\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\r\n    <xsl:key name=\"projects\" match=\"process\" use=\"@project-name\"/>\r\n    <xsl:key name=\"headers\" match=\"field\" use=\"concat(../../@project-name,@name)\"/>\r\n    <xsl:template match=\"/\">\r\n        <Workbook>\r\n            <Styles>\r\n                <Style ss:ID=\"Default\" ss:Name=\"Normal\">\r\n                    <Alignment ss:Vertical=\"Bottom\"/>\r\n                    <Borders/>\r\n                    <Font/>\r\n                    <Interior/>\r\n                    <NumberFormat/>\r\n                    <Protection/>\r\n                <\/Style>\r\n                <Style ss:ID=\"bold\">\r\n                    <Font ss:Size=\"12\" ss:Bold=\"1\"/>\r\n                <\/Style>\r\n                <Style ss:ID=\"norm\">\r\n                    <Font ss:Size=\"10\" ss:Bold=\"0\"/>\r\n                <\/Style>\r\n            <\/Styles>\r\n            <xsl:for-each select=\"//xfc-data/processes/process[generate-id() = generate-id(key('projects',@project-name))]\">\r\n                <xsl:variable name=\"pname\" select=\"@project-name\"/>\r\n                <Worksheet ss:Name=\"{$pname}\">\r\n                    <Table>\r\n                        <Row>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">ProzessId<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Datum<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Status<\/Data>\r\n                            <\/Cell>\r\n                            <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                <Cell ss:StyleID=\"bold\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"string(@name)\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                            <\/xsl:for-each>\r\n                        <\/Row>\r\n                        <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]\">\r\n                            <xsl:variable name=\"row\" select=\".\"/>\r\n                            <Row>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@process-uid\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@creation-date\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@status\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                    <xsl:variable name=\"header\" select=\"@name\"/>\r\n                                    <xsl:for-each select=\"$row\">\r\n                                        <Cell ss:StyleID=\"norm\">\r\n                                            <Data ss:Type=\"String\">\r\n                                                <xsl:value-of select=\"string($row/form/field[@name=$header]/plainValue)\"/>\r\n                                            <\/Data>\r\n                                        <\/Cell>\r\n                                    <\/xsl:for-each>\r\n                                <\/xsl:for-each>\r\n                            <\/Row>\r\n                        <\/xsl:for-each>\r\n                    <\/Table>\r\n                <\/Worksheet>\r\n            <\/xsl:for-each>\r\n        <\/Workbook>\r\n    <\/xsl:template>\r\n<\/xsl:stylesheet>"
+            }}
         },
-        "de.xima.fc.statusAfterResubmission": "de.xima.fc.status-2404"
+        "de.xima.fc.statusOnResubmission": "de.xima.fc.status-2404",
+        "de.xima.fc.statusOnSubmission": "de.xima.fc.status-2400"
     }
 }
