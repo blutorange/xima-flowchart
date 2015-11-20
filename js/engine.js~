@@ -9,30 +9,51 @@
 // root
 // /master_
 
-XV = function (folder,servlet,paper) {
+// https://storiesfailedentrepreneur.files.wordpress.com/2012/08/the-procrastination-flow-chart.png
+// https://plumsail.com/blog/2014/07/how-to-use-javascript-and-css-for-conditional-formatting-in-sharepoint-org-chart/
+
+XV = function (folder,servlet,viewport,dimensionsCallback) {
     var self = this
-    D = this
+    dimensionsCallback = dimensionsCallback || $.noop
+D = this // debug
+    self.viewportNode = viewport
+    self.viewport = d3.select(viewport)
+    self.dimensionsCallback = dimensionsCallback
+    var dimensions = self.getDimensions()
     self.folder = folder
-    self.paper = paper
-    self.paperWidth = self.paper.clientWidth
-    self.paperHeight = self.paper.clientHeight
-    self.svg = d3.select(paper).append("svg")
-        .attr("width", self.paperWidth)
-        .attr("height", self.paperHeight)
-        .attr("id","paper-svg")
+    self.paper = $(self.viewportNode).find("#paper")[0]
+    self.svg = d3.select(paper).select('#paper-svg')
+        .attr("width", dimensions.width)
+        .attr("height", dimensions.height)
     self.svgDefs = []
     self.svgG = self.svg.append("g").attr("id","paper-g")
+    self.svgDefs = self.svgG.append("defs").attr("id","paper-defs")
     self.svgNode = self.svg.node()
+    self.svgDefsNode = self.svgDefs.node()
+    self.edgeStatusG = self.svgG.append("g").attr("id","containerEdgeStatus")
+    self.edgeNodeStatusG = self.svgG.append("g").attr("id","containerEdgeNodeStatus")
+    self.nodeStatusG = self.svgG.append("g").attr("id","containerNodeStatus")
     self.svgGNode = self.svgG.node()
+    self.nodeStatusGNode = self.nodeStatusG.node()
+    self.edgeStatusGNode = self.edgeStatusG.node()
+    self.edgeNodeStatusGNode = self.edgeNodeStatusG.node()
     self.svgTranslate0 = Pt(0,0)
     self.svgScale0 = Pt(1,1)
+    self.mousePageX = -424242
+    self.mousePageY = -424242
+    self.mouseClientX = -424242
+    self.mouseClientY = -424242
+    self.mode = XV.MODE_VIEW
+    self.onResize = []
     XV.setTranslate(self.svgGNode,self.svgTranslate0)
     XV.setScale(self.svgGNode,self.svgScale0)
     
     d3.json(folder+"data/workflow.json",function(error,data){
         if (error){self.handleError(error);return}
         d3.json(folder+"data/layout.json",function(error,layout){
-            if (error){self.handleError(error);return}                
+            if (error){self.handleError(error);return}  
+            if (!Modernizr.inlinesvg){self.handleError({reason:"Browser does not support svg."});return}
+            
             self.data = data
             self.layout = layout
             self.highlightElements = {}
@@ -50,19 +71,90 @@ XV.prototype.handleError = function (error){
     for (var key in error) {
         errMsg += (key + ": " + error[key] + "\n")
     }
+    if (error.stack) {
+        errMsg += error.stack + "\n"
+    }
     self.removeLoadBar()
     $(this.paper).children("svg").hide()
+    $('#mainToolbarOpener').hide()
+    $('.my-tooltip').hide()
     $(this.paper).append($('<p>')
-        .text('Leider gab es einen Fehler beim Laden des Diagrams. Bitte versuchen Sie es später erneut oder starten Sie ihren Browser neu.')
+        .text('Leider gab es einen Fehler beim Laden des Diagrams. Bitte versuchen Sie es später erneut, starten Ihren Browser neu oder versuchen es mit einem anderen Browser.')
         .css({"color":"red","font-weight":"700","font-size":"3em"})
     )
     .append($('<pre>')
         .text('Fehlerdetails: ' + errMsg)
         .css({"color":"black","font-weight":"100","font-size":"1.0em"})
     )
+    $('#viewport').css("overflow","scroll")
     $(self.paper).trigger("error")
 }
 
+// Fix for svg elements.
+XV.jWidth = $.fn.width
+XV.jHeight = $.fn.height
+XV.jOuterWidth = $.fn.outerWidth
+XV.jOuterHeight = $.fn.outerHeight
+$.fn.outerWidth = function(){
+    if (this[0]) {
+        if (this[0] instanceof SVGElement) {
+            var wC = this[0].getBoundingClientRect().width // width
+            return (wC&&wC!==0) ? wC : XV.jOuterWidth.apply(this,arguments)
+        }
+        else {
+            return XV.jOuterWidth.apply(this,arguments)
+        }
+    }
+    else {
+        return null
+    }
+}
+$.fn.outerHeight = function(){
+    if (this[0]) {
+        if (this[0] instanceof SVGElement) {
+            var hC = this[0].getBoundingClientRect().height // height
+            return (hC&&hC!==0) ? hC : XV.jOuterHeight.apply(this,arguments)
+        }
+        else {
+            return XV.jOuterHeight.apply(this,arguments)
+        }
+    }
+    else {
+        return null
+    }
+}
+$.fn.width = function(){
+    if (this[0]) {
+        if (this[0] instanceof SVGElement) {
+            var wC = this[0].getBoundingClientRect().width // width
+            return (wC&&wC!==0) ? wC : XV.jWidth.apply(this,arguments)
+        }
+        else {
+            return XV.jWidth.apply(this,arguments)
+        }
+    }
+    else {
+        return null
+    }
+}
+$.fn.height = function(){
+    if (this[0]) {
+        if (this[0] instanceof SVGElement) {
+            var hC = this[0].getBoundingClientRect().height // height
+            return (hC&&hC!==0) ? hC : XV.jHeight.apply(this,arguments)
+        }
+        else {
+            return XV.jHeight.apply(this,arguments)
+        }
+    }
+    else {
+        return null
+    }
+}
+
+XV.MODE_VIEW = 0
+XV.MODE_EDIT_MANUAL = 1
+XV.EDGE_NODE_STATUS_ID = 0
 XV.IDS = {}
 XV.setDefault = function(obj,key,type,def){
     try {
@@ -73,6 +165,12 @@ XV.setDefault = function(obj,key,type,def){
     }
 }
 // http://stackoverflow.com/questions/8486099/how-do-i-parse-a-url-query-parameters-in-javascript
+XV.findIndex = function(arr,val,start){
+    for (var i=start;i<arr.length;i++){
+        if (val(arr[i])){return i}
+    }
+    return -1
+}
 XV.getJsonFromUrl = function(hashBased) {
     var query
     if(hashBased) {
@@ -115,6 +213,18 @@ XV.checkBrowserSupport = function(){
     XV.setElementsFromPoint()
     // classList.add for SVG
     XV.setClassListAdd()
+    XV.setMathSign()
+}
+XV.setMathSign = function(){
+    if (Math.sign) {
+        XV.mathSign = Math.sign
+    }
+    else {
+        XV.mathSign = function(x){
+            return x>0 ? 1 : x<0 ? -1 : 0
+        }
+    }
+    XV.browserSupport.mathSign = true    
 }
 // Workaround for browsers not supporting elementsFromPoint but elementFromPoint
 // elementsFromPoint does not work properly for some svg element in Opera.
@@ -126,23 +236,20 @@ XV.setElementsFromPoint = function(){
     if (document.elementFromPoint){
         if (document.elementsFromPoint) {
             var rect = test.getClientRects()[0]
-            var el = document.elementsFromPoint(rect.left,rect.top)
+            var el = document.elementsFromPoint((rect.left+rect.right)/2,(rect.top+rect.bottom)/2)
             if (!isOpera && el && el.length>0 && el[0].id==="eFPTest") { // elementsFromPoint somewhat broken in opera for now
                 XV.elementsFromPoint = document.elementsFromPoint.bind(document)
-                XV.elementsAtPointDT = -1
                 console.log("elementsFromPoint: native")
             }
             else {
                 fix = true
                 XV.elementsFromPoint = XV.elementsFromPointFix            
-                XV.elementsAtPointDT = 1000
                 console.log("elementsFromPoint: fix")
             }
         }
         else {
             fix = true            
             XV.elementsFromPoint = XV.elementsFromPointFix
-            XV.elementsAtPointDT = 1000
             console.log("elementsFromPoint: fix")
         }
     }
@@ -163,15 +270,26 @@ XV.setClassListAdd = function() {
     var avail = true
     if (document.getElementById("ieSvgClassTest").classList !== undefined){
         XV.addClass = function(el,clazz) {
-            el.classList.add(clazz)
+            d3.select(el).classed(clazz,true)//classList.add(clazz) this won't work in old opera...
         }
         XV.removeClass = function(el,clazz) {
-            el.classList.remove(clazz)
+            d3.select(el).classed(clazz,false)//el.classList.remove(clazz)
         }        
     }
     else {
+        // IE fix, d3 works with IE as well        
         avail = false
-        // IE fix
+        XV.addClass = function(el,clazz){
+            //var list = {}
+            //list.clazz = true
+            d3.select(el).classed(clazz,true)
+    }        
+        XV.removeClass = function(el,clazz){
+            //var list = {}
+            //list.clazz = false
+            d3.select(el).classed(clazz,false)
+        }        
+        /*
         XV.addClass = function(el,clazz) {
             var classList = _.words(el.getAttribute("class")||"",/[^ ]+/g)
             if (classList.indexOf(clazz)<0) {
@@ -186,7 +304,8 @@ XV.setClassListAdd = function() {
                 classList.splice(idx,1)
                 el.setAttribute("class",classList.join(" "))
             }
-        }        
+        } 
+        */
     }    
     
     XV.browserSupport.classListAdd = avail
@@ -201,7 +320,7 @@ XV.elementsFromPointFix = function(x,y){
         pointerEvents.push(pointerEvent)
         $(el).css("pointer-events","none")
         el.removeAttribute("pointer-events")
-        if ((el.tagName||el.nodeName)==="HTML"){break} // in some(all?) browsers, elementFromPoint always returns at least the root html
+        if (!el || el === document.documentElement){break} // according to the specs browsers, elementFromPoint always returns at least the root element, if present
     }
     for (var i=0;i<elements.length;i++){
         $(elements[i]).css("pointer-events",pointerEvents[i] || "auto")
@@ -235,7 +354,7 @@ XV.actionClass = [
     "GENERAL",   // Vorgang löschen
     "GENERAL",   // Weiterleitung
     "GENERAL",   // Word Fill
-    "GENERAL",  // XML Einlesen
+    "GENERAL"   // XML Einlesen
 ]
 XV.uniqueID = function(id){
     var newId
@@ -257,12 +376,12 @@ XV.clone = function(el,a,b,callback){
     return clone[0]
 }
 XV.allElementsAtMouse = function(clientX,clientY,selector){
-    var elements = XV.elementsFromPoint(clientX,clientY) //document.elementsFromPoint(clientX,clientY)
+    var elements = XV.elementsFromPoint(clientX,clientY)
     return $(elements).filter(selector)
 }
 // Axis-aligned line.
 XV.getPointLineDistance = function(rx,ry,line){
-    if (line.direction=="vertical"){
+    if (line.direction==="vertical"){
         return (ry<line.ymin) ? Math.sqrt((rx-line.xm)*(rx-line.xm)+(ry-line.ymin)*(ry-line.ymin)) : (ry>line.ymax) ? Math.sqrt((rx-line.xm)*(rx-line.xm)+(ry-line.ymax)*(ry-line.ymax)) : Math.abs(rx-line.xm)
     }
     else {
@@ -272,18 +391,22 @@ XV.getPointLineDistance = function(rx,ry,line){
 // Axis-aligned bounding box.
 XV.getPointBBoxDistance = function(rx,ry,xmin,ymin,xmax,ymax){
     var r1,r2,r3,r4
+    var i=0
     // right edge
-    r1 = (ry<ymin) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymin)*(ry-ymin)) : (ry>ymax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymax)*(ry-ymax)) : Math.abs(rx-xmax)
+    r1 = (ry<ymin) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymin)*(ry-ymin)) : (ry>ymax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymax)*(ry-ymax)) : (Math.abs(rx-xmax) && i++)
     // top edge
-    r2 = (rx<xmin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymin)*(ry-ymin)) : (rx>xmax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymin)*(ry-ymin)) : Math.abs(ry-ymin)
+    r2 = (rx<xmin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymin)*(ry-ymin)) : (rx>xmax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymin)*(ry-ymin)) : (Math.abs(ry-ymin) && i++)
     // left edge
-    r3 = (ry<ymin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymin)*(ry-ymin)) : (ry>ymax) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymax)*(ry-ymax)) : Math.abs(rx-xmin)
+    r3 = (ry<ymin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymin)*(ry-ymin)) : (ry>ymax) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymax)*(ry-ymax)) : (Math.abs(rx-xmin) && i++)
     // bottom edge
-    r4 = (rx<xmin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymax)*(ry-ymax)) : (rx>xmax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymax)*(ry-ymax)) : Math.abs(ry-ymax)
-    return Math.min(r1,r2,r3,r4)
+    r4 = (rx<xmin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymax)*(ry-ymax)) : (rx>xmax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymax)*(ry-ymax)) : (Math.abs(ry-ymax) && i++)
+    return i===4 ? 0 : Math.min(r1,r2,r3,r4)
 }
 XV.moveElementBy = function(el,dx,dy){
-    return XV.setTransform(el,function(r){return {x:r.x+dx,y:r.y+dy}})
+    return XV.setTranslate(el,function(r){return {x:r.x+dx,y:r.y+dy}})
+}
+XV.moveElementTo = function(el,x,y,translate0){
+    return XV.setTranslate(el,function(r){return {x:x-translate0.x,y:y-translate0.x}})
 }
 XV.getTranslate = function(el){
     var attr = el.getAttribute("transform") || ""
@@ -321,7 +444,7 @@ XV.getNewTranslate = function(el,translate){
         var hasMatch = false
         newTransform  = trans.replace(/translate\(\s*([0-9.\-]+)[ ,]([0-9.\-]+)\)/,function(_,x,y){
             hasMatch = true
-            if ((typeof translate)=="function"){
+            if ((typeof translate)==="function"){
                 x = parseInt(x)
                 y = parseInt(y)
                 translate = translate({x:x,y:y})
@@ -329,14 +452,14 @@ XV.getNewTranslate = function(el,translate){
             return "translate(" + translate.x + "," + (translate.y||translate.x) + ")"
         })
         if (!hasMatch){
-            if ((typeof translate)=="function"){
+            if ((typeof translate)==="function"){
                 translate = translate({x:0,y:0})
             }
             newTransform = trans + (trans.length>0 ? "," : "") + "translate(" + translate.x + "," + (translate.y||translate.x) + ")"            
         }
     }
     catch(e){
-        if ((typeof translate)=="function"){
+        if ((typeof translate)==="function"){
             translate = translate({x:0,y:0})
         }
         newTransform = trans + (trans.length>0 ? "," : "") + "translate(" + translate.x + "," + (translate.y||translate.x) + ")"
@@ -356,7 +479,7 @@ XV.getNewScale = function(el,scale){
         var hasMatch = false
         newTransform  = trans.replace(/scale\(\s*([0-9.\-]+)([ ,]([0-9.\-]+))?\)/,function(_,x,__,y){
             hasMatch = true
-            if ((typeof scale)=="function"){
+            if ((typeof scale)==="function"){
                 x = parseInt(x)
                 y = parseInt(y||x)
                 scale = scale({x:x,y:y})
@@ -364,14 +487,14 @@ XV.getNewScale = function(el,scale){
             return "scale(" + scale.x + "," + (scale.y||scale.x) + ")"
         })
         if (!hasMatch){
-            if ((typeof scale)=="function"){
+            if ((typeof scale)==="function"){
                 scale = scale({x:1,y:1})
             }
             newTransform = trans + (trans.length>0 ? "," : "") + "scale(" + scale.x + "," + (scale.y||scale.x) + ")"            
         }
     }
     catch(e){
-        if ((typeof scale)=="function"){
+        if ((typeof scale)==="function"){
             scale = scale({x:1,y:1})
         }
         newTransform = trans + (trans.length>0 ? "," : "") + "scale(" + scale.x + "," + (scale.y||scale.x) + ")"
@@ -399,13 +522,16 @@ XV.isRangeIntersecting = function(s1,s2,q1,q2){
 }
 // getBBox is broken.
 XV.prototype.getBBoxFix = function(el) {
+    if (el.nodeName === "tspan"){ // boundingClientRect for tspan broken in firefox and maybe IE
+        el = $(el.parentNode).closest("text")[0] || el
+    }
     var cRectEl = el.getBoundingClientRect()
-    var cRectSvg = this.svgNode.getBoundingClientRect()
+    var cRectSvg = $(el).closest("svg")[0].getBoundingClientRect()
     var width = cRectEl.width
     var height = cRectEl.height
     var x = cRectEl.left - cRectSvg.left
     var y = cRectEl.top - cRectSvg.top
-    return {width:width, height:height, x:x, y:y}
+    return {xmin:x, ymin: y, xmax: x+width, ymax: y+height, width:width, height:height}
 }
 XV.generateTransitionLines = function(edge){
     var lines = []
@@ -426,12 +552,17 @@ XV.generateTransitionLines = function(edge){
         line.xmax = Math.max(line.x1,line.x2)
         line.ymin = Math.min(line.y1,line.y2)
         line.ymax = Math.max(line.y1,line.y2)
+        line.orientationX = XV.kGraphCoordinateEqual(line.x1,line.x2) ? 0 : line.x2>line.x1 ? 1 : -1
+        line.orientationY = XV.kGraphCoordinateEqual(line.y1,line.y2) ? 0 : line.y2>line.y1 ? 1 : -1
+        line.orientation = [line.orientationX,line.orientationY]
         if (Math.abs(line.x2-line.x1) < Math.abs(line.y2-line.y1)){
             line.direction = "vertical"
+            line.directionCoordinate = 1 // y-coordinate
             line.length = Math.abs(line.y2-line.y1)
         }
         else {
             line.direction = "horizontal"
+            line.directionCoordinate = 0 // x-coordinate
             line.length = Math.abs(line.x2-line.x1)
         }
         line.xm = (line.x1+line.x2)/2
@@ -494,7 +625,6 @@ XV.stringifyCSSToken = function(token){
     }
 }
 XV.convertIdSelectorsToClassSelectors = function(oldSelectors,prefix){
-    var newSelectors = {}
     var delimToken = new DelimToken()
     delimToken.value = "."
     var convertSelector = function(oldSelector){
@@ -513,72 +643,377 @@ XV.convertIdSelectorsToClassSelectors = function(oldSelectors,prefix){
         })
         return XV.stringifyCSSToken(newSelector)
     }
-    for (var key in oldSelectors) {
-        var oldSelector = oldSelectors[key]
-        if (oldSelector instanceof Array) {
-            var ns = []
-            oldSelector.forEach(function(os){
-                ns.push(convertSelector(os))
+    var convertSelectors = function(old){
+        var newS
+        if (old instanceof Array) {
+            newS = _.map(old,function(o){
+                return convertSelectors(o)
             })
-            newSelectors[key] = ns
+        }
+        else if ((typeof old) === "string") {
+            newS = convertSelector(old)
         }
         else {
-            newSelectors[key] = convertSelector(oldSelector)
+            newS = {}
+            for (var key in old) {
+                newS[key] = convertSelectors(old[key])
+            }
+        }
+        return newS
+    }
+    return convertSelectors(oldSelectors)
+}
+XV.kGraphCoordinateEqual = function(x1,x2) {
+    return Math.abs(x1-x2) < 1E-3
+}
+XV.kGraphPointsEqual = function(a,b) {
+    return XV.kGraphCoordinateEqual(a.x,b.x) && XV.kGraphCoordinateEqual(a.y,b.y) 
+}
+// This function assumes that no transition edge intersects itself.
+XV.computeEdgeIntersections = function(transitionEdges) {
+    var self = this
+    var lenEdges = transitionEdges.length
+    var intersectionsCross = []
+    var intersectionsTip = []
+    var time = (new Date()).getTime()
+    for (var edgeI=0;edgeI<lenEdges-1;edgeI++){
+        var edgeA = transitionEdges[edgeI]
+        for (var edgeJ=edgeI+1;edgeJ<lenEdges;edgeJ++){
+            var edgeB = transitionEdges[edgeJ]
+            // Check bounding boxes for intersection.
+            if (XV.isRangeIntersecting(edgeA.bBox.x1,edgeA.bBox.x2,edgeB.bBox.x1,edgeB.bBox.x2) &&
+                XV.isRangeIntersecting(edgeA.bBox.y1,edgeA.bBox.y2,edgeB.bBox.y1,edgeB.bBox.y2)){
+                // Check whether any lines intersect.
+                edgeA.lines.forEach(function(lineA){
+                    edgeB.lines.forEach(function(lineB){
+                        if (lineA.direction==lineB.direction){return}
+                        if (lineA.direction==="horizontal" && lineB.xm >= lineA.xmin && lineB.xm<=lineA.xmax && lineA.ym>=lineB.ymin && lineA.ym<=lineB.ymax){
+                            if (XV.kGraphCoordinateEqual(lineA.xmin,lineB.xm) || XV.kGraphCoordinateEqual(lineA.xmax,lineB.xm) ||
+                                XV.kGraphCoordinateEqual(lineA.ym,lineB.ymin) || XV.kGraphCoordinateEqual(lineA.ym,lineB.ymax)) {
+                                intersectionsTip.push({x:lineB.xm,y:lineA.ym,horizontalLine:lineA,verticalLine:lineB,horizontalEdge:edgeA,verticalEdge:edgeB})
+                            }
+                            else {
+                                intersectionsCross.push({x:lineB.xm,y:lineA.ym,horizontalLine:lineA,verticalLine:lineB,horizontalEdge:edgeA,verticalEdge:edgeB})
+                            }
+                        }
+                        else if (lineB.direction==="horizontal" && lineA.xm >= lineB.xmin && lineA.xm<=lineB.xmax && lineB.ym>=lineA.ymin && lineB.ym<=lineA.ymax){
+                            if (XV.kGraphCoordinateEqual(lineA.xm,lineB.xmin) || XV.kGraphCoordinateEqual(lineA.xm,lineB.xmax) ||
+                                XV.kGraphCoordinateEqual(lineA.ymin,lineB.ym) || XV.kGraphCoordinateEqual(lineA.ymax,lineB.ym)) {
+                                intersectionsTip.push({x:lineA.xm,y:lineB.ym,horizontalLine:lineB,verticalLine:lineA,horizontalEdge:edgeB,verticalEdge:edgeB})
+                            }
+                            else {
+                                intersectionsCross.push({x:lineA.xm,y:lineB.ym,horizontalLine:lineB,verticalLine:lineA,horizontalEdge:edgeB,verticalEdge:edgeB})                                
+                            }
+                        }
+                    })
+                })
+            }
         }
     }
-    return newSelectors
+    console.log("Computing intersections took " + ((new Date()).getTime()-time)/1000 +"s.")
+    return {cross:intersectionsCross,tip:intersectionsTip}
+}
+XV.computeEdgeNodes = function(transitionEdgesIntersections) {
+    var self = this
+    var edgeNodes = []
+    var time = (new Date()).getTime()
+    
+    // Crossing intersection.
+    transitionEdgesIntersections.cross.forEach(function(point){
+        var hLine = point.horizontalLine
+        var vLine = point.verticalLine
+        var node = _.find(edgeNodes,function(e){return XV.kGraphPointsEqual(point,e)})
+        if (!node) {
+            // new intersection points
+            node = {}
+            node.id = "edge-node-status-" + XV.EDGE_NODE_STATUS_ID++
+            node.x = point.x
+            node.y = point.y
+            node.inbound = {east:[],west:[],south:[],north:[]}
+            node.outbound = {east:[],west:[],south:[],north:[]}
+            edgeNodes.push(node)
+        }
+        if (hLine.orientationX === 1) {
+            node.inbound.west.push(hLine)
+            node.outbound.east.push(hLine)
+        }
+        else {
+            node.inbound.east.push(hLine)
+            node.outbound.west.push(hLine)
+        }
+        if (vLine.orientationY === 1) {
+            node.inbound.north.push(vLine)
+            node.outbound.south.push(vLine)
+        }
+        else {
+            node.inbound.south.push(vLine)
+            node.outbound.north.push(vLine)
+        }
+    })
+    
+    // Touching intersection.
+    transitionEdgesIntersections.tip.forEach(function(point){
+        var hLine = point.horizontalLine
+        var vLine = point.verticalLine
+        var node = _.find(edgeNodes,function(e){return XV.kGraphPointsEqual(point,e)})
+        if (!node) {
+            // new intersection points
+            node = {}
+            node.id = "edge-node-status-" + XV.EDGE_NODE_STATUS_ID++
+            node.x = point.x
+            node.y = point.y
+            node.inbound = {east:[],west:[],south:[],north:[]}
+            node.outbound = {east:[],west:[],south:[],north:[]}
+            edgeNodes.push(node)
+        }
+        // See file ./img/edgeNodes.jpg for an explanation of variable names.
+        // Red and green for case (1) and (2) are wrong, they should be switched (1 green, 2 red)
+        var blue = XV.kGraphCoordinateEqual(hLine.xmin,vLine.xm)
+        var purple = XV.kGraphCoordinateEqual(hLine.xmax,vLine.xm)
+        var red = XV.kGraphCoordinateEqual(hLine.ym,vLine.ymax)
+        var green = XV.kGraphCoordinateEqual(hLine.ym,vLine.ymin)
+        
+        if (red) {
+            if (blue) {
+                // 7
+                hLine.orientationX === 1 ? node.outbound.east.push(hLine) : node.inbound.east.push(hLine)
+                vLine.orientationY === 1 ? node.inbound.north.push(vLine) : node.outbound.north.push(vLine)
+            }
+            else if (purple) {
+                // 8            
+                hLine.orientationX === 1 ? node.inbound.west.push(hLine) : node.outbound.west.push(hLine)
+                vLine.orientationY === 1 ? node.inbound.north.push(vLine) : node.outbound.north.push(vLine)
+            }
+            else { // !blue && !purple
+                // 2            
+                hLine.orientationX === 1 ? node.inbound.west.push(hLine) && node.outbound.east.push(hLine) :
+                                           node.inbound.east.push(hLine) && node.outbound.west.push(hLine)
+                vLine.orientationY === 1 ? node.inbound.north.push(vLine) : node.outbound.north.push(vLine)
+            }
+        }
+        else if (green) {
+            if (blue) {
+                // 5
+                hLine.orientationX === 1 ? node.outbound.east.push(hLine) : node.inbound.east.push(hLine)
+                vLine.orientationY === 1 ? node.outbound.south.push(vLine) : node.inbound.south.push(vLine)                
+            }
+            else if (purple) {
+                // 6
+                hLine.orientationX === 1 ? node.inbound.west.push(hLine) : node.outbound.west.push(hLine)
+                vLine.orientationY === 1 ? node.outbound.south.push(vLine) : node.inbound.south.push(vLine)                
+            }
+            else { // !blue && !purple
+                // 1
+                hLine.orientationX === 1 ? node.inbound.west.push(hLine) && node.outbound.east.push(hLine) :
+                                           node.inbound.east.push(hLine) && node.outbound.west.push(hLine)
+                vLine.orientationY === 1 ? node.outbound.south.push(vLine) : node.inbound.south.push(vLine)                
+            }
+        }
+        else {
+            if (blue) {
+                // 3
+                hLine.orientationX === 1 ? node.outbound.east.push(hLine) : node.inbound.east.push(hLine)
+                vLine.orientationY === 1 ? node.inbound.north.push(vLine) && node.outbound.south.push(vLine) :
+                                           node.inbound.south.push(vLine) && node.outbound.north.push(vLine)
+            }
+            else { // purple
+                // 4
+                hLine.orientationX === 1 ? node.inbound.west.push(hLine) : node.outbound.west.push(hLine)
+                vLine.orientationY === 1 ? node.inbound.north.push(vLine) && node.outbound.south.push(vLine) :
+                                           node.inbound.south.push(vLine) && node.outbound.north.push(vLine)
+            }
+        }
+    })
+    console.log("Edge node computation took " + ((new Date()).getTime()-time)/1000 + "s.")
+    return edgeNodes
+}
+XV.idToSelector = function(id) {
+    var hashToken = new HashToken()
+    hashToken.value = id
+    return hashToken.toSource()
+}
+XV.getElementIDSelector = function(el) {
+    return XV.idToSelector(el.id)
+}
+XV.getIFrameContentDocument = function(el) {
+    return (el.contentWindow) ? el.contentWindow : (el.contentDocument.document) ? el.contentDocument.document : el.contentDocument
+}
+XV.getPositionFromMouse = function(x,y,svgGNode){
+    var translate = XV.getTranslate(svgGNode)
+    var scale = XV.getScale(svgGNode)
+    var offset = svgGNode.parentNode.offset()
+    var pX = x || d3.event.pageX
+    var pY = y || d3.event.pageY
+    return {x:(pX-offset.left-translate.x)/scale.x,y:(pY-offset.top-translate.y)/scale.y}
+}
+// Parameters:
+//  - bBox : the bounding box of the graph or any other bounding box; {x1,x2,y1,y2}
+//  - svgGNode : the <svg><g> element used for zooming
+//  - zoom: d3 zooming behaviour for this element
+//  - positionX,positionY : how to center the graph, 0 left/top, 1 right/bottom
+//  - scaleXY: do not scale to boundaries but set newScale = oldScale*scaleXY
+//  - callback: called after computing the new transform, for custom animations
+//  - unlockedScales: do not lock zooming factor x and y
+XV.zoomGraphToBoundaries = function (bBox,svgGNode,zoom,positionX,positionY,scaleXY,callback,unlockedRatio) {
+    container = svgGNode.parentNode
+    positionX = parseFloat(typeof(positionX)==="number" ? positionX : 0.5,10)
+    positionY = parseFloat(typeof(positionY)==="number" ? positionY : 0.5,10)
+
+    var scaleCurrent = XV.getScale(svgGNode)
+    var scm = Math.sqrt((scaleCurrent.x*scaleCurrent.x+scaleCurrent.y*scaleCurrent.y)/2) // average area
+    
+    var paperX = $(container).width()
+    var paperY = $(container).height()
+    var minX = bBox.x1-0.1*paperX
+    var maxX = bBox.x2+0.1*paperX
+    var minY = bBox.y1-0.1*paperY
+    var maxY = bBox.y2+0.1*paperY
+    var scale, scaleX, scaleY
+    if (scaleXY) {
+        // pre-defined zooming factor
+        scaleX = scaleCurrent.x*scaleXY
+        scaleY = scaleCurrent.y*scaleXY
+        scale = Math.min(scaleCurrent.x,scaleCurrent.y)*scaleXY
+    }
+    else {
+        scaleX = paperX/(maxX-minX)
+        scaleY = paperY/(maxY-minY)
+        scale = Math.min(scaleX,scaleY)
+    }
+    
+    if (!unlockedRatio) {
+        scaleX = scale
+        scaleY = scale
+    }
+    
+    var width = (maxX-minX)*scaleX
+    var height= (maxY-minY)*scaleY
+    var scr = (scale*scale)/(scm*scm)
+
+    var dx = ((paperX-width)*positionX-minX-0.05*paperX)/scaleX
+    var dy = ((paperY-height)*positionY-minY-0.05*paperY)/scaleY
+    var transform = 'scale(' + scaleX + ',' + scaleY + '),translate(' + dx + ',' + dy + ')'
+
+    zoom.translate([dx*scaleX,dy*scaleY])    
+    zoom.scale(scale)
+
+    if (callback) {
+        callback.call(d3.select(svgGNode),transform)
+    }
+    else {
+        d3.select(svgGNode).transition()
+            .duration(scr>1 ? (scr>10 ? 2000 : scr*200) : 2000-scr*1800)
+            .attr("transform",transform)        
+    }
+    
+    return transform
 }
 
+XV.tableWidget = function(el,displayNames) {
+    el = $(el)
+    var children = el.children()
+    var rows = []
+    var elsHash = {}
+    for (var i=0; i<children.length-1; i+=2) {
+        var elLeft = $(children[i])
+        var elRight = $(children[i+1])
+        var idLeft = elLeft.attr("id")
+        var idRight = elRight.attr("id")
+        elsHash[idLeft] = elLeft
+        elsHash[idRight] = elRight
+        elLeft.removeAttr("id").addClass(idLeft).attr("original-id",idLeft)
+        elRight.removeAttr("id").addClass(idRight).attr("original-id",idRight)
+        elLeft.find("[id]").each(function(){
+            var self = $(this)
+            var id = self.attr("id")
+            elsHash[id] = self
+            self.removeAttr("id").addClass(id).attr("original-id",id)
+        })
+        elRight.find("[id]").each(function(){
+            var self = $(this)
+            var id = self.attr("id")
+            elsHash[id] = self
+            self.removeAttr("id").addClass(id).attr("original-id",id)
+        })        
+        rows.push([
+            {id: idLeft, element: elLeft.detach()},
+            {id: idRight, element: elRight.detach()}
+        ])
+    }
+    el.empty()
+    this.displayNames = displayNames || XV.tableWidget.displayNames
+    this.elsHash = elsHash
+    this.rows = rows
+    this.rowsHash = {}
+    this.colsHash = {}
+    this.container = el
+}
+XV.tableWidget.prototype.widget = function() {
+    return this.container
+}
+XV.tableWidget.prototype.setDisplayNames = function () {
+    var self = this
+    self.container.find('.use-display-name').each(function(){
+        this.textContent = self.displayNames[this.getAttribute('original-id')]
+    })
+}
+XV.tableWidget.prototype.update = function(setupCallback){
+    ;(setupCallback || $.noop).call(this.elsHash,this.rowsHash)
+}
+XV.tableWidget.prototype.asTable = function(clone,setupCallback){
+    this.container.empty().append(this._asABC("tr","td","td",$('<table class="tableWidgetTable"></table>'),clone,setupCallback))
+    return this
+}
+XV.tableWidget.prototype.asDivDiv = function(clone,setupCallback){
+    this._asABC("div","div","div",this.container.empty(),clone,setupCallback)
+    return this
+}
+XV.tableWidget.prototype.asDivSpan = function(clone,setupCallback){
+    this._asABC("div","span","span",this.container.empty(),clone,setupCallback)
+    return this
+}
+XV.tableWidget.prototype._asABC = function(a,b,c,container,clone,setupCallback) {
+    var self = this
+    container.empty()
+    self.rows.forEach(function(row){
+        var tr = $('<' + a +' class="tableWidgetRow ' + row[0].id + ' ' + row[1].id + '"></' + a +'>')
+        var tdLeft = $('<' + b + ' class="tableWidgetLeft ' + row[0].id + '"></' + b + '>')
+        var tdRight = $('<' + c + ' class="tableWidgetRight ' + row[1].id + '"></' + c + '>')
+        self.rowsHash[row[0].id] = tr
+        self.rowsHash[row[1].id] = tr
+        self.colsHash[row[0].id] = tdLeft
+        self.colsHash[row[1].id] = tdRight
+        ;(setupCallback || $.noop).call(self.elsHash,self.rowsHash)           
+        if (clone) {
+            tdLeft.append(row[0].element.clone(false,true))
+            tdRight.append(row[1].element.clone(false,true))
+        }
+        else {
+            tdLeft.append(row[0].element)
+            tdRight.append(row[1].element)
+        }
+        tr.append(tdLeft)
+        tr.append(tdRight)
+        container.append(tr)
+    }) 
+    return container    
+}
+
+XV.prototype.getDimensions = function() {
+    var dims = this.dimensionsCallback(this.viewportNode) || {}
+    dims.width = dims.width || window.innerWidth
+    dims.height = dims.height || window.innerHeight
+    return dims
+}
 // Get svg coordinates corresponding to the current mouse position.
-XV.prototype.getPositionFromMouse = function(ev){
+XV.prototype.getPositionFromMouse = function(x,y){
     var svgGNode = this.svgGNode
     var translate = XV.getTranslate(svgGNode)
     var scale = XV.getScale(svgGNode)
-    var offset = $(svgGNode).offset()
-    var pX = d3.event.pageX
-    var pY = d3.event.pageY
-    return {x:(pX+offset.left-translate.x)/scale.x,y:(pY+offset.top-translate.y)/scale.y}
-}
-XV.prototype.showTextPopup = function (el,text){
-    var self = this
-    var popup = $('#dynamic-popup')
-    popup.css("opacity","0.0")
-    popup.addClass("popupOpen")
-    popup.text(text)
-    // Determine popup position relative to element.
-    var BBoxText = el.getBoundingClientRect()
-    var BBoxPopup = popup[0].getBoundingClientRect()
-    var centerTextX = (BBoxText.left+BBoxText.right)/2
-    var centerTextY = (BBoxText.top+BBoxText.bottom)/2
-    var screenX = document.documentElement.clientWidth
-    var screenY = document.documentElement.clientHeight
-    var popupX, popupY
-    if (centerTextY>screenY/2) {
-        popupY = BBoxText.top-BBoxPopup.height // above the text box
-    }
-    else {
-        popupY = BBoxText.top+BBoxText.height // below the text box
-    }
-    if (centerTextX<screenX/2) {
-        popupX = BBoxText.left+BBoxText.width // to the right of the text box
-    }
-    else {
-        popupX = BBoxText.left-BBoxPopup.width // to the left of the text box
-    }
-    // Keep it on screen.
-    if(popupX<0){popupX=0}
-    if(popupY<0){popupY=0}
-    if(popupX>screenX-BBoxPopup.width){popupX=screenX-BBoxPopup.width}
-    if(popupY>screenY-BBoxPopup.height){popupY=screenY-BBoxPopup.height}
-    // Apply positioning.
-    popup.css({
-        "top": popupY+"px",
-        "left": popupX+"px",
-    })
-    popup.animate({
-        "opacity": "1.0",
-    }, self.layout.popupText.fadeIn, "swing")
-    
+    var offset = $('#paper>svg').offset()
+    var pX = x || d3.event.pageX
+    var pY = y || d3.event.pageY
+    return {x:(pX-offset.left-translate.x)/scale.x,y:(pY-offset.top-translate.y)/scale.y}
 }
 XV.prototype.resURL = function (file){
     return this.folder + file
@@ -590,48 +1025,58 @@ XV.prototype.cleanupDefs = function(defs,svg){
     var prefix = "xima-svg-defs-" + (self.defsID++) + "-"
     var subID = 0
     var idHash = {}
+
     // Merge all defs into one defs.
     var def = XV.mergeElements(defs)
-    
+
     // Assign unique ids.
     def = XV.clone(def,false,false,function(oldID,newID){
         idHash[oldID] = newID
-    })
-    
+    })        
+
     // Replace references to defined elements in svg.
     // Based upon https://github.com/svg/svgo/blob/master/plugins/cleanupIDs.js, https://github.com/svg/svgo/blob/master/LICENSE (MIT)
     var refsRegUrl = /^url\(("|')?#(.+?)\1\)$/
     var refsRegHref = /^#(.+?)$/
     var refsRegUrlG = /url\(("|')?#(.+?)\1\)/g
     var m,h
+    var hToken = new HashToken()
+    var urlToken = new URLToken()
+    
     var referencesProps = ['clip-path','color-profile','fill','filter','marker-start','marker-mid','marker-end','mask','stroke']
     ;[def,svg].forEach(function(cont){
         var items = cont.getElementsByTagName("*")
         for (var i = items.length; i--;) {
             var item = items[i]
-            if (item.tagName =='style' || item.tagName === 'script'){continue}
+            if (item.tagName === 'style' || item.tagName === 'script'){continue}
             var attrs = item.attributes
             for (var j = attrs.length; j--;){
                 var attr = attrs[j]
-                ;(referencesProps.indexOf(attr.name)!=-1) && (m=attr.value.match(refsRegUrl)) && (h=idHash[m[2]]) && (attr.value="url('#" + h + "')")
-                ;(attr.name === "xlink:href") && (m=attr.value.match(refsRegHref)) && (h=idHash[m[1]]) && (attr.value='#'+h)
+                ;(referencesProps.indexOf(attr.name)!=-1) && (m=attr.value.match(refsRegUrl)) && (h=idHash[m[2]]) && (hToken.value=h) && (urlToken.value=hToken.toSource) && (attr.value=urlToken.toSource())
+                ;(attr.name === "xlink:href") && (m=attr.value.match(refsRegHref)) && (h=idHash[m[1]]) && (hToken.value=h) && (attr.value=hToken.toSource())
                 if (attr.name === "style"){
                     // parse the css..
                     var css = parseACommaSeparatedListOfComponentValues(attr.value)[0]
                     var len = css.length
-                    for (var k = 0; k<len-2; k++){
+                    var k = 0
+                    while(k<len-2) {
                         var token = css[k]
-                        var val = css[k+2]
-                        if ((token instanceof IdentToken) && (referencesProps.indexOf(token.value)!=-1) && (css[k+1] instanceof ColonToken)) {
+                        var q = XV.findIndex(css,function(t){return !(t instanceof WhitespaceToken)},k+1)
+                        if(q<0){break;}
+                        var r = XV.findIndex(css,function(t){return !(t instanceof WhitespaceToken)},q+1)
+                        if(r<0){break;}
+                        var val = css[r]
+                        if ((token instanceof IdentToken) && (referencesProps.indexOf(token.value)!=-1) && (css[q] instanceof ColonToken)) {
                             if (val instanceof URLToken) {
                                 var id = val.value.substring(1,val.value.length)
-                                ;(h=idHash[id]) && (val.value='#' + h)
+                                ;(h=idHash[id]) && (hToken.value=h) && (val.value=hToken.toSource())
                             }
                             else if ((val instanceof Func) && val.name==="url"){
-                                var id = val.value[0].value.substring(1,val.value.length)
-                                ;(h=idHash[id]) && (val.value[0].value='#' + h)                                
+                                var id = val.value[0].value.substring(1,val.value[0].length)
+                                ;(h=idHash[id]) && (hToken.value=h) && (val.value[0].value=hToken.toSource())
                             }
                         }
+                        k = q
                     }
                     // re-stringify the css and apply
                     attr.value = XV.stringifyCSSToken(css)
@@ -642,61 +1087,81 @@ XV.prototype.cleanupDefs = function(defs,svg){
     return def
 }
 XV.prototype.newStatusNodes = function() {
+    // Bind data to nodes, and load nodes to DOM.
     var self = this
     
-    /* Needs support for edge routing for arbitrary node positions first.
-    var drag = d3.behavior.drag()
-      .on("dragstart",function(){d3.event.sourceEvent.stopPropagation()})
-      .on("drag",function(){XV.moveElementBy(this,d3.event.dx,d3.event.dy)})
-    */
-    
-    return this.svgG.selectAll('g.node-status')
+    return this.nodeStatusG.selectAll('g.node-status')
         .data(self.statusNodes)
         .enter()
         .append(function(d){return d.svgGNode})
         .each(function(d){
+            d.svgG.select(d.classSelectors.nodeHighlight).classed({"node-status-highlight":true})
             d.svgG.select(d.classSelectors.textTitle).text(" ") // make sure bounding box is not affected by overflowing text
                                                                 // emptying the text completely makes getBoundingClientRect report false dimensions...
-            d.translate0 = XV.getTranslate(d.svgGNode),
-            d.scale0 = XV.getScale(d.svgGNode),
+            d.translate0 = self.layout.status.main.translate0
+            d.scale0 = self.layout.status.main.scale0
             d.bBox0 = self.getBBoxFix(d.svgGNode)
         })
-        //.call(drag)
-        .classed("node-status",true)
+        .classed({"node-status":true})
         .style("visibility","hidden")
         .attr("id",function(d){return d.ximaNode.id})
         .attr("transform",function(d){return XV.getNewTransform("",d.translate0,d.scale0)})
 }
+XV.prototype.newActionNodes = function(statusNode) {
+    // Bind data to nodes, and load nodes to DOM.
+    var self = this    
+    statusNode.nodeActionG.selectAll('g.node-action')
+        .data(statusNode.actions)
+        .enter()
+        .append(function(d){
+            return d.svgGNode
+        })
+        .each(function(d){
+            var actionNodeLayout = self.getActionNodeLayout(d)
+            d.svgG.select(d.classSelectors.nodeHighlight).classed({"node-action-highlight":true})
+            d.svgG.select(d.classSelectors.textTitle).text(" ") // make sure bounding box is not affected by overflowing text
+                                                                // emptying the text completely makes getBoundingClientRect report false dimensions...
+            d.translate0 = actionNodeLayout.translate0
+            d.scale0 = actionNodeLayout.scale0
+            d.bBox0 = self.getBBoxFix(d.svgGNode)
+        })
+        .classed({"node-action":true})
+        .style("visibility","hidden")
+        .attr("id",function(d){return d.ximaAction.id})
+        .attr("transform",function(d){return XV.getNewTransform("",d.translate0,d.scale0)})
+}
 XV.prototype.setLoadBar = function(text,pct){
     var self = this
-    self.loadDialog.bar.animate({"opacity":Math.random()*0.3+0.6},(Math.random()*30+15),"swing",function(){
+    self.loadDialog.bar.animate({"opacity":Math.random()*0.3+0.6},0*(Math.random()*90+30),"swing",function(){
         self.loadDialog.bar.progressbar("value",pct)
         self.loadDialog.details.text(text)        
     })
 }
-XV.prototype.removeLoadBar = function() {
+XV.prototype.removeLoadBar = function(callback) {
     var self=this
     if (self.loadDialog){
         self.loadDialog.bar.animate({"opacity":1},500,"swing",function(){
             self.loadDialog.bar.progressbar("value",100)
+            callback && callback()
         })
     }
     else {
         $('#loadBlock').hide()
         $('#loadDialog').hide()
+        callback && callback()
     }
 }
-XV.prototype.getkGraphBBox = function() {
+XV.prototype.getKGraphBBox = function(statusNodes, transitionEdges) {
     var self = this
-    var statusNodes = self.statusNodes
-    var transitionEdges = self.transitionEdges
+    var statusNodes = statusNodes || self.statusNodes
+    var transitionEdges = transitionEdges || self.transitionEdges
     var minX = statusNodes[0].kGraphNode.x, maxX = statusNodes[0].kGraphNode.x
     var minY = statusNodes[0].kGraphNode.y, maxY = statusNodes[0].kGraphNode.y
     statusNodes.forEach(function(node){
         minX = Math.min(minX,node.kGraphNode.x)
-        maxX = Math.max(maxX,node.kGraphNode.x)
+        maxX = Math.max(maxX,node.kGraphNode.x+node.kGraphNode.width)
         minY = Math.min(minY,node.kGraphNode.y)
-        maxY = Math.max(maxY,node.kGraphNode.y)
+        maxY = Math.max(maxY,node.kGraphNode.y+node.kGraphNode.height)
     })
     transitionEdges.forEach(function(edge){
         edge.kGraphEdge.bendPoints.forEach(function(point){
@@ -714,7 +1179,7 @@ XV.prototype.getImageFont = function(id){
     var codepoint = imageFont.codepoint
     var fontId = imageFont.font
     var fontFamily = self.getFont(fontId)    
-    return {char:String.fromCharCode(codepoint),fontFamily:fontFamily}
+    return {character:String.fromCharCode(codepoint),fontFamily:fontFamily}
 }
 XV.prototype.getFont = function(id){
     var self = this
@@ -722,7 +1187,7 @@ XV.prototype.getFont = function(id){
     var sourceType = font.sourceType
     var sourceData = font.sourceData
     if (!font.loaded) {
-        if (sourceType == "FAMILY") {
+        if (sourceType === "FAMILY") {
             var family
             switch (sourceData) {
                 case "de.xima.fc.resource.font.sentinel":
@@ -746,6 +1211,7 @@ XV.prototype.setWrappedText = function(elText,elBBox,elEllipsis,text,callbackMou
             var newFontSize = fontSize.replace(/[0-9.\-]+/,function(fs){
                 return parseFloat(fs)*ratioY*0.9
             })
+            console.log("Adjusting font-size from " + fontSize + " to " + newFontSize + " for " + text + ".")
             jElText.css("font-size",newFontSize)
             textDim = self.getBBoxFix(elText)            
             return recursiveY()
@@ -802,71 +1268,90 @@ XV.prototype.setWrappedText = function(elText,elBBox,elEllipsis,text,callbackMou
     }
     return isOverflow
 }
-XV.prototype.zoomToKGraphBoundaries = function () {
-    var self = this
-    var paperX = self.paperWidth
-    var paperY = self.paperHeight
-    var minX = self.kGraphBBox.x1-0.1*paperX
-    var maxX = self.kGraphBBox.x2+0.1*paperX
-    var minY = self.kGraphBBox.y1-0.1*paperY
-    var maxY = self.kGraphBBox.y2+0.1*paperY
-    var scaleX = paperX/(maxX-minX)
-    var scaleY = paperY/(maxY-minY)
-    var scale = Math.min(scaleX,scaleY)
-    var transform = 'scale(' + scale + '),translate(' + -minX*scale + ',' + -minY*scale + ')'
-    self.svgGZoom.scale(scale)
-    self.svgGZoom.translate([-minX*scale,-minY*scale])
-    self.svgG.transition()
-        .duration(scale>1 ? scale*200 : 2000-scale*1800)
-        .attr("transform",transform)
+XV.prototype.zoomToKGraphBoundaries = function (positionX,positionY,scaleXY,callback) {
+    return XV.zoomGraphToBoundaries(this.kGraphBBox,this.svgGNode,this.svgGZoom,positionX,positionY,scaleXY,callback)
 }
-// This function assumes that no transition edge intersects itself.
-XV.prototype.computeEdgeIntersections = function() {
+// Quantized grid for computing all edges within a certain radius quickly.
+XV.prototype.createKGraphEdgeGrid = function() {
+    // grid[y][x]
     var self = this
-    var transitionEdges = self.transitionEdges
-    var lenEdges = transitionEdges.length
-    var intersectionsCross = []
-    var intersectionsTip = []
     var time = (new Date()).getTime()
-    for (var edgeI=0;edgeI<lenEdges-1;edgeI++){
-        var edgeA = transitionEdges[edgeI]
-        for (var edgeJ=edgeI+1;edgeJ<lenEdges;edgeJ++){
-            var edgeB = transitionEdges[edgeJ]
-            // Check bounding boxes for intersection.
-            if (XV.isRangeIntersecting(edgeA.bBox.x1,edgeA.bBox.x2,edgeB.bBox.x1,edgeB.bBox.x2) &&
-                XV.isRangeIntersecting(edgeA.bBox.y1,edgeA.bBox.y2,edgeB.bBox.y1,edgeB.bBox.y2)){
-                // Check whether any lines intersect.
-                edgeA.lines.forEach(function(lineA){
-                    edgeB.lines.forEach(function(lineB){
-                        if (lineA.direction==lineB.direction){return}
-                        if (lineA.direction=="horizontal" && lineB.xm >= lineA.xmin && lineB.xm<=lineA.xmax && lineA.ym>=lineB.ymin && lineA.ym<=lineB.ymax){
-                            var ratioX = (lineB.xm-lineA.xmin)/(lineA.length)
-                            var ratioY = (lineA.ym-lineB.ymin)/(lineB.length)
-                            if (ratioX>0.01 && ratioX < 0.99 && ratioY>0.01 && ratioY < 0.99) {
-                                intersectionsCross.push({x:lineB.xm,y:lineA.ym,horizontalLine:lineA,verticalLine:lineB,horizontalEdge:edgeA,verticalEdge:edgeB})
-                            }
-                            else {
-                                intersectionsTip.push({x:lineB.xm,y:lineA.ym,horizontalLine:lineA,verticalLine:lineB,horizontalEdge:edgeA,verticalEdge:edgeB})                                
-                            }
-                        }
-                        else if (lineB.direction=="horizontal" && lineA.xm >= lineB.xmin && lineA.xm<=lineB.xmax && lineB.ym>=lineA.ymin && lineB.ym<=lineA.ymax){
-                            var ratioX = (lineA.xm-lineB.xmin)/(lineB.length)
-                            var ratioY = (lineB.ym-lineA.ymin)/(lineA.length)
-                            if (ratioX>0.01 && ratioX < 0.99 && ratioY>0.01 && ratioY < 0.99) {
-                                intersectionsCross.push({x:lineA.xm,y:lineB.ym,horizontalLine:lineB,verticalLine:lineA,horizontalEdge:edgeB,verticalEdge:edgeB})
-                            }
-                            else {
-                                intersectionsTip.push({x:lineA.xm,y:lineB.ym,horizontalLine:lineB,verticalLine:lineA,horizontalEdge:edgeB,verticalEdge:edgeB})                                
-                            }
-                        }
-                    })
-                })
+    var grid = {}
+    var gridPoints = []
+    var bBox = self.kGraphBBox
+    var radius = self.layout.diagram.spacing*self.layout.diagram.edgeSpacingFactor*0.45
+    var accuracy = self.layout.diagram.mouseEdgeProximityAccuracy*radius
+    var gridXMin = bBox.x1-radius
+    var gridXMax = bBox.x2+radius
+    var gridYMin = bBox.y1-radius
+    var gridYMax = bBox.y2+radius
+    var minGridSize = Math.sqrt(2)*accuracy
+    var gridDivisionsX = Math.ceil((gridXMax-gridXMin) / minGridSize)
+    var gridSizeX = (gridXMax-gridXMin) / gridDivisionsX
+    var gridDivisionsY = Math.ceil((gridYMax-gridYMin) / minGridSize)
+    var gridSizeY = (gridYMax-gridYMin) / gridDivisionsY
+    var allEdges = _.map(self.transitionEdges,function(edge){return edge.edgeGNode})
+    var allNodes = _.map(self.statusNodes,function(status){return status.svgGNode})
+    var nullEntry = {
+        within: d3.select(),
+        outside: d3.selectAll(allEdges),
+        sources: d3.select(),
+        targets: d3.select(),
+        notTargets: d3.selectAll(allNodes)
+    }
+    for (var j=0; j<=gridDivisionsY; j++){
+        var y = gridYMin+j*gridSizeY
+        var gridRow = []
+        gridPoints.push(gridRow)
+        for (var i=0; i<=gridDivisionsX; i++){
+            var x = gridXMin+i*gridSizeX
+            var within = []
+            var outside = []
+            var sources = []
+            var targets = []
+            var notTargets = []
+            self.getAllEdgesWithin(x,y,radius,function(edge){
+                within.push(edge.edgeGNode)
+                sources.push(self.getStatusResource(edge.kGraphEdge.source).svgGNode)
+                targets.push(self.getStatusResource(edge.kGraphEdge.target).svgGNode)
+            }, function(edge){
+                outside.push(edge.edgeGNode)
+                notTargets.push(self.getStatusResource(edge.kGraphEdge.target).svgGNode)
+            })
+            targets = _.uniq(targets)
+            var entry = {
+                within:d3.selectAll(_.uniq(within)),
+                outside:d3.selectAll(_.uniq(outside)),
+                sources:d3.selectAll(_.uniq(sources)),
+                targets:d3.selectAll(targets),
+                notTargets:d3.selectAll(allNodes.filter(function(x){return targets.indexOf(x)===-1}))
             }
+            gridRow.push(entry)
         }
     }
-    console.log(((new Date()).getTime()-time)/1000)
-    return {cross:intersectionsCross,tip:intersectionsTip}
+    var getGridCellAt = function(x,y){
+        var i = Math.floor((x-this.minX) / this.gridSizeX + 0.5)
+        var j = Math.floor((y-this.minY) / this.gridSizeY + 0.5)
+        return (i<0 || i>this.divisionsX || j<0 || j>this.divisionsY) ? this.nullEntry : this.points[j][i]
+    }
+    grid.withinRadius = radius
+    grid.accuracy = accuracy
+    grid.points = gridPoints
+    grid.minX = gridXMin
+    grid.maxX = gridXMax
+    grid.minY = gridYMin
+    grid.maxY = gridYMax
+    grid.gridSizeX = gridSizeX
+    grid.gridSizeY = gridSizeY
+    grid.divisionsX = gridDivisionsX
+    grid.divisionsY = gridDivisionsY
+    grid.nullEntry = nullEntry
+    grid.getGridCellAt = getGridCellAt.bind(grid)
+    self.kGraphEdgeProximityRadius = radius
+    console.log("Edge grid generation took " + (new Date().getTime()-time)/1000 + "s.")
+    return grid
 }
+
 // Get the edge closest to the point.
 // Checks edges whose bounding boxes are closest first.
 XV.prototype.getClosestEdge = function(rx,ry){
@@ -895,6 +1380,28 @@ XV.prototype.getClosestEdge = function(rx,ry){
     })
     return {distance:dMin, edge:eMin, line:lMin}
 }
+XV.prototype.getAllEdgesWithin = function(rx,ry,r,callbackWithin,callbackOutside){
+    var self = this
+    var edges = _.map(self.transitionEdges,function(edge){
+        var bBox = edge.bBox
+        var distance = XV.getPointBBoxDistance(rx,ry,bBox.x1,bBox.y1,bBox.x2,bBox.y2)
+        return {distanceBBox:distance,edge:edge}
+    })
+    var sortedEdges = _.sortBy(edges,function(edge){return edge.distanceBBox})
+    sortedEdges.forEach(function(edge){
+        if (edge.distanceBBox <= r){
+            var lmin = _.min(edge.edge.lines,function(line){
+                return XV.getPointLineDistance(rx,ry,line)
+            })
+            var dmin = XV.getPointLineDistance(rx,ry,lmin)
+            dmin<r ? callbackWithin(edge.edge,dmin,lmin) : callbackOutside(edge.edge,dmin,lmin)
+        }
+        else {
+            callbackOutside(edge.edge,edge.distanceBBox)
+        }
+    })
+}
+
 // Enter invisible broad edges for detecting mouseover.
 XV.prototype.triggerStatusEdgeHighlight = function(els){
     var self = this
@@ -909,20 +1416,1526 @@ XV.prototype.triggerStatusEdgeHighlight = function(els){
     els.each(function(){
         var par = this.parentNode
         hElEs[par.getAttribute("id")] = par
-        $('svg g.edge-status').last().after(par) // put edge in front
+        $(self.edgeStatusGNode).append(par) // put edge in front
         XV.addClass(par,"is-mouseover") // highlight edge                    
     })
 }
+
+// Operation modes.
+XV.prototype.modeChange = function(mode) {
+    var self = this
+    this.mode = mode
+    switch (mode) {
+        case XV.MODE_EDIT_MANUAL:
+            self.statusNodes.forEach(function(node){
+                node.statusToolbar.hide()
+            })
+            break;
+    }
+}
+XV.prototype.modeAllowsEdgeHighlight = function(mode){
+    return this.mode === XV.MODE_VIEW
+}
+XV.prototype.modeAllowsStatusToolbar = function(mode){
+    return this.mode === XV.MODE_VIEW
+}
+
+// Event callbacks, tooltips, popups etc.
 XV.prototype.setTooltipActionIcon = function(){
-    $('#paper').tooltip({
+    var self = this
+    var jTooltip = $('#actionTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jActions = jTooltip.find('.actions')    
+    $('.text-action-active').tooltip({
         items: '.text-action-active',
+        track: true,
         content: function(){
-            Z=this
             var elD = d3.select(this)
             var d = elD.datum()
-            return d.actions[0].properties["de.xima.fc.action.displayName"]
-        },
+            var displayName = d.actions[0].ximaAction.properties["de.xima.fc.action.displayName"]
+            jDisplayName.text(displayName)
+            jActions.empty()
+            d.actions.forEach(function(action){
+                var ximaAction = action.ximaAction
+                var li = document.createElement("li")
+                var span1 = document.createElement("span")
+                var span2 = document.createElement("span")
+                var span3 = document.createElement("span")
+                var cond = ximaAction.properties["de.xima.fc.action.condition"]
+                var active = ximaAction.properties["de.xima.fc.action.active"]
+                span1.classList.add("tooltip-action-status-name")
+                span2.classList.add("tooltip-action-condition-display-name")
+                span3.classList.add("tooltip-action-condition-active-status")                
+                span1.textContent = ximaAction.properties["de.xima.fc.action.name"]
+                span2.textContent = cond.type==="NONE" ? "" : (" (" + cond.displayName + ")")
+                span3.textContent = active ? "" : (" (" + self.layout.status.displayNameActionDeactivated + ")")
+                li.appendChild(span1)
+                li.appendChild(span2)
+                li.appendChild(span3)
+                jActions.append(li)
+            })
+            return jTooltip
+        }
     })
+}
+XV.prototype.setTooltipTimedTransitionIcon = function(){
+    var self = this
+    var jTooltip = $('#transitionTimedTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jOnlyForUnread = jTooltip.find('.onlyForUnread')
+    var jWeeks = jTooltip.find('.weeks')
+    var jWeekdays = jTooltip.find('.weekdays')
+    var jDays = jTooltip.find('.days')
+    var jHours = jTooltip.find('.hours')
+    var jMinutes = jTooltip.find('.minutes')
+    var jSeconds = jTooltip.find('.seconds')
+    var jSubseconds = jTooltip.find('.subseconds')
+    self.statusNodes.forEach(function(statusNode){
+        var portOutTimedMouseoverSelector = statusNode.classSelectors.portOutTimedMouseover
+        var portOutTimedMouseoverNode = $(portOutTimedMouseoverSelector,statusNode.svgGNode)[0]
+        var portOutTimedMouseoverIDSelector = XV.getElementIDSelector(portOutTimedMouseoverNode)
+        $(portOutTimedMouseoverIDSelector).tooltip({
+            items: portOutTimedMouseoverIDSelector,
+            track: true,
+            content: function(){
+                var d = d3.select(this).datum()
+                var displayName = self.layout.status.displayNameTimedTransition
+                var transitionAfter = d[0].properties["de.xima.fc.transition.details"].transitionAfter
+                var onlyForUnread = d[0].properties["de.xima.fc.transition.details"].onlyForUnread
+                var displayNameOnlyForUnread = onlyForUnread ? self.layout.status.displayNameOnlyForUnread : ""
+                var weeks = Math.floor(transitionAfter/604800)
+                var weekdays = Math.floor((transitionAfter-weeks*604800)/86400)
+                var days = Math.floor(transitionAfter/86400) ; transitionAfter -= days*86400
+                var hours = Math.floor(transitionAfter/3600) ; transitionAfter -= hours*3600
+                var minutes = Math.floor(transitionAfter/60) ; transitionAfter -= minutes*60
+                var seconds = Math.floor(transitionAfter)    ; transitionAfter -= seconds
+                var subseconds = transitionAfter
+
+                jDisplayName.text(displayName)
+                jOnlyForUnread.text(displayNameOnlyForUnread)
+                jWeeks.text(weeks)
+                jWeekdays.text(weekdays)
+                jDays.text(days)
+                jHours.text(hours)
+                jMinutes.text(minutes)
+                jSeconds.text(seconds)
+                jSubseconds.text(subseconds)
+
+                return jTooltip
+            }
+        })
+    })
+}
+XV.prototype.setTooltipManualTransitionIcon = function(){
+    var self = this
+    var jTooltip = $('#transitionManualTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jUserGroups = jTooltip.find('.userGroups')
+    self.statusNodes.forEach(function(statusNode){
+        var portOutManualMouseoverSelector = statusNode.classSelectors.portOutManualMouseover
+        var portOutManualMouseoverNode = $(portOutManualMouseoverSelector,statusNode.svgGNode)[0]
+        var portOutManualMouseoverIDSelector = XV.getElementIDSelector(portOutManualMouseoverNode)        
+        $(portOutManualMouseoverIDSelector).tooltip({
+            items: portOutManualMouseoverIDSelector,
+            track: true,
+            content: function(){   
+                var d = d3.select(this).datum()
+                var displayName = self.layout.status.displayNameManualTransition
+                jUserGroups.empty()                    
+                d.forEach(function(transition){
+                    var li = document.createElement("li")    
+                    var span = document.createElement("span")
+                    var ulSub = document.createElement("ul")
+                    var details = transition.properties["de.xima.fc.transition.details"]
+                    var target = self.getStatusResource(transition.target)
+                    var nameTarget = target.ximaNode.properties["de.xima.fc.status.name"]
+
+                    span.textContent = nameTarget
+                    details.restrictToUserGroup.forEach(function(userGroupID){
+                        var liSub = document.createElement("li")
+                        var spanSub = document.createElement("span")
+                        var userGroup = self.getUserGroupResource(userGroupID)
+                        spanSub.textContent = userGroup.name
+                        liSub.classList.add('tooltip-transition-timed-user-group-li')
+                        spanSub.classList.add('tooltip-transition-timed-user-group-name')
+                        liSub.appendChild(spanSub)
+                        ulSub.appendChild(liSub)
+                    })                
+
+                    ulSub.classList.add('tooltip-transition-timed-user-groups-ul')
+                    li.classList.add('tooltip-transition-timed-ul')
+                    span.classList.add('tooltip-transition-timed-display-name-target')
+                    li.appendChild(span)
+                    li.appendChild(ulSub)
+                    jUserGroups.append(li)
+                })
+
+                jDisplayName.text(displayName)
+                return jTooltip
+            }
+        })
+    })
+}
+XV.prototype.setTooltipAutoTransitionIcon = function(){
+    var self = this
+    var jTooltip = $('#transitionAutoTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jActionsContainer = jTooltip.find('.actionsContainer')
+    var jActions = jTooltip.find('.actions').detach()
+    
+    self.statusNodes.forEach(function(statusNode){
+        var portOutAutoMouseoverSelector = statusNode.classSelectors.portOutAutoMouseover
+        var portOutAutoMouseoverNode = $(portOutAutoMouseoverSelector,statusNode.svgGNode)[0]
+        var portOutAutoMouseoverIDSelector = XV.getElementIDSelector(portOutAutoMouseoverNode)
+        $(portOutAutoMouseoverIDSelector).tooltip({
+            items: portOutAutoMouseoverSelector,
+            track: true,
+            content: function(){        
+                var d = d3.select(this).datum()       
+                var displayName = self.layout.status.displayNameAutoTransition
+
+                jActionsContainer.empty()
+                d.forEach(function(transition){
+                    var jAction = jActions.clone(false,true)
+                    var jTarget = jAction.find('.target')
+                    var jInitiatorDisplayName = jAction.find('.initiatorDisplayName')
+                    var jInitiatorName = jAction.find('.initiatorName')
+                    var initiator = self.getActionResource(transition.properties["de.xima.fc.transition.details"].initiator)
+                    var target = self.getStatusResource(transition.target)
+                    var initiatorName = initiator.ximaAction.properties["de.xima.fc.action.name"]
+                    var initiatorDisplayName = initiator.ximaAction.properties["de.xima.fc.action.displayName"]
+                    var targetName = target.ximaNode.properties["de.xima.fc.status.name"]
+                    jTarget.text(targetName)
+                    jInitiatorDisplayName.text(initiatorDisplayName)
+                    jInitiatorName.text(initiatorName)                
+                    jActionsContainer.append(jAction)
+                })
+
+                jDisplayName.text(displayName)
+                return jTooltip
+            }
+        })
+    })
+}
+XV.prototype.setTooltipStatusTitle = function(){
+    var self = this
+    var jTooltip = $('#statusTitleTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jDescription = jTooltip.find('.description')
+    var jOnError = jTooltip.find('.onError')    
+    var jDeletableTrue = jTooltip.find('.deletableTrue')
+    var jDeletableFalse = jTooltip.find('.deletableFalse')
+
+    self.statusNodes.forEach(function(statusNode){
+        var statusTitleSelector = statusNode.classSelectors.textTitle
+        var statusTitleNode = $(statusTitleSelector,statusNode.svgGNode)[0]
+        var statusTitleIDSelector = XV.getElementIDSelector(statusTitleNode)
+        var d = d3.select(statusNode.svgGNode).datum()
+        
+        statusNode.svgG.select(statusTitleSelector).data([d.ximaNode.properties])
+        $(statusTitleIDSelector).tooltip({
+            items: statusTitleIDSelector,
+            track: true,
+            content: function(){
+                var data = d3.select(this).datum()
+                var displayName = data["de.xima.fc.status.name"]
+                var description = data["de.xima.fc.status.comments"] || self.layout.status.displayNameNoStatusDescriptionAvailable
+                var onError = data["de.xima.fc.status.onErrorDisplayName"]
+                var deletable = data["de.xima.fc.status.deletable"]
+                jDisplayName.text(displayName)
+                jDescription.text(description)
+                jOnError.text(onError)
+                deletable ? jDeletableFalse.hide() : jDeletableFalse.show()
+                deletable ? jDeletableTrue.show() : jDeletableTrue.hide()
+                return jTooltip
+            }
+        })
+    })
+}
+XV.prototype.setTooltipDeletableIcon = function(){
+    var self = this
+    var jTooltip = $('#deleteableIconTooltip').detach()
+    var jInfoText = jTooltip.find('.infoText')
+    self.statusNodes.forEach(function(statusNode){
+        var iconDeletableTrueSelector = statusNode.classSelectors.iconDeletableTrue
+        var iconDeletableTrueNode = $(iconDeletableTrueSelector,statusNode.svgGNode)[0]
+        var iconDeletableTrueIDSelector = XV.getElementIDSelector(iconDeletableTrueNode)
+        $(iconDeletableTrueIDSelector,statusNode.svgGNode).tooltip({
+            items: iconDeletableTrueIDSelector,
+            track: true,
+            content: function(){        
+                var displayName = self.layout.status.displayNameDeletableIcon
+                jInfoText.text(displayName)
+                return jTooltip
+            }
+        })
+    })
+}
+XV.prototype.setTooltipPortOutMismatch = function(){
+    var self = this
+    var layoutAction = self.layout.action
+
+    // Tooltip elements.
+    var jTooltip = $('#onMismatchTooltip').detach()
+    var jOnMismatchStop = jTooltip.find('.onMismatchStop')
+    var jOnMismatchProceed = jTooltip.find('.onMismatchProceed')
+    var jOnMismatchProceedPrefix = jTooltip.find('.onMismatchProceedPrefix')
+    var jOnMismatchProceedAction = jTooltip.find('.onMismatchProceedAction')
+    var jDisplayName = jTooltip.find('.displayName')
+    
+    // Localized strings.
+    var displayNameMismatchTransition = layoutAction.displayNameMismatchTransition
+    
+    self.statusNodes.forEach(function(statusNode){
+        statusNode.actions.forEach(function(actionNode){
+            // No port exists as no condition was set.
+            if (actionNode.ximaAction.properties["de.xima.fc.action.condition"].type === "NONE"){return} 
+
+            var actionMain = self.getActionNodeLayout(actionNode)
+            // Elements to attach tooltip to.
+            var portOutMismatchSelector = actionMain.classSelectors.ports.OUT.MISMATCH.attach
+
+            var portOutMismatchMouseoverSelector = actionMain.classSelectors.ports.OUT.MISMATCH.mouseover
+            var portOutMismatchMouseoverNode = $(portOutMismatchMouseoverSelector,actionNode.svgGNode)[0]
+            var portOutMismatchMouseoverIDSelector = XV.getElementIDSelector(portOutMismatchMouseoverNode)
+            var onMismatchStopSelector = actionMain.classSelectors.iconOnMismatchStop
+            var onMismatchStopNode = $(onMismatchStopSelector,actionNode.svgGNode)[0]
+            var onMismatchStopIDSelector = XV.getElementIDSelector(onMismatchStopNode)
+
+            var selector = portOutMismatchMouseoverIDSelector
+
+            actionNode.svgG.select(onMismatchStopSelector).data([actionNode])
+            actionNode.svgG.select(portOutMismatchSelector).data([actionNode])
+            actionNode.svgG.select(portOutMismatchMouseoverSelector).data([actionNode])
+
+            if (!actionNode.nextActionMismatch){selector += "," + onMismatchStopIDSelector}
+        
+            $(selector).tooltip({
+                items: selector,
+                track: true,
+                content: function(){
+                    var d = d3.select(this).datum()
+                    jDisplayName.text(displayNameMismatchTransition)
+                    if (d.nextActionMismatch) {
+                        var nextAction = self.getActionResource(d.nextActionMismatch)
+                        jOnMismatchProceedPrefix.text(d.ximaAction.properties["de.xima.fc.action.condition"].nextActionDisplayName)
+                        jOnMismatchProceedAction.text(nextAction.ximaAction.properties["de.xima.fc.action.name"])
+                        jOnMismatchStop.hide()
+                        jOnMismatchProceed.show()
+                    }
+                    else {                    
+                        jOnMismatchStop.text(d.ximaAction.properties["de.xima.fc.action.condition"].nextActionDisplayName)
+                        jOnMismatchStop.show()
+                        jOnMismatchProceed.hide()
+                    }
+                    return jTooltip
+                }
+            })
+        })
+    })
+}
+XV.prototype.setTooltipPortOutError = function(){
+    var self = this
+    var layoutAction = self.layout.action
+
+    // Tooltip elements.
+    var jTooltip = $('#onErrorTooltip').detach()
+    var jOnErrorStop = jTooltip.find('.onErrorStop')
+    var jOnErrorProceed = jTooltip.find('.onErrorProceed')
+    var jOnErrorProceedPrefix = jTooltip.find('.onErrorProceedPrefix')
+    var jOnErrorProceedAction = jTooltip.find('.onErrorProceedAction')
+    var jDisplayName = jTooltip.find('.displayName')
+    
+    // Localized strings.
+    var displayNameErrorTransition = layoutAction.displayNameErrorTransition
+    
+    self.statusNodes.forEach(function(statusNode){
+        statusNode.actions.forEach(function(actionNode){
+            var actionMain = self.getActionNodeLayout(actionNode)
+            
+            // Elements to attach tooltip to.
+            var portOutErrorSelector = actionMain.classSelectors.ports.OUT.ERROR.attach
+
+            var portOutErrorMouseoverSelector = actionMain.classSelectors.ports.OUT.ERROR.mouseover
+            var portOutErrorMouseoverNode = $(portOutErrorMouseoverSelector,actionNode.svgGNode)[0]
+            var portOutErrorMouseoverIDSelector = XV.getElementIDSelector(portOutErrorMouseoverNode)
+
+            var onErrorStopSelector = actionMain.classSelectors.iconOnErrorStop
+            var onErrorStopNode = $(onErrorStopSelector,actionNode.svgGNode)[0]
+            var onErrorStopIDSelector = XV.getElementIDSelector(onErrorStopNode)
+
+            var selector = portOutErrorMouseoverIDSelector
+
+            actionNode.svgG.select(onErrorStopSelector).data([actionNode])
+            actionNode.svgG.select(portOutErrorSelector).data([actionNode])
+            actionNode.svgG.select(portOutErrorMouseoverSelector).data([actionNode])
+
+            if (!actionNode.nextActionError){selector += "," + onErrorStopIDSelector}
+
+            $(selector).tooltip({
+                items: selector,
+                track: true,
+                content: function(){
+                    var d = d3.select(this).datum()
+                    jDisplayName.text(displayNameErrorTransition)
+                    if (d.nextActionError) {
+                        var nextAction = self.getActionResource(d.nextActionError)
+                        jOnErrorProceedPrefix.text(d.ximaAction.properties["de.xima.fc.action.onErrorDisplayName"])
+                        jOnErrorProceedAction.text(nextAction.ximaAction.properties["de.xima.fc.action.name"])
+                        jOnErrorStop.hide()
+                        jOnErrorProceed.show()
+                    }
+                    else {
+                        jOnErrorStop.text(d.ximaAction.properties["de.xima.fc.action.onErrorDisplayName"])
+                        jOnErrorStop.show()
+                        jOnErrorProceed.hide()
+                    }
+                    return jTooltip
+                }
+            })
+        })
+    })    
+}
+XV.prototype.setTooltipPortOutStandard = function(){
+    var self = this
+    var layoutAction = self.layout.action
+
+    // Tooltip elements.
+    var jTooltip = $('#onStandardTooltip').detach()
+    var jOnStandardStop = jTooltip.find('.onStandardStop')
+    var jOnStandardProceed = jTooltip.find('.onStandardProceed')
+    var jOnStandardProceedPrefix = jTooltip.find('.onStandardProceedPrefix')
+    var jOnStandardProceedAction = jTooltip.find('.onStandardProceedAction')
+    var jDisplayName = jTooltip.find('.displayName')
+    
+    // Localized strings.
+    var displayNameStandardTransition = layoutAction.displayNameStandardTransition
+    var displayNameStandardTransitionProceed = layoutAction.displayNameStandardTransitionProceed
+    var displayNameStandardTransitionStop = layoutAction.displayNameStandardTransitionStop
+        
+    self.statusNodes.forEach(function(statusNode){
+        var actionNodesLength = statusNode.actions.length
+        statusNode.actions.forEach(function(actionNode,actionNodeIdx){
+            var actionMain = self.getActionNodeLayout(actionNode)
+            
+            // Elements to attach tooltip to.
+            var portOutStandardSelector = actionMain.classSelectors.ports.OUT.STANDARD.attach
+
+            var portOutStandardMouseoverSelector = actionMain.classSelectors.ports.OUT.STANDARD.mouseover
+            var portOutStandardMouseoverNode = $(portOutStandardMouseoverSelector,actionNode.svgGNode)[0]
+            var portOutStandardMouseoverIDSelector = XV.getElementIDSelector(portOutStandardMouseoverNode)
+
+            var onStandardStopSelector = actionMain.classSelectors.iconOnStandardStop
+            var onStandardStopNode = $(onStandardStopSelector,actionNode.svgGNode)[0]
+            var onStandardStopIDSelector = XV.getElementIDSelector(onStandardStopNode)
+
+            var selector = portOutStandardMouseoverIDSelector
+
+            actionNode.svgG.select(onStandardStopSelector).data([actionNode])
+            actionNode.svgG.select(portOutStandardSelector).data([actionNode])
+            actionNode.svgG.select(portOutStandardMouseoverSelector).data([actionNode])
+
+            if (actionNodeIdx===actionNodesLength-1 && !actionNode.ximaAction.properties["de.xima.fc.action.stopsWorkflow"]){return}
+            if (!actionNode.nextActionStandard){selector += "," + onStandardStopIDSelector}
+
+            $(selector).tooltip({
+                items: selector,
+                track: true,
+                content: function(){
+                    var d = d3.select(this).datum()
+                    jDisplayName.text(displayNameStandardTransition)
+                    if (d.nextActionStandard) {
+                        var nextAction = self.getActionResource(d.nextActionStandard)
+                        jOnStandardProceedPrefix.text(displayNameStandardTransitionProceed)
+                        jOnStandardProceedAction.text(nextAction.ximaAction.properties["de.xima.fc.action.name"])
+                        jOnStandardStop.hide()
+                        jOnStandardProceed.show()
+                    }
+                    else {
+                        jOnStandardStop.text(displayNameStandardTransitionStop)
+                        jOnStandardStop.show()
+                        jOnStandardProceed.hide()
+                    }
+                    return jTooltip
+                }
+            })
+        })
+    })    
+}
+XV.prototype.setTooltipActionCondition = function() {
+    var self = this
+    var layoutAction = self.layout.action
+
+    // Tooltip elements.
+    var jTooltip = $('#actionConditionTooltip').detach()
+    var jDisplayName = jTooltip.find('.displayName')
+    var jConditionForm = jTooltip.find('.conditionForm')
+    var jConditionRegexp = jTooltip.find('.conditionRegexp')
+    var jContainerRhs = jTooltip.find('.containerRhs')
+    var jLhs = jTooltip.find('.lhs')
+    var jOperator = jTooltip.find('.operator')
+    var jRhs = jTooltip.find('.rhs')
+    var jRegexp = jTooltip.find('.regexp')
+    var jFormElementDisplayName = jTooltip.find('.formElementDisplayName')
+    
+    var conditionFormElementDisplayName = layoutAction.displayNameConditionFormElement
+    
+    self.statusNodes.forEach(function(statusNode){
+        statusNode.actions.forEach(function(actionNode){
+            if (actionNode.ximaAction.properties["de.xima.fc.action.condition"].type==="NONE"){return}
+            
+            var actionMain = self.getActionNodeLayout(actionNode)
+            
+            var containerConditionNodeMouseover = actionMain.classSelectors.containerConditionNodeMouseover
+            var containerConditionNodeMouseoverNode = $(containerConditionNodeMouseover,actionNode.svgGNode)[0]
+            var containerConditionNodeMouseoverIDSelector = XV.getElementIDSelector(containerConditionNodeMouseoverNode)
+                        
+            actionNode.svgG.select(containerConditionNodeMouseover).data([actionNode])
+            
+            $(containerConditionNodeMouseoverIDSelector).tooltip({
+                items: containerConditionNodeMouseoverIDSelector,
+                track: true,
+                content: function(){
+                    var d = d3.select(this).datum()
+                    var ximaProps = d.ximaAction.properties
+                    var cond = ximaProps["de.xima.fc.action.condition"]
+                    jDisplayName.text(cond.displayName)
+                    
+                    switch (cond.type) {
+                        case "FORM":
+                            jConditionForm.show()
+                            jConditionRegexp.hide()
+                            jLhs.text(cond.details.conditionLHS)
+                            jOperator.text(cond.details.displayNameConditionOperator)
+                            jFormElementDisplayName.text(conditionFormElementDisplayName)
+                            if (cond.details.hasRHS){
+                                jContainerRhs.show()
+                                jRhs.text(cond.details.conditionRHS)
+                            }
+                            else {
+                                jContainerRhs.hide()
+                            }
+                            break;
+                        case "REGEXP":
+                            jConditionForm.hide()
+                            jConditionRegexp.show()
+                            jRegexp.text(cond.details.regexp)
+                            break;
+                    }
+                    
+                    return jTooltip
+                }
+            })
+        })
+    })
+}
+XV.prototype.setTooltipActionDetails = function() {
+    var self = this
+    var displayNames = self.layout.action.displayNames
+    var actionDetailsTooltipDimensions = self.layout.action.actionDetailsTooltipDimensions
+    
+    // Tooltip element.
+    var jTooltip = $('#actionDetailsTooltip').detach()
+
+    var jDisplayName = jTooltip.find('.displayName')
+    var jActionTypePrefix = jTooltip.find('.actionTypePrefix')
+    var jActionTypeDisplayName = jTooltip.find('.actionTypeDisplayName')
+    
+    // Container for the action details for each action.
+    var jDetails = jTooltip.find('.details')
+    var jDetailsShowTemplate = jTooltip.find('.detailsShowTemplate')
+    var jDetailsCallback = jTooltip.find('.detailsCallback')
+    var jDetailsAttachFileToBatch = jTooltip.find('.detailsAttachFileToBatch')
+    var jDetailsReturnFile = jTooltip.find('.detailsReturnFile')
+    var jDetailsDbSqlStatement = jTooltip.find('.detailsDbSqlStatement')
+    var jDetailsEMail = jTooltip.find('.detailsEMail')
+    var jDetailsExportPersistence = jTooltip.find('.detailsExportPersistence')
+    var jDetailsExportXml = jTooltip.find('.detailsExportXml')
+    var jDetailsExternalResource= jTooltip.find('.detailsExternalResource')
+    var jDetailsWriteToForm= jTooltip.find('.detailsWriteToForm')
+    var jDetailsStopBatch = jTooltip.find('.detailsStopBatch')
+    var jDetailsRenewProcessId = jTooltip.find('.detailsRenewProcessId')
+    var jDetailsDeleteBatch = jTooltip.find('.detailsDeleteBatch')
+    
+    // Setup table.    
+    XV.tableWidget.displayNames = displayNames
+    var tShowTemplate = (new XV.tableWidget(jDetailsShowTemplate)).asTable()
+    var tAttachFileToBatch = (new XV.tableWidget(jDetailsAttachFileToBatch)).asTable()
+    var tReturnFile = (new XV.tableWidget(jDetailsReturnFile)).asDivSpan()
+    var tDbSqlStatement = (new XV.tableWidget(jDetailsDbSqlStatement)).asDivDiv()
+    var tEMail = (new XV.tableWidget(jDetailsEMail)).asDivDiv()
+    var tExportPersistence = (new XV.tableWidget(jDetailsExportPersistence)).asTable()
+    var tExportXml = (new XV.tableWidget(jDetailsExportXml)).asTable()
+    var tExternalResource = (new XV.tableWidget(jDetailsExternalResource)).asTable()
+    var tWriteToForm = (new XV.tableWidget(jDetailsWriteToForm)).asTable()
+    var tStopBatch = (new XV.tableWidget(jDetailsStopBatch)).asTable()
+    var tRenewProcessId = (new XV.tableWidget(jDetailsRenewProcessId)).asTable()
+    var tDeleteBatch = (new XV.tableWidget(jDetailsDeleteBatch)).asTable()
+
+    // Setup code syntax highlighting.
+    var cmDbSqlStatement = CodeMirror(jDetailsDbSqlStatement.find('.dbSqlStatementEditor')[0], {
+        value: "",
+        mode: "text/x-mysql",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })
+    var cmExportXml = CodeMirror(jDetailsExportXml.find('.exportXmlPreviewEditor')[0], {
+        value: "",
+        mode: "text/xml",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })
+    
+    // Get additional data.
+    var ajaxRequest = null
+
+    // Set tooltip for each action node.
+    self.statusNodes.forEach(function(statusNode){
+        statusNode.actions.forEach(function(actionNode){        
+            var actionMain = self.getActionNodeLayout(actionNode)
+
+            var nodeBody = $(actionMain.classSelectors.nodeBody,actionNode.svgGNode)
+            var nodeBodyNode = $(nodeBody,actionNode.svgGNode)[0]
+            var nodeBodyIDSelector = XV.getElementIDSelector(nodeBodyNode)
+            
+            var containerActionNodeMouseover = actionMain.classSelectors.containerActionNodeMouseover
+            var containerActionNodeMouseoverNode = $(containerActionNodeMouseover,actionNode.svgGNode)[0]
+            var containerActionNodeMouseoverIDSelector = XV.getElementIDSelector(containerActionNodeMouseoverNode)
+            var tooltipDimensions = actionDetailsTooltipDimensions[actionNode.ximaAction.properties["de.xima.fc.action.type"]]
+            
+            actionNode.svgG.select(containerActionNodeMouseover).data([actionNode])
+            
+            $(containerActionNodeMouseoverIDSelector).tooltip({
+                items: containerActionNodeMouseoverIDSelector,
+                close: function(event,ui){
+                    ui.tooltip.hover(
+                        function() {
+                            $(this).stop(true).fadeTo(600, 1)
+                        },
+                        function() {
+                            $(this).fadeOut(600, function() {
+                                $(this).remove()
+                                if (ajaxRequest){ajaxRequest.abort()}
+                                ajaxRequest = null
+                            })
+                        }
+                    )
+                },
+                position: {
+                    my: "left top",
+                    at: "right+10 top",
+                    of: nodeBodyIDSelector,
+                    collision: "none",
+                    using: function(position,dimensions) {
+                        var me = $(this)
+                        me.css(tooltipDimensions)
+                        dimensions.element.width = me.outerWidth()
+                        dimensions.element.height = me.outerHeight()
+                        screenW = window.innerWidth
+                        screenH = window.innerHeight
+                        var onTheFarRight = position.left+dimensions.element.width/2>screenW
+                        var fitsLeftButNotRight = (position.left+dimensions.element.width>screenW) && (position.left>=0)
+                        if (onTheFarRight || fitsLeftButNotRight) {
+                            // put element to the left
+                            position.left = dimensions.target.left-dimensions.element.width-10
+                        }
+                        else {
+                            // no changes needed
+                        }
+                        if (position.top < 0) {
+                            position.top = 0
+                        }
+                        else if (position.top+dimensions.element.height>screenH) {
+                            position.top = screenH-dimensions.element.height
+                        }
+                        $(this).css(position)
+                    }                    
+                },
+                open: function(event,ui){
+                    // Prevent tooltip from closing on mouseover over tooltip content.
+                    if (event.originalEvent === undefined) {
+                        return false;
+                    }
+                    var $id = $(ui.tooltip).attr('id');
+                    // close any lingering tooltips
+                    $('div.ui-tooltip').not('#' + $id).remove();
+                    
+                    var d = d3.select(this).datum()
+                    var ximaProps = d.ximaAction.properties
+                    var actionDetails = ximaProps["de.xima.fc.action.details"]
+                    
+                    // Make tooltip draggable (useful for large tooltips).
+                    ui.tooltip.draggable()
+                    
+                    // Setup data and event handlers after the tooltip has been
+                    // loaded to the DOM.
+                    switch (ximaProps["de.xima.fc.action.type"]) {
+                        case 0:
+                            //ui.tooltip.css("max-width","70vw")                            
+                            // Update iframe with content
+                            tShowTemplate.update(function(){
+                                var iFrame = this.showTemplatePreviewRight[0]
+                                var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
+                                var htmlResource = self.getHtmlResource(actionDetails.targetTemplate)
+                                iFrameDoc.open()
+                                iFrameDoc.write(htmlResource.html)
+                                iFrameDoc.close()
+                            })
+                            break;
+                        case 4:
+                            //ui.tooltip.css("max-width","70vw")
+                            // Update text editor with the sql statement.
+                            cmDbSqlStatement.setValue(actionDetails.sqlStatement)
+                            cmDbSqlStatement.refresh()
+                            break;
+                        case 5:
+                            //ui.tooltip.css("max-width","70vw")
+                            // Update iframe with content
+                            tEMail.update(function(){
+                                var iFrame = this.eMailBodyRight[0]
+                                var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
+                                iFrameDoc.open()
+                                iFrameDoc.write(actionDetails.body)
+                                iFrameDoc.close()
+                            })
+                            break;
+                        case 7:
+                            //ui.tooltip.css("max-width","70vw")
+                            // Update text editor with the xsl statement.
+                            cmExportXml.setValue(self.getXslResource(actionDetails.xslTemplate).xsl)
+                            cmExportXml.refresh()                            
+                            break;
+                        case 8:
+                            //ui.tooltip.css("max-width","70vw")
+                            tExternalResource.update(function(){
+                                var iFrame = this.externalResourcePreviewRight[0]
+                                var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
+                                ajaxRequest = $.ajax({
+                                    async: true,
+                                    error: function(jqXHR, textStatus, errorThrown){
+                                        iFrameDoc.open()
+                                        iFrameDoc.write('<h1>'+jqXHR.status+': '+textStatus+'</h1><pre>'+errorThrown+'</pre>')
+                                        iFrameDoc.close()
+                                    },
+                                    method: 'GET',
+                                    success: function(data) {
+                                        iFrameDoc.open()
+                                        iFrameDoc.write(data)
+                                        iFrameDoc.close()
+                                    },
+                                    url: actionDetails.resourceURL
+                                })
+                            })
+
+                            break;                            
+                    }
+                },
+                content: function(){
+                    var d = d3.select(this).datum()
+                    var ximaProps = d.ximaAction.properties
+                    var actionDetails = ximaProps["de.xima.fc.action.details"]
+                    
+                    jDisplayName.text(ximaProps["de.xima.fc.action.name"])
+                    jActionTypePrefix.text(displayNames.actionDetailsTypeLeft)
+                    jActionTypeDisplayName.text(ximaProps["de.xima.fc.action.displayName"])
+                    jDetails.hide()
+                    
+                    switch (ximaProps["de.xima.fc.action.type"]) {
+                        case 0:
+                            tShowTemplate.widget().show()
+                            tShowTemplate.setDisplayNames()
+                            tShowTemplate.update(function(){
+                                this.showTemplateNameRight.text(self.getHtmlResource(actionDetails.targetTemplate).name)
+                            })
+                            break;
+                            
+
+                        case 1:
+                            jDetailsCallback.show()
+                            break;
+                            
+                            
+                        case 2:
+                            tAttachFileToBatch.widget().show()
+                            tAttachFileToBatch.setDisplayNames()
+                            tAttachFileToBatch.update(function(rows){
+                                var _this = this
+                                _this.attachFileToBatchFilesRight.empty()
+                                actionDetails.loadFrom.length===0 ? rows.attachFileToBatchFilesLeft.hide() : rows.attachFileToBatchFilesLeft.show()
+                                actionDetails.loadFrom.forEach(function(actionID){
+                                    var action = self.getActionResource(actionID)
+                                    _this.attachFileToBatchFilesItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                    _this.attachFileToBatchFilesRight.append(_this.attachFileToBatchFilesItem.clone(false,true))
+                                })
+                            })
+                            break;
+                            
+                            
+                        case 3:
+                            tReturnFile.widget().show()
+                            tReturnFile.setDisplayNames()
+                            tReturnFile.update(function(rows){
+                                var _this = this
+                                actionDetails.forceDownload && _this.returnFileForceDownloadYes.show() && _this.returnFileForceDownloadNo.hide()
+                                !actionDetails.forceDownload && _this.returnFileForceDownloadYes.hide() && _this.returnFileForceDownloadNo.show()
+                                actionDetails.loadFrom.length===0 ? rows.returnFileSaveAsLeft.hide() : rows.returnFileSaveAsLeft.show()
+                                _this.returnFileSaveAsRight.empty()
+                                actionDetails.loadFrom.forEach(function(actionID){
+                                    var action = self.getActionResource(actionID)
+                                    _this.returnFileSaveAsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                    _this.returnFileSaveAsRight.append(_this.returnFileSaveAsItem.clone(false,true))
+                                })                                
+                            })
+                            break;
+                            
+                            
+                        case 4:
+                            tDbSqlStatement.widget().show()
+                            tDbSqlStatement.setDisplayNames()
+                            break;
+                            
+                            
+                        case 5:
+                            tEMail.widget().show()
+                            tEMail.setDisplayNames()
+                            tEMail.update(function(rows) {
+                                var _this = this
+                                this.eMailToRight.text(actionDetails.headerTo)
+                                this.eMailFromRight.text(actionDetails.headerFrom)
+                                this.eMailSubjectRight.text(actionDetails.headerSubject)
+                                this.eMailAttachmentsRight.empty()
+                                actionDetails.loadFrom.length===0 ? rows.eMailAttachmentsLeft.hide() : rows.eMailAttachmentsLeft.show()
+                                actionDetails.loadFrom.forEach(function(actionID) {
+                                    var action = self.getActionResource(actionID)                                
+                                    _this.eMailAttachmentsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                    _this.eMailAttachmentsRight.append(_this.eMailAttachmentsItem.clone(false,true))
+                                })
+                            })
+                            break;
+                            
+                            
+                        case 6:
+                            tExportPersistence.widget().show()
+                            tExportPersistence.setDisplayNames()
+                            tExportPersistence.update(function(){this.exportPersistenceSaveAsRight.text(actionDetails.saveAs)})
+                            break;
+                            
+                            
+                        case 7:
+                            tExportXml.widget().show()
+                            tExportXml.setDisplayNames()
+                            tExportXml.update(function(){
+                                this.exportXmlSaveAsRight.text(actionDetails.saveAs)
+                                this.exportXmlTemplateNameRight.text(self.getXslResource(actionDetails.xslTemplate).name)
+                                actionDetails.sanitizeOutput && this.exportXmlCleanupYes.show() && this.exportXmlCleanupNo.hide()
+                                !actionDetails.sanitizeOutput && this.exportXmlCleanupYes.hide() && this.exportXmlCleanupNo.show()
+                            })
+                            break;
+                            
+                            
+                        case 8:
+                            tExternalResource.widget().show()
+                            tExternalResource.setDisplayNames()
+                            tExternalResource.update(function(){
+                              this.externalResourceUrlRight.text(actionDetails.resourceURL)
+                              this.externalResourceSaveAsRight.text(actionDetails.saveAs)
+                            })
+                            break;
+                            
+                            
+                        case 9:
+                            tWriteToForm.widget().show()
+                            tWriteToForm.setDisplayNames()
+                            tWriteToForm.update(function(){
+                                var _this = this
+                                _this.writeToFormValuesRight.empty()
+                                actionDetails.formChanges.forEach(function(formChange){
+                                    _this.writeToFormValuesKey.text(formChange.key)
+                                    _this.writeToFormValuesValue.text(formChange.value)
+                                    _this.writeToFormValuesRight.append(_this.writeToFormValuesRow.clone(false,true))
+                                })
+                            })
+                            break;
+                            
+                            
+                        case 10:
+                            break;
+                            
+                            
+                        case 11:
+                            break;
+                        case 12:
+                            break;
+                        case 13:
+                            break;
+                        case 14:
+                            break;
+                        case 15:
+                            break;
+                        case 16:
+                            break;
+                        case 17:
+                            break;
+                        case 18:
+                            tStopBatch.widget().show()
+                            tStopBatch.setDisplayNames()                            
+                            break;
+                        case 19:
+                            break;
+                        case 20:
+                            tRenewProcessId.widget().show()
+                            tRenewProcessId.setDisplayNames()                        
+                            break;
+                            
+                            
+                        case 21:
+                            break;
+                        case 22:
+                            break;
+                        case 23:
+                            tDeleteBatch.widget().show()
+                            tDeleteBatch.setDisplayNames()                            
+                            break;
+                            
+                            
+                        case 24:
+                            break;
+                        case 25:
+                            break;
+                        case 26:
+                            break;
+                    }
+                    
+                    return jTooltip
+                }
+            })
+        })
+    })
+    
+}
+
+XV.prototype.setDialogLegend = function() {
+    var self = this
+    var dialogLegend = $('#dialogLegend')
+    var buttons = {}
+    buttons[self.layout.toolbar.displayNameLegendClose] = function(){dialogLegend.dialog("close")}
+    dialogLegend.dialog({
+        autoOpen: false,
+        modal: false,
+        closeText: self.layout.toolbar.displayNameLegendClose,
+        draggable: true,
+        resizable: true,
+        show: {
+            effect: "fade",
+            duration: self.layout.toolbar.legendFade
+        },
+        hide: {
+            effect: "fade",
+            duration: self.layout.toolbar.legendFade
+        },        
+        buttons: buttons
+    })
+}
+XV.prototype.setMainToolbar = function() {
+    // See http://paulkinzett.github.io/toolbar/
+    var self = this
+    var toolbarOpen = false
+    var mainToolbarOpener = $("#mainToolbarOpener")
+    var mainToolbarOpenerTitleOpened = mainToolbarOpener.attr("ui-title-opened")
+    var mainToolbarOpenerTitleClosed = mainToolbarOpener.attr("ui-title-closed")
+    var dialogLegend = $('#dialogLegend')
+    
+    // Main toolbar
+    mainToolbarOpener.toolbar({
+        content: "#mainToolbar",
+        position: "right",
+        style: 'success',
+        animation: 'flip',
+        event: 'click',
+        hideOnClick: true,
+        autoAdjust: true,
+        adjustment: 0,
+        adjustAgainst: self.viewportNode
+    })
+    .on("toolbarShown",function(){
+        // Make the tooltip say "close menu"
+        var span = $('.ui-tooltip-content>span.mainToolbarOpenerSpan').last()
+        toolbarOpen = true
+        $(span).text(mainToolbarOpenerTitleOpened)
+    })
+    .on("toolbarHidden",function(){
+        // Make the tooltip say "open menu"
+        var span = $('.ui-tooltip-content>span.mainToolbarOpenerSpan').last()
+        toolbarOpen = false
+        $(span).text(mainToolbarOpenerTitleClosed)
+    })
+
+    // Make the toolbar handler draggable.
+    mainToolbarOpener.draggable({
+        distance: 10,
+        scroll: false,
+        containment: '#viewport',
+        start: function(){
+            this.toolbarWasShown = mainToolbarOpener.toolbar("shown")
+            mainToolbarOpener.toolbar("disable",true)
+            mainToolbarOpener.toolbar("hide")
+        },
+        stop: function() {
+            if (this.toolbarWasShown) {
+                mainToolbarOpener.toolbar("show")
+            }
+            mainToolbarOpener.toolbar("disable",null)
+        }
+    })
+    
+    // Reposition the toolbar handler upon resize.
+    self.onResize.push(function(){
+        var offset = mainToolbarOpener.offset()
+        if (offset.top+mainToolbarOpener.outerHeight() > window.innerHeight){
+            mainToolbarOpener.css("top",window.innerHeight-mainToolbarOpener.outerHeight())
+        }
+        if (offset.left+mainToolbarOpener.outerWidth() > window.innerWidth){
+            mainToolbarOpener.css("left",window.innerWidth-mainToolbarOpener.outerWidth())
+        }        
+    })
+    
+    // Tooltip on the toolbar button
+    mainToolbarOpener.tooltip({
+        items: '#mainToolbarOpener',
+        track: true,
+        show: {
+            effect:"fade",
+            duration: self.layout.toolbar.tooltipFade,
+            delay: self.layout.toolbar.tooltipDelay
+        },
+        content: function(){
+            return $('<span>').addClass('mainToolbarOpenerSpan').text(toolbarOpen ? mainToolbarOpenerTitleOpened : mainToolbarOpenerTitleClosed)
+        }
+    })    
+    // Tooltip on items
+    $('.tool-items>.mainToolbarItem').tooltip({
+        items: '.tool-items>.tool-item',
+        track: true,
+        show: {
+            effect:"fade",
+            duration: self.layout.toolbar.tooltipFade,
+            delay: self.layout.toolbar.tooltipDelay
+        },
+        position: {my: "left+20 center", at: "right center"},
+        content: function(){
+            return $('<span>').text($(this).attr('ui-title'))
+        }
+    })
+    
+    // Setup legend.
+    self.setDialogLegend()
+    
+    // Event handlers when clicking an item
+    $('a#toolbarZoomToKGraph').on("click",function(){
+        self.zoomToKGraphBoundaries()
+    })
+    $('a#toolbarToggleEdgeNodeArrows').on("click",function(){
+        var edgeNodeStatus = self.svgG.select('#containerEdgeNodeStatus')
+        var opacity = parseInt(edgeNodeStatus.style("opacity"),10) > 0.5 ? 0 : 1
+        edgeNodeStatus.transition()
+            .duration(self.layout.toolbar.edgeNodeArrowsFade)
+            .style({"opacity":opacity})
+    })
+    $('a#toolbarPrintGraph').on("click",function(){
+        $('#mainToolbarOpener').hide()
+        $('.tool-container').hide()
+        window.print()
+        $('#mainToolbarOpener').show()
+        $('.tool-container').show()        
+    })   
+    $('a#toolbarToggleLegend').on("click",function(){
+        dialogLegend.dialog(dialogLegend.dialog("isOpen") ? "close" : "open")
+    })
+    
+}
+XV.prototype.setStatusToolbar = function() {
+    var self = this
+    var toolbarFadeDuration = self.layout.status.toolbarFadeDuration
+    var showToolbar = function() {
+        this.transition()
+            .duration(toolbarFadeDuration)
+            .style({"opacity":"1.0"})
+    }
+    var hideToolbar = function() {
+        this.transition()
+            .duration(toolbarFadeDuration)
+            .style({"opacity":"0.0"})
+    }
+    self.statusNodes.forEach(function(statusNode){
+        var mainSelector = statusNode.classSelectors.MAIN
+        var toolbarSelector = statusNode.classSelectors.containerToolbar
+        var dMain = statusNode.svgG.select(mainSelector)
+        var dToolbar = statusNode.svgG.select(toolbarSelector) || statusNode.svgG.filter(mainSelector)
+        if (dMain.empty()){dMain = statusNode.svgG.filter(mainSelector)}
+        if (dToolbar.empty()){dMain = statusNode.svgG.filter(toolbarSelector)}
+        dMain.on("mouseenter",function(){
+            if (self.modeAllowsStatusToolbar()) {
+                showToolbar.call(dToolbar)
+            }
+        })
+        dMain.on("mouseleave",function(){
+            hideToolbar.call(dToolbar)
+        })
+        hideToolbar.call(dToolbar)
+        statusNode.statusToolbar = {
+            element: dToolbar,
+            show: showToolbar.bind(dToolbar),
+            hide: hideToolbar.bind(dToolbar),
+        }
+    })
+}
+XV.prototype.setupStatusNodeButtons = function() {
+    var self = this
+    self.statusNodes.forEach(function(node){
+        var buttons = node.classSelectors.buttons
+        var buttonsProps = self.layout.status.buttons
+        for (var buttonName in buttons) {
+            var button = buttons[buttonName]
+            var buttonProps = buttonsProps[buttonName]
+            var elButtonNormal = node.svgG.select(button.normal)
+            var elButtonHover = node.svgG.select(button.hover)
+            var data = {
+                callback: XV.callbacksButton[buttonName],
+                elNormal: elButtonNormal,
+                elHover: elButtonHover,
+                pointerEvents : buttonProps.pointerEvents,
+                fadeDuration: buttonProps.fadeDuration,
+                node: node
+            }
+            
+            // Do not show hidden buttons.
+            if ($(elButtonNormal.node()).css("visibility")==="hidden"){continue}
+            
+            elButtonNormal.style({"opacity":"1.0"})
+                .attr("pointer-events", button.pointerEvents)
+                .data([data])
+                .on("mouseenter",function(d){
+                    d.elHover.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"1.0"})
+                    d.elNormal.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"0.0"})
+                })
+                .on("mouseleave",function(d){
+                    d.elNormal.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"1.0"})
+                    d.elHover.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"0.0"})
+                })
+                .on("click",function(d){
+                    d.callback.call(self,d.node)
+                })
+            elButtonHover.style({"opacity":"0.0"})
+                .attr("pointer-events", button.pointerEvents)
+                .data([data])
+                .on("mouseenter",function(d){
+                    d.elHover.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"1.0"})
+                    d.elNormal.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"0.0"})
+                })
+                .on("mouseleave",function(d){
+                    d.elNormal.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"1.0"})
+                    d.elHover.transition()
+                        .duration(d.fadeDuration)
+                        .style({"opacity":"0.0"})
+                })
+                .on("click",function(d){
+                    d.callback.call(self,d.node)
+                })
+        }
+    })
+}
+XV.prototype.setupEdgeHighlight = function() {
+    var self = this
+    /* TO_BE_DELETED
+    if (self.layout.edgeStatus.highlightMode==="TOPMOST") {
+        self.svg.selectAll('.edge-path-mouseover').on("mouseenter",function(){
+            var selfEl = this
+            var par = selfEl.parentNode
+            $(self.edgeStatusGNode).append(par) // put edge in front
+            XV.addClass(par,"is-mouseover") // highlight edge
+        })    
+        .on("mouseleave",function(){        
+            var selfEl = this            
+            var par = selfEl.parentNode
+            XV.removeClass(par,"is-mouseover") // remove highlight
+        })        
+    }
+    else*/ if (self.layout.edgeStatus.highlightMode==="ALL") {
+        // native browser support for checking multiple elements
+        if (false && XV.browserSupport.elementsFromPoint && !XV.browserSupport.elementsFromPointFix) {
+            /* TO_BE_DELETED
+            // searching for edges with method GRID is much faster, albeit slighlty less accurate
+            self.svg.selectAll('.edge-path-mouseover').on("mouseenter",function(){
+                    var cX = d3.event.clientX
+                    var cY = d3.event.clientY
+                    var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
+                    self.triggerStatusEdgeHighlight(els)
+                })
+                .on("mouseleave",function(){
+                    var cX = d3.event.clientX
+                    var cY = d3.event.clientY
+                    var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
+                    self.triggerStatusEdgeHighlight(els)                                      
+                })
+                .on("mousemove",function(){
+                    var cX = d3.event.clientX
+                    var cY = d3.event.clientY
+                    var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
+                    self.triggerStatusEdgeHighlight(els)
+                })*/
+        }
+        // if no native browser support, search for edges within a given radius
+        else {
+            self.svg.on("mousemove",function(){
+                self.mousePageX = d3.event.pageX || -424242 // event.pageX being undefined
+                self.mousePageY = d3.event.pageY || -424242 // happened once to me...
+            })
+            var oldMousePageX = self.mousePageX
+            var oldMousePageY = self.mousePageY
+            var radius = self.kGraphEdgeProximityRadius
+            var dt = self.layout.diagram.edgeHighlightCheckInterval
+            var recursiveCheck = recursiveCheck
+            var highlightNodes = self.layout.diagram.highlightStatusNodesOnEdgeMouseover
+            if (self.layout.diagram.edgeHighlightCheckIntervalAlgorithm == "GRID") {    
+                // Create grid for computing all edges within a given radius quickly.
+                self.kGraphEdgeGrid = self.createKGraphEdgeGrid()
+                function recursiveCheck(){
+                    window.setTimeout(function(){
+                        if (self.modeAllowsEdgeHighlight() && (self.MousePageX!==oldMousePageX || self.mousePageY !== oldMousePageY)) {
+                            var pos = self.getPositionFromMouse(self.mousePageX,self.mousePageY)                        
+                            var edges = self.kGraphEdgeGrid.getGridCellAt(pos.x,pos.y)
+                            edges.within.classed({"is-mouseover":true})
+                            edges.outside.classed({"is-mouseover":false})
+                            if (highlightNodes){
+                                edges.targets.classed({"is-highlight":true})
+                                edges.notTargets.classed({"is-highlight":false})
+                            }
+                            oldMousePageX = self.mousePageX
+                            oldMousePageY = self.mousePageY
+                        }
+                        recursiveCheck()
+                    }, dt)
+                }
+                recursiveCheck()
+            }
+            /* TO_BE_DELETED
+            else if (self.layout.diagram.edgeHighlightCheckIntervalAlgorithm == "BBOX") {
+                var callbackInside = function(edge){
+                    edge.edgeG.classed({"is-mouseover":true})
+                }
+                var callbackOutside = function(edge){
+                    edge.edgeG.classed({"is-mouseover":false})
+                }                
+                recursiveCheck = function(){
+                    window.setTimeout(function(){
+                        if (self.MousePageX!==oldMousePageX || self.mousePageY !== oldMousePageY){
+                            var pos = self.getPositionFromMouse(self.mousePageX,self.mousePageY)
+                            var edges = self.getAllEdgesWithin(pos.x,pos.y,radius,callbackInside,callbackOutside)
+                            oldMousePageX = self.mousePageX
+                            oldMousePageY = self.mousePageY
+                        }
+                        recursiveCheck()
+                    }, dt)
+                }
+            }
+            recursiveCheck()*/
+        }
+    }
+}
+XV.prototype.setupManualEditor = function() {
+    var self = this
+    var scale = XV.getScale(self.svgGNode)    
+    self.statusNodes.forEach(function(node){
+        var disableMaskEditManualSelector = node.classSelectors.disableMaskEditManual
+        var disableMaskEditManual = node.svgG.select(disableMaskEditManualSelector)
+        disableMaskEditManual.style({'display':'none'})
+            .classed({'disable-mask-edit-manual':true})
+            .on("click",function(){
+                node.svgG.classed("is-highlight") ? node.svgG.classed({"is-highlight":false}) : node.svgG.classed({"is-highlight":true})
+        })
+        node.disableMaskEditManual = disableMaskEditManual
+   }) 
+}
+XV.prototype.setupActionsDialog = function() {
+    var self=this
+    var minimizeTitle = self.layout.action.displayNameActionsGraphMinimize
+    var maximizeTitle = self.layout.action.displayNameActionsGraphMaximize
+    var restoreTitle = self.layout.action.displayNameActionsGraphRestore
+    var collapseTitle = self.layout.action.displayNameActionsGraphCollapse
+    
+    self.statusNodes.forEach(function(statusNode){
+        var actionSvg = statusNode.actionSvg
+        var actionsDialog = statusNode.actionsDialog
+        var initialWidth = window.innerWidth*0.25
+        var initialHeight = window.innerHeight*0.50
+        var onResize = function(event,ui){
+            var width = actionsDialog.width()
+            var height = actionsDialog.height()
+            actionSvg.attr({
+                "width": width < 0 ? 0 : width,
+                "height": height < 0 ? 0 : height
+            })
+            XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom,0.0,0.0,1,function(transform) {
+                this.attr({transform: transform})
+            })
+        }
+        actionSvg.attr({
+            "width": initialWidth,
+            "height": initialHeight
+        })    
+        statusNode.actionsDialogInitial = true
+        actionsDialog.dialog({
+            // properties
+            appendTo: "body",
+            autoOpen: false,
+            buttons: [
+                {
+                    "text": self.layout.action.displayNameActionsGraphZoom,
+                    "icon": "ui-icon-zoomin",
+                    "click": function() {
+                        XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom)
+                    }
+                },                
+                {
+                    text: self.layout.action.displayNameActionsGraphClose,
+                    icon: "ui-icon-close",
+                    click: function(){
+                        $(this).dialog("close")
+                    }
+                }
+            ],
+            closeOnEscape: true,
+            closeText: self.layout.action.displayNameActionsGraphClose,
+            draggable: true,
+            height: initialHeight,
+            hide: self.layout.action.effectOutActionsGraph,
+            maxHeight: false,
+            maxWidth: false,
+            minHeight: 1,
+            minWidth: 1,
+            modal: false,
+            position: {
+                my: "center",
+                at: "center",
+                of: window 
+            },
+            resizable: true,
+            show: self.layout.action.effectInActionsGraph,
+            title: self.layout.action.displayNameTitleActionsGraph.replace('###STATUS###',statusNode.ximaNode.properties["de.xima.fc.status.name"]),
+            width: initialWidth,
+            // callbacks
+            open: function(){
+                if (statusNode.actionsDialogInitial){
+                    statusNode.actionsDialogInitial = false
+                    $(this).parent().promise().done(function(){
+                        statusNode.actionsDialog.dialogExtend("maximize")
+                        XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom,0.5,0.5,null,function(transform){
+                            console.log(transform)
+                            this.attr({opacity: 0.0, transform: transform})
+                                .transition()
+                                .duration(400)
+                                .attr("opacity",1.0)
+                        })
+                    })
+                }
+            },
+            resizeStop: onResize
+        })
+        .dialogExtend({
+            // options
+            closable: true,
+            collapsable: true,
+            dblclick: "collapse",
+            icons: {
+                "maximize": "ui-icon-extlink",
+                "close": "ui-icon-close",
+                "minimize": "ui-icon-arrowstop-1-s",
+                "restore": "ui-icon-newwin"
+            },
+            maximizable: true,
+            minimizable: true,
+            // locale
+            minimizeTitle: minimizeTitle,
+            maximizeTitle: maximizeTitle,
+            restoreTitle: restoreTitle,
+            collapseTitle: collapseTitle,            
+            // callbacks
+            maximize: onResize,
+            collapse: onResize,
+            minimize: onResize,
+            restore: onResize
+        })
+    })
+}
+XV.prototype.readSvgFontAsGlyphs = function(data,name) {
+    var self = this
+    var glyphs = {}
+    var selectors = new HashToken()
+    selector.value = name
+    var oldSelector = selector.toSource()
+    var contentSelector = selector.toSource()
+    var svg = self.readSvg(data,contentSelector,oldSelector)
+    elGlyphs = svg.svgData.selectAll("glyph").each(function(d){
+        var attrD = this.getAttribute("d")
+        var unicode = this.getAttribute("codepoint")
+        var codepoint = unicode.codePointAt(0)
+        var path = document.createElement("path")
+        path.setAttribute(attrD)
+        gylphs[codepoint] = {codepoint:codepoint, unicode:unicode, svg: path}
+    })
+    
+    return glyphs
+}
+XV.prototype.readSvg = function(data,contentSelector,oldSelectors,svgElement) {
+    var self = this
+    var svg = {}
+    var newSelectors = {}            
+    var svgData = d3.select(data.documentElement)
+    var svgDefs = $(svgData.node().childNodes).filter('defs')
+    var svgContent = svgData.select(contentSelector)[0]
+    var newG
+    var translate0, scale0
+    
+    // Get view box from inkscape.
+    var viewBox = svgData.attr("viewBox").trim(" ").match(/([0-9\-.]+) ([0-9\-.]+) ([0-9\-.]+) ([0-9\-.]+)/)
+    var x0 = parseFloat(viewBox[1])
+    var y0 = parseFloat(viewBox[2])
+    var width = parseFloat(viewBox[3])
+    var height = parseFloat(viewBox[4])
+
+    // Get class selectors from id selectors.
+    var newSelectors = XV.convertIdSelectorsToClassSelectors(oldSelectors,'id-')
+
+    // Create unique ids and replace references.
+    var newDefs = self.cleanupDefs(svgDefs,svgData.node())
+
+    // Append defs from svg.
+    //$(self.svgDefsNode).append(newDefs.childNodes)
+    $(svgElement).append(newDefs.childNodes)
+    
+    //self.svgDefs.push(newDefs)
+
+    // Wrap in g if not already wrapped.
+    newG = svgContent[0]
+
+    // Get zero transform
+    translate0 = XV.getTranslate(newG),
+    scale0 = XV.getScale(newG)
+
+    svg.svgData = svgData
+    svg.svgDefs = svgDefs
+    svg.svgGNode = newG
+    svg.viewBox = {xmin:x0,ymin:y0,xmax:x0+width,ymax:y0+height,width:width,height:height}
+    svg.translate0 = translate0
+    svg.scale0 = scale0
+    svg.bBox = svg.viewBox // fixme...
+    svg.classSelectors = newSelectors
+    
+    return svg
+}
+
+// Returns the layout for this kind of node.
+// Some nodes (eg. submission, resubmission) have got
+// a different svg image and corresponding metadata.
+XV.prototype.getStatusNodeLayout = function(node){
+    var self = this
+    var nodeLayout
+    // In case the status on resubmission is identical to the status on
+    // submission, prefer the former one. This is the default setting.
+    if (node.id === self.data.properties["de.xima.fc.statusOnSubmission"]) {
+        nodeLayout = self.layout.status.mainSubmission
+    }
+    else if (node.id === self.data.properties["de.xima.fc.statusOnResubmission"]) {
+        nodeLayout = self.layout.status.mainResubmission
+    }
+    else {
+        nodeLayout = self.layout.status.main
+    }
+    return nodeLayout
+}
+XV.prototype.getActionNodeLayout = function(node){
+    var self = this
+    var nodeLayout
+    if (node.ximaAction.properties["de.xima.fc.action.condition"].type==="NONE"){
+        nodeLayout = self.layout.action.mainWithoutCondition
+    }
+    else {
+        nodeLayout = self.layout.action.mainWithCondition
+    }
+    return nodeLayout
+}
+
+// Get resource (template, font etc.) by id.
+XV.prototype.getUserGroupResource = function(id) {
+    return this.resources.userGroup[id]
+}
+XV.prototype.getStatusResource = function(id) {
+    return this.statusNodesHash[id]
+}
+XV.prototype.getActionResource = function(id) {
+    
+    return this.actionsHash[id]
+}
+XV.prototype.getHtmlResource = function(id) {
+    return this.resources.html[id]
+}
+XV.prototype.getXslResource = function(id) {
+    return this.resources.xsl[id]
+}
+
+// Button callback (navigation etc.)
+XV.prototype.callbackButtonExpand = function(statusNode){
+    if (statusNode.actionsDialog.dialog("isOpen")){
+        statusNode.actionsDialog.dialogExtend("restore")
+        statusNode.actionsDialog.dialog("moveToTop")
+        statusNode.actionsDialog.parent().effect("shake", {
+            direction: "left",
+            distance: 20,
+            times: 3
+        })
+    }
+    else {
+        if (statusNode.actionsDialogInitial){
+            statusNode.actionsDialog.dialogExtend("maximize")
+        }
+        statusNode.actionsDialog.dialog("open")
+    }
+}
+XV.prototype.callbackButtonEditManual = function(node) {
+    var self = this
+    self.modeChange(XV.MODE_EDIT_MANUAL)
+    self.zoomToKGraphBoundaries()
+    self.statusNodes.forEach(function(otherNode){
+        if (otherNode.id!==node.id){
+            otherNode.disableMaskEditManual.style({"display":"initial"})
+            // Highlight all active nodes with at least one manual transition.
+            if (node.allTargetsHash[otherNode.ximaNode.id]) {
+                otherNode.svgG.classed({"is-highlight":true})
+            }
+        }
+    })
+}
+XV.callbacksButton = {
+    expand: XV.prototype.callbackButtonExpand,
+    editManual: XV.prototype.callbackButtonEditManual
 }
 
 // STEP 0: Load and show loading bar.
@@ -947,10 +2960,10 @@ XV.prototype.main = function(){
         dialogClass: "dialog-no-close dialogLoad",
         hide: {
             effect: "explode",
-            duration: 1000,
+            duration: 1000
         },
         resizable: false,
-        width: Math.min(window.innerWidth*0.9,800),
+        width: Math.min(window.innerWidth*0.9,800)
     })
     loadBar.progressbar({
         value: 0,
@@ -960,7 +2973,7 @@ XV.prototype.main = function(){
         complete: function(){
             loadDialog.dialog("close")
             loadBlock.animate({"opacity":"0"},1000,"swing",function(){$(this).hide()})
-        },
+        }
     })
 
     // Zooming & Dragging
@@ -973,15 +2986,11 @@ XV.prototype.main = function(){
     self.svg.call(zoom)
     
     // Line interpolator
-    // Line + Arrow in curve direction
-    var patternPoints = self.layout.edgeStatus.patternPoints
-    var patternDirection = self.layout.edgeStatus.patternDirection
-    var patternOrigin = self.layout.edgeStatus.patternOrigin
-    var pattern = LS.createPattern(patternPoints,patternDirection,patternOrigin)
-    lineInterpolator = new d3.svg.line()
-    lineInterpolator.x(function(d){return d.x})
-    lineInterpolator.y(function(d){return d.y})
-    lineInterpolator.interpolate(function(points){
+    // Pattern defined in layout.json
+    /* Line+Arrow:
+        "patternPoints" : [{"x":0,"y":0},{"x":200,"y":0},{"x":200,"y":1.5},{"x":210,"y":0},{"x":200,"y":-1.5}],
+        "patternDirection" : {"x":210,"y":0},
+        "patternOrigin" : {"x":0,"y":0}
         var path = _.map(points,function(r){return r[0] + " " + r[1]}).join("L")
         var mpoints = _.map(points,function(r){return{x:r[0],y:r[1]}})
         LS.transformPoints(mpoints,pattern,0,LS.getBezier,function(pts){
@@ -990,6 +2999,17 @@ XV.prototype.main = function(){
             path += pts[2].x + " " + pts[2].y + " " + pts[3].x + " " + pts[3].y + " " + pts[4].x + " " + pts[4].y + " Z "
         })
         return path
+    */
+
+    var patternPoints = self.layout.edgeStatus.patternPoints
+    var patternDirection = self.layout.edgeStatus.patternDirection
+    var patternOrigin = self.layout.edgeStatus.patternOrigin
+    var pattern = LS.createPattern(patternPoints,patternDirection,patternOrigin)
+    lineInterpolator = new d3.svg.line()
+    lineInterpolator.x(function(d){return d.x})
+    lineInterpolator.y(function(d){return d.y})
+    lineInterpolator.interpolate(function(points){
+        return path = _.map(points,function(r){return r[0] + " " + r[1]}).join("L")
     })
 
     self.loadDialog = {dialog:loadDialog,bar:loadBar,block:loadBlock,details:loadDetails}
@@ -997,109 +3017,117 @@ XV.prototype.main = function(){
     self.svgGZoom = zoom
     self.readLayoutSVG()
 }
+
 // STEP 1: Read svg data from layout.json.
 // Proceed to STEP 2 upon completion.
 XV.prototype.readLayoutSVG = function() {
     var self = this
-    var entries = [self.layout.status.main]
+    var entries = [
+        [self.layout.status.main,self.svgDefsNode],
+        [self.layout.status.mainSubmission,self.svgDefsNode],
+        [self.layout.status.mainResubmission,self.svgDefsNode],
+        [self.layout.status.edgeNodeInboundNorth,self.svgDefsNode],
+        [self.layout.status.edgeNodeInboundEast,self.svgDefsNode],
+        [self.layout.status.edgeNodeInboundSouth,self.svgDefsNode],
+        [self.layout.status.edgeNodeInboundWest,self.svgDefsNode],
+        [self.layout.status.edgeNodeOutboundNorth,self.svgDefsNode],
+        [self.layout.status.edgeNodeOutboundEast,self.svgDefsNode],
+        [self.layout.status.edgeNodeOutboundSouth,self.svgDefsNode],
+        [self.layout.status.edgeNodeOutboundWest,self.svgDefsNode],
+        [self.layout.status.edgeNodeTwoboundNorth,self.svgDefsNode],
+        [self.layout.status.edgeNodeTwoboundEast,self.svgDefsNode],
+        [self.layout.status.edgeNodeTwoboundSouth,self.svgDefsNode],
+        [self.layout.status.edgeNodeTwoboundWest,self.svgDefsNode],
+        [self.layout.action.mainWithCondition,document.getElementById('actionsPaperSvgDefsTemplate')],
+        [self.layout.action.mainWithoutCondition,document.getElementById('actionsPaperSvgDefsTemplate')]
+    ]
     var promises = []
     var len = entries.length
     var pct = 2, dpct = (9-2)/len
-    self.setLoadBar("Lese Layoutresourcen und erstelle Promise-Objekte...",2)
+    var time = (new Date()).getTime()
     
     // Read svg file and replace all selectors (eg. #button-expand => .id-button-expand).
-    entries.forEach(function(node){
-        var url = self.resURL(node.svg)
+    entries.forEach(function(entry,idx){
+        var node = entry[0]
+        var defs = entry[1]
+        var url = self.resURL(node.svg)        
         var selectors = node.selectors
-        var promise = d3.promise.xml(url,"image/svg+xml")
-        promise.then(function(data){        
-            var svgData = d3.select(data.documentElement)
-            var svgGData = svgData.select(self.layout.status.main.selectors.MAIN)
-            var svgDefs = $(svgData.node().childNodes).filter('defs')
-            var viewBox = svgData.attr("viewBox").trim(" ").match(/([0-9\-.]+) ([0-9\-.]+) ([0-9\-.]+) ([0-9\-.]+)/)
-            self.setLoadBar("Lese Layoutresourcen und erstelle Promise-Objekte für ViewBox " + viewBox.join(",") + "...",pct+=dpct)
-            var x0 = parseFloat(viewBox[1])
-            var y0 = parseFloat(viewBox[2])
-            var width = parseFloat(viewBox[3])
-            var height = parseFloat(viewBox[4])
-            var oldSelectors = self.layout.status.main.selectors
-            var newSelectors = {}            
-
-            // Create unique ids and replace references.
-            var newDefs = self.cleanupDefs(svgDefs,svgData.node())
-            
-            // Get class selectors from id selectors.
-            var newSelectors = XV.convertIdSelectorsToClassSelectors(oldSelectors,'id-')
-
-            node.svgData = svgData
-            node.svgGData = svgGData
-            node.bBox = {x0:x0,y0:y0,width:width,height:height}
-            node.classSelectors = newSelectors
-            // Append defs from svg.
-            self.svgNode.appendChild(newDefs)
-            self.svgDefs.push(newDefs)        
-            self.setLoadBar("Bearbeitung des Objektes " + url + " wird finalisiert...",pct+=dpct)            
+        var promise = $.get(url,"",$.noop,"xml").promise()
+        promise.then(function(data){
+            var oldSelectors = node.selectors
+            var contentSelector = node.selectors.MAIN
+            var svg = self.readSvg(data,contentSelector,oldSelectors,defs)
+            node.classSelectors = svg.classSelectors
+            node.svgData = svg.svgData
+            node.svgGNode = svg.svgGNode
+            node.viewBox = svg.viewBox
+            node.bBox = svg.bBox
+            node.translate0 = svg.translate0
+            node.scale0 = svg.scale0            
         })
         promises.push(promise)
     })
     // Proceed to next step once all svg files are loaded.
     Promise.all(promises).then(function(){
-        self.setLoadBar("Einlesen der Layoutresourcen abgeschlossen...",20)                    
+        console.log("Loading all svg resources took " + ((new Date().getTime())-time)/1000 + "s.")
         self.loadNodesToDomLayered()
-    })    
+    }).catch(function(e){
+        self.handleError(e)
+    }) 
 }
+
 // Step 2: Bind data to status nodes and load to DOM.
 // Proceed to step 3 upon completion.
 XV.prototype.loadNodesToDomLayered = function(){
     var self = this 
-    self.setLoadBar("Füge Knoten in DOM-Struktur ein...",21)                            
-    var statusMain = self.layout.status.main
-    var svgData = statusMain.svgData
-    var len=self.data.children.length, pct=21, dpct=(38-21)/len
+
     // Create status node data.
     var statusNodes = []
     var statusNodesHash = {}
-    self.data.children.forEach(function(node){
-        self.setLoadBar("Bearbeite Knoten " + node.id + " und erstelle eineindeutige ID...",pct+=dpct)
+    var actionsHash = {}
+    
+    self.data.children.forEach(function(node,idx){
+        var statusMain = self.getStatusNodeLayout(node)
         var svgData = statusMain.svgData
-        var newStatusGNode = $(XV.clone(svgData.node())).children("g")[0]
+        var svgGNode = statusMain.svgGNode
+        
+        var newStatusGNode = $(XV.clone(svgGNode))[0]
         var newStatusGNodeD3 = d3.select(newStatusGNode)
-        var actionsHash = {}
+        var actions = _.map(node.children,function(xa){return {ximaAction:xa, id:xa.id}})
         var statusNode = {
             svgG : newStatusGNodeD3,
             svgGNode : newStatusGNode,
             ximaNode : node,
             selectors : statusMain.selectors,
             classSelectors : statusMain.classSelectors,
-            actions : node.children,
-            actionsHash : actionsHash,
+            actions : actions
         }       
-        node.children.forEach(function(action){
+        actions.forEach(function(action){
             actionsHash[action.id] = action
         })
         statusNodes.push(statusNode)
         statusNodesHash[node.id] = statusNode
     })
 
-    self.setLoadBar("Binde Graphdaten an DOM-Struktur...",39)
     // Bind data to status nodes and enter nodes.
     self.statusNodes = statusNodes
     self.statusNodesHash = statusNodesHash
+    self.actionsHash = actionsHash
+    
     self.newStatusNodes()
-    self.setLoadBar("Finalisiere Knotenbindung...",40)
 
     // Proceed to next step.
     self.prepareLayoutLayered()
 }
-// Step 3: Generate kGraph.
+
+// Step 3: Generate kGraph and link data.
 // Proceed to Step 4 upon completion.
 XV.prototype.prepareLayoutLayered = function () {
     var self = this
     self.setLoadBar("Erstelle kGraph-Datenstruktur...",41)
     var data = self.data
     var layout = self.layout
-    var statusMain = layout.status.main
-    var statusMainBBox = statusMain.bBox
+    var status = layout.status
     var kGraph = {}
     var kGraphNodeHash = {}
     var kGraphEdgeHash = {}    
@@ -1115,16 +3143,20 @@ XV.prototype.prepareLayoutLayered = function () {
     var kGraphEdges = kGraph.edges
     var kGraphProperties  = kGraph.properties
     var kGraphAllPorts = {}
-    
+    var ximaAllPorts = {}
+    var allTransitions = {}
+    var allTargetsHashes = {}
+    var allSourcesHashes = {}
+
     kGraph.properties["de.cau.cs.kieler.direction"] = layout.diagram.direction
     kGraph.properties["de.cau.cs.kieler.klay.layered.nodePlace"] = layout.diagram.nodePlace
     kGraph.properties["de.cau.cs.kieler.edgeRouting"] = layout.diagram.edgeRouting
     kGraph.properties["de.cau.cs.kieler.spacing"] = layout.diagram.spacing
+    kGraph.properties["de.cau.cs.kieler.borderSpacing"] = layout.diagram.borderSpacing    
     kGraph.properties["de.cau.cs.kieler.klay.layered.edgeSpacingFactor"] = layout.diagram.edgeSpacingFactor
     kGraph.properties["de.cau.cs.kieler.klay.layered.nodeLayering"] = layout.diagram.nodeLayering
     kGraph.properties["de.cau.cs.kieler.klay.layered.thoroughness"] = layout.diagram.thoroughness
     kGraph.properties["de.cau.cs.kieler.klay.layered.interactiveReferencePoint"] = layout.diagram.interactiveReferencePoint
-    
     
     // Parse transition edges and add to kGraph.
     // Also creates one port for each transition.
@@ -1143,10 +3175,9 @@ XV.prototype.prepareLayoutLayered = function () {
         var svgGTarget = statusNodeTarget.svgG
         var properties = edge.properties
         var linkType = properties["de.xima.fc.transition.type"]
-        var portSourceID = "de.xima.fc.port-" + portID++        
-        var portTargetID = "de.xima.fc.port-" + portID++        
+        var portSourceID, portTargetID
         var transitionEdge = {}
-        
+
         var kGraphPortSource = {}
         var kGraphPortTarget = {}
         
@@ -1155,81 +3186,134 @@ XV.prototype.prepareLayoutLayered = function () {
         var portsOut = {
             AUTO: svgGSource.select(classSelectorsSource.portOutAuto),
             MANUAL: svgGSource.select(classSelectorsSource.portOutManual),
-            TIMED : svgGSource.select(classSelectorsSource.portOutTimed),
+            TIMED : svgGSource.select(classSelectorsSource.portOutTimed)
         }
         var portsIn = {
             AUTO: svgGTarget.select(classSelectorsTarget.portInAuto),
             MANUAL : svgGTarget.select(classSelectorsTarget.portInManual),
-            TIMED : svgGTarget.select(classSelectorsTarget.portInTimed),
+            TIMED : svgGTarget.select(classSelectorsTarget.portInTimed)
         }
+        A=svgGSource
+        console.log(classSelectorsSource.portOutAuto)
         var portsOutBBox = {
             AUTO : self.getBBoxFix(portsOut.AUTO.node()),
             MANUAL : self.getBBoxFix(portsOut.MANUAL.node()),
-            TIMED : self.getBBoxFix(portsOut.TIMED.node()),
+            TIMED : self.getBBoxFix(portsOut.TIMED.node())
         }
         var portsInBBox = {
             AUTO : self.getBBoxFix(portsIn.AUTO.node()),
             MANUAL : self.getBBoxFix(portsIn.MANUAL.node()),
-            TIMED : self.getBBoxFix(portsIn.TIMED.node()),
+            TIMED : self.getBBoxFix(portsIn.TIMED.node())
         }        
-
+        
+        // Save references to sources and target nodes for each status node.
+        allTargetsHashes[sourceID] = allTargetsHashes[sourceID] || {}
+        allTargetsHashes[sourceID][targetID] = statusNodeTarget
+        allSourcesHashes[targetID] = allSourcesHashes[targetID] || {}
+        allSourcesHashes[targetID][sourceID] = statusNodeSource
+        
+        // Save a reference to all possible transitions for this node.
+        allTransitions[sourceID] = allTransitions[sourceID] || {AUTO:[], MANUAL: [], TIMED:[], IN: []}
+        allTransitions[targetID] = allTransitions[targetID] || {AUTO:[], MANUAL: [], TIMED:[], IN: []}
+        allTransitions[sourceID][linkType].push(transitionEdge)
+        allTransitions[targetID][linkType].push(transitionEdge)
         
         // Defaults.
-        kGraphAllPorts[sourceID] = kGraphAllPorts[sourceID] || []
-        kGraphAllPorts[targetID] = kGraphAllPorts[targetID] || []
+        kGraphAllPorts[sourceID] = kGraphAllPorts[sourceID] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
+        kGraphAllPorts[targetID] = kGraphAllPorts[targetID] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
         var kGraphPortsSource = kGraphAllPorts[sourceID]
         var kGraphPortsTarget = kGraphAllPorts[targetID]
 
+        ximaAllPorts[sourceID] = ximaAllPorts[sourceID] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
+        ximaAllPorts[targetID] = ximaAllPorts[targetID] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
+        var ximaPortsSource = ximaAllPorts[sourceID]
+        var ximaPortsTarget = ximaAllPorts[targetID]
+        
         // Setup edge data.
         transitionEdge.kGraphEdge = kGraphEdge
-            
-        // Set port properties (id,coordinates, width, height)
-        kGraphPortSource.id = portSourceID
-        kGraphPortSource.x = portsOutBBox[linkType].x - statusNodeSourceBBox.x
-        kGraphPortSource.y = portsOutBBox[linkType].y - statusNodeSourceBBox.y
-        kGraphPortSource.width = portsOutBBox[linkType].width
-        kGraphPortSource.height = portsOutBBox[linkType].height
-        kGraphPortSource.properties = {}
+        transitionEdge.ximaEdge = edge
+
+        // Push reference to available transitions for each status node.
+        ximaPortsSource[linkType].push(edge)
+        ximaPortsTarget.IN.push(edge)
         
-        kGraphPortTarget.id = portTargetID
-        kGraphPortTarget.x = portsInBBox[linkType].x - statusNodeTargetBBox.x
-        kGraphPortTarget.y = portsInBBox[linkType].y - statusNodeTargetBBox.y
-        kGraphPortTarget.width = portsInBBox[linkType].width
-        kGraphPortTarget.height = portsInBBox[linkType].height
+        // Set port properties (id,coordinates, width, height)
+        // Source
+        if (status.maxPortsOut[linkType] < 0 || kGraphPortsSource[linkType].length < status.maxPortsOut[linkType]) {
+            portSourceID = "de.xima.fc.port-" + portID++   
+            kGraphPortSource.id = portSourceID
+            kGraphPortSource.x = portsOutBBox[linkType].xmin - statusNodeSourceBBox.xmin
+            kGraphPortSource.y = portsOutBBox[linkType].ymin - statusNodeSourceBBox.ymin
+            kGraphPortSource.width = portsOutBBox[linkType].width
+            kGraphPortSource.height = portsOutBBox[linkType].height
+            kGraphPortSource.properties = {}
+            kGraphPortsSource[linkType].push(kGraphPortSource)
+        }
+        else {
+            portSourceID = kGraphPortsSource[linkType][0].id
+        }
+        // Target
+        if (status.maxPortsIn < 0 || kGraphPortsTarget.IN.length < status.maxPortsIn){
+            portTargetID = "de.xima.fc.port-" + portID++            
+            kGraphPortTarget.id = portTargetID
+            kGraphPortTarget.x = portsInBBox[linkType].xmin - statusNodeTargetBBox.xmin
+            kGraphPortTarget.y = portsInBBox[linkType].ymin - statusNodeTargetBBox.ymin
+            kGraphPortTarget.width = portsInBBox[linkType].width
+            kGraphPortTarget.height = portsInBBox[linkType].height
+            kGraphPortsTarget.IN.push(kGraphPortTarget)
+        }
+        else {
+            portTargetID = kGraphPortsTarget.IN[0].id
+        }
         
         // Set edge properties (id, source, target, source port, target ort)
         kGraphEdge.id = edge.id
         kGraphEdge.source = sourceID
         kGraphEdge.target = targetID
         kGraphEdge.properties = {}
-        kGraphEdge.sourcePort = kGraphPortSource.id
-        kGraphEdge.targetPort = kGraphPortTarget.id
+        kGraphEdge.sourcePort = portSourceID
+        kGraphEdge.targetPort = portTargetID
 
         transitionEdges.push(transitionEdge)        
-        kGraphPortsSource.push(kGraphPortSource)
-        kGraphPortsTarget.push(kGraphPortTarget)    
         kGraphEdges.push(kGraphEdge)
     })
  
     // Parse status nodes and add to kGraph.
     // Also add ports to the status node.
-    data.children.forEach(function(node,idx){
+    data.children.forEach(function(node,idx){    
         self.setLoadBar("Füge Graphknoten " + node.id +" hinzu...",60+idx*(70-60)/(data.children.length-1))
 
         var kGraphNode = {}
-    
+        var allPorts = kGraphAllPorts[node.id]
+        var allPortsArray = []
+        var statusNode = self.statusNodesHash[node.id]
+        var statusMain = self.getStatusNodeLayout(node)
+        var statusMainBBox = statusMain.bBox
+        
+        allPortsArray = allPortsArray
+            .concat(allPorts.MANUAL)
+            .concat(allPorts.AUTO)
+            .concat(allPorts.TIMED)
+            .concat(allPorts.IN)
         kGraphNode.id = node.id
         kGraphNode.properties = {}
         kGraphNode.labels = []
         kGraphNode.width = statusMainBBox.width
         kGraphNode.height = statusMainBBox.height
-        kGraphNode.ports = kGraphAllPorts[node.id]
+        kGraphNode.ports = allPortsArray
+                
+        statusNode.ports = allPorts
+        statusNode.allTargetsHash = allTargetsHashes[node.id] || {}
+        statusNode.allSourcesHash = allSourcesHashes[node.id] || {}
+        statusNode.transitions = allTransitions[node.id] || {}
+        statusNode.id = node.id
+        statusNode.ximaPorts = ximaAllPorts[node.id]
         
         kGraphNode.properties["de.cau.cs.kieler.portConstraints"] = "FIXED_POS"
         kGraphNode.properties["de.cau.cs.kieler.portSpacing"] = 1
         
         if (node.properties["de.xima.fc.status.isIncoming"]) {
-            kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "FIRST"
+            //kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "FIRST"
         }
         if (node.properties["de.xima.fc.status.isOutgoing"]) {
             kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "LAST"
@@ -1254,22 +3338,29 @@ XV.prototype.prepareLayoutLayered = function () {
     // Proceed to next step.
     self.generateMainGraphLayered()
 }
+
 // Step 4: Run the KLay layouter.
 //         Bind node data and update nodes.
 //         Create edge data, bind it and update edges.
 // Proceed to step 5 upon completion.
 XV.prototype.generateMainGraphLayered = function() {    
     var self = this
-    self.setLoadBar("Berechnen Knotenanordnung und optimiere Kantenverlauf...",75)    
+
     var kGraph = self.kGraph
     var kGraphNodeHash = self.kGraphNodeHash
     var kGraphEdgeHash = self.kGraphEdgeHash
     var transitionEdges = self.transitionEdges
+    var time = (new Date()).getTime()
     
     var onSuccess = function(layouted) {
+        console.log("Klay layout computation for status nodes took "+ ((new Date().getTime())-time)/1000 + "s.")
+        
         var statusNodes = self.statusNodes
-        var nodeStatusD3 = self.svgG.selectAll('g.node-status')   
-        var edgeStatusD3 = self.svgG.selectAll('g.edge-status')
+        
+        var nodeStatusD3 = self.nodeStatusG.selectAll('g.node-status')   
+        var edgeStatusD3 = self.edgeStatusG.selectAll('g.edge-status')
+        var edgeNodeStatusD3 = self.edgeNodeStatusG.selectAll('g.edge-node-status')
+        
         statusNodes.forEach(function(node){
             var id = node.ximaNode.id        
             var kGraphNode = kGraphNodeHash[id]
@@ -1278,28 +3369,34 @@ XV.prototype.generateMainGraphLayered = function() {
         
         // Set bendingPoints to empty array in none were needed.
         transitionEdges.forEach(function(edge,idx){
-            self.setLoadBar("Setze Zwischenpunkte und interpoliere für " + edge.kGraphEdge.id + "...",75+idx*(85-75)/(transitionEdges.length-1))
             edge.kGraphEdge.bendPoints = edge.kGraphEdge.bendPoints || []
         })
         
         // Get graph boundaries.
-        self.kGraphBBox = self.getkGraphBBox()   
-        
+        self.kGraphBBox = self.getKGraphBBox(statusNodes,transitionEdges)   
+            
         // Generate lines from edge vertices.
         self.transitionEdges.forEach(function(edge){
             XV.generateTransitionLines(edge)            
         })
-        
+            
         // Compute edge intersections.
-        self.transitionEdgesIntersections = self.computeEdgeIntersections()
-        self.setLoadBar("Berechne Schnittstellen zwischen Graphkanten...",90)
+        self.transitionEdgesIntersections = XV.computeEdgeIntersections(self.transitionEdges)
         
+        // Compute unique intersection points.
+        self.transitionEdgesNodes = XV.computeEdgeNodes(self.transitionEdgesIntersections)
+                    
         var nodeStatusData = nodeStatusD3.data(statusNodes)
         var edgeStatusData = edgeStatusD3.data(transitionEdges)
-        self.unhideNodeStatusD3Layered(nodeStatusData)        
+        var edgeNodeStatusData = edgeNodeStatusD3.data(self.transitionEdgesNodes)
+        
+        // Setup node position etc. and display them.
+        self.unhideNodeStatusD3Layered(nodeStatusData)
         self.updateNodeStatusD3Layered(nodeStatusData)
         self.updateEdgeStatusD3Layered(edgeStatusData)
-        self.setupGlobalEvents()
+        self.updateEdgeNodeStatusD3Layered(edgeNodeStatusData)
+        
+        self.setupGlobalEventsLayered()
     }
     
     // Start layouter.
@@ -1307,21 +3404,28 @@ XV.prototype.generateMainGraphLayered = function() {
         graph: kGraph,
         options : {},
         success : onSuccess,
-        error : function(error){self.handleError(error)},
+        error : function(error){self.handleError(error)}
     })
 }
+// Status nodes
 XV.prototype.unhideNodeStatusD3Layered = function(nodeD3){
-    var self = this
+    //nodeD3.style({"opacity":"1.0","visibility":"visible"})
     nodeD3.style({"opacity":"0.0","visibility":"visible"})
         .transition("node-unhide")
         .duration(500)
-        .style({"opacity" : "1.0"})
+        .style({"opacity" : "1.0"})    
 }
 XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
     var self = this
-    nodeD3.each(function(d){
+    var status = self.layout.status
+    nodeD3.each(function(d){    
+        var thisNode = this
+        var jThisNode = $(thisNode)
+        var dThisNode = d3.select(thisNode)
         var ximaProperties = d.ximaNode.properties
-        var ximaActions = d.actions
+        var actionNodes = d.actions
+        var statusMain = self.getStatusNodeLayout(d.ximaNode)        
+        
         // Get properties.
         var deletable = ximaProperties["de.xima.fc.status.deletable"]
         var onError = ximaProperties["de.xima.fc.status.onError"]
@@ -1329,19 +3433,21 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         var actions = { "GENERAL": []}
         var actionsUnique = {"GENERAL": []}
         var actionsUniqueHash = {"GENERAL": {}}
-        ximaActions.forEach(function(action){
-            var actionType = action.properties["de.xima.fc.action.type"]
+        actionNodes.forEach(function(actionNode){
+            var ximaAction = actionNode.ximaAction
+            var actionType = ximaAction.properties["de.xima.fc.action.type"]
             var actionClass = XV.actionClass[actionType]
-            actions[actionClass].push(action)
+            actionNode.actionClass = actionClass
+            actions[actionClass].push(actionNode)
             if (!actionsUniqueHash[actionClass][actionType]){
-                actionsUniqueHash[actionClass][actionType] = [action]
+                actionsUniqueHash[actionClass][actionType] = [actionNode]
                 actionsUnique[actionClass].push(actionsUniqueHash[actionClass][actionType])
             }
             else {
-                actionsUniqueHash[actionClass][actionType].push(action)
+                actionsUniqueHash[actionClass][actionType].push(actionNode)
             }
         })
-        console.log(actionsUnique)
+
         // Get DOM elements.
         var elText = d.svgG.select(d.classSelectors.textTitle)
         var elTextBBox = d.svgG.select(d.classSelectors.textTitleBBox)
@@ -1365,17 +3471,71 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         
         // Name
         var isOverflow = self.setWrappedText(elText.node(),elTextBBox.node(),elTextEllipsis.node(),name)
-        if (isOverflow){
-            elText.classed({"node-status-title-overflow":true})
-                .attr("title",name)
-            $(elText.node()).tooltip({
-                show : {
-                    effect: "fade",  
-                    duration: 350,
-                },
-                track: true,
-            })
+            
+        // Hide unused ports.
+        var portIn = dThisNode.select(statusMain.selectors.portInAuto)
+        var portOutAuto = dThisNode.select(d.classSelectors.portOutAuto)            
+        var portOutTimed = dThisNode.select(d.classSelectors.portOutTimed)   
+        var portOutManual = dThisNode.select(d.classSelectors.portOutManual)
+        var portOutAutoIcon = dThisNode.select(d.classSelectors.portOutAutoIcon)
+        var portOutManualIcon = dThisNode.select(d.classSelectors.portOutManualIcon)
+        var portOutTimedIcon = dThisNode.select(d.classSelectors.portOutTimedIcon)
+        var portOutAutoMouseover = dThisNode.select(d.classSelectors.portOutAutoMouseover)
+        var portOutTimedMouseover = dThisNode.select(d.classSelectors.portOutTimedMouseover)
+        var portOutManualMouseover = dThisNode.select(d.classSelectors.portOutManualMouseover)
+        if (status.hideUnusedPorts) {
+            if (d.ports.AUTO.length===0) {
+                portOutAuto.classed({"port-out-auto-active":false}).style({"visibility":"hidden"})
+                portOutAutoIcon.classed({"port-out-auto-icon-active":false}).style({"visibility":"hidden"})
+                portOutAutoMouseover.classed({"port-out-auto-mouseover-active":false}).style({"visibility":"hidden"})
+            }
+            else {
+                portOutAuto.classed({"port-out-auto-active":true})
+                portOutAutoIcon.classed({"port-out-auto-icon-active":true})                
+                portOutAutoMouseover.classed({"port-out-auto-mouseover-active":true})
+            }
+            
+            if (d.ports.TIMED.length===0) {
+                portOutTimed.classed({"port-out-timed-active":false}).style({"visibility":"hidden"})
+                portOutTimedIcon.classed({"port-out-timed-icon-active":false}).style({"visibility":"hidden"})
+                portOutTimedMouseover.classed({"port-out-timed-mouseover-active":false}).style({"visibility":"hidden"})
+            }
+            else {
+                portOutTimed.classed({"port-out-timed-active":true})
+                portOutTimedIcon.classed({"port-out-timed-icon-active":true})
+                portOutTimedMouseover.classed({"port-out-timed-mouseover-active":true})
+            }
+            
+            if (d.ports.MANUAL.length===0) {
+                portOutManual.classed({"port-out-manual-active":false}).style({"visibility":"hidden"})
+                portOutManualIcon.classed({"port-out-manual-icon-active":false}).style({"visibility":"hidden"})
+                portOutManualMouseover.classed({"port-out-manual-mouseover-active":false}).style({"visibility":"hidden"})
+            }
+            else {
+                portOutManual.classed({"port-out-manual-active":true})
+                portOutManualIcon.classed({"port-out-manual-icon-active":true})                
+                portOutManualMouseover.classed({"port-out-manual-mouseover-active":true})
+            }
+
+            if (d.ports.IN.length===0) {
+                portIn.classed({"port-in-active":false}).style({"visibility":"hidden"})
+            }
+            else {
+                portIn.classed({"port-in-active":true})
+            }
         }
+        
+        // Bind data to ports
+        portOutTimed.data([d.ximaPorts.TIMED])
+        portOutTimedIcon.data([d.ximaPorts.TIMED])
+        portOutTimedMouseover.data([d.ximaPorts.TIMED])
+        portOutManual.data([d.ximaPorts.MANUAL])
+        portOutManualIcon.data([d.ximaPorts.MANUAL])
+        portOutManualMouseover.data([d.ximaPorts.MANUAL])
+        portOutAuto.data([d.ximaPorts.AUTO])
+        portOutAutoIcon.data([d.ximaPorts.AUTO])
+        portOutAutoMouseover.data([d.ximaPorts.AUTO])
+        portIn.data([d.ximaPorts.IN])
         
         // Flags
         if (deletable) {
@@ -1386,7 +3546,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
             elDeletableTrue.style("visibility","hidden")
             elDeletableFalse.style("visibility","visible")
         }
-        if (onError == "STOP") {
+        if (onError === "STOP") {
             elOnErrorStop.style("visibility","visible")
             elOnErrorNext.style("visibility","hidden")
         }
@@ -1398,21 +3558,31 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         // Actions
         var elActionsGeneral
         var actionsDataGeneral = []
-        if (actionsUnique.GENERAL > elActionsGeneralSub.length) {
+        
+        // Show large icons if there aren't many actions configured.
+        if (actionsUnique.GENERAL.length > elActionsGeneralSub.length) {
             d.svgG.select(d.classSelectors.textActionGeneralSub).style({"visibility":"hidden"})
             elActionsGeneral = elActionsGeneralMain
         }
         else {
-             d.svgG.select(d.classSelectors.textActionGeneralMain).style({"visibility":"hidden"})
+            d.svgG.select(d.classSelectors.textActionGeneralMain).style({"visibility":"hidden"})
             elActionsGeneral = elActionsGeneralSub
         }
+        
+        // Hide toolbar actions expand icon if there are no actions configured.
+        if (actionNodes.length===0) {
+            d.svgG.select(d.classSelectors.buttons.expand.normal).style({"visibility":"hidden"})
+            d.svgG.select(d.classSelectors.buttons.expand.hover).style({"visibility":"hidden"})
+        }
+
+        // Add action icons.
         elActionsGeneral.forEach(function(elActionGeneral,idx){
             var actionGeneral = actionsUnique.GENERAL[idx]
             if (actionGeneral){
-                var icons = actionGeneral[0].properties["de.xima.fc.action.icons"]
+                var icons = actionGeneral[0].ximaAction.properties["de.xima.fc.action.icons"]
                 var iconAction = self.getImageFont(icons.action)
                 elActionGeneral.style({"visibility":"visible"})
-                    .text(iconAction.char)
+                    .text(iconAction.character)
                     .style({"font-family":iconAction.fontFamily})
                 var actionDataGeneral = {}
                 actionDataGeneral.actions = actionGeneral
@@ -1420,6 +3590,24 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
                 actionsDataGeneral.push(actionDataGeneral)
                 XV.addClass(elActionGeneral.node(),"text-action-active")
                 XV.addClass(elActionGeneral.node(),"text-action-general")
+                if (_.find(actionDataGeneral.actions,function(action){return action.ximaAction.properties["de.xima.fc.action.active"]})) {
+                    XV.addClass(elActionGeneral.node(),"text-action-status-activated")
+                }
+                else {
+                    XV.addClass(elActionGeneral.node(),"text-action-status-deactivated")
+                }
+                if (_.find(actionDataGeneral.actions,function(action){return action.ximaAction.properties["de.xima.fc.action.onError"]!=="STOP"})) {
+                    XV.addClass(elActionGeneral.node(),"text-action-on-error-next-action")
+                }
+                else {
+                    XV.addClass(elActionGeneral.node(),"text-action-on-error-stop")
+                }
+                if (_.find(actionDataGeneral.actions,function(action){return action.ximaAction.properties["de.xima.fc.action.condition"]["type"] !=="NONE"})) {
+                    XV.addClass(elActionGeneral.node(),"text-action-has-condition")
+                }
+                else {
+                    XV.addClass(elActionGeneral.node(),"text-action-has-not-condition")
+                }                
             }
             else {
                 XV.addClass(elActionGeneral.node(),"text-action-inactive")
@@ -1432,19 +3620,18 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         d.actionsD3.data(actionsDataGeneral)
     })
     
-    nodeD3.transition("node-move")
-        .duration(500)
-        .attr("transform",function(d){
+    nodeD3.attr("transform",function(d){
             var newX = d.kGraphNode.x
             var newY = d.kGraphNode.y
-            var dx = newX - d.bBox0.x
-            var dy = newY - d.bBox0.y
+            var dx = newX - d.bBox0.xmin
+            var dy = newY - d.bBox0.ymin
             var translate0 = d.translate0
             var scale0 = d.scale0
             var newTransform = XV.getNewTranslate(this,function(r){return Pt.addC(r,dx,dy)})
             return newTransform
         })
 }
+// Edges between status nodes.
 XV.prototype.updateEdgeStatusD3Layered = function(edgeD3) {
     var self = this
     var nodeEnter = edgeD3.enter()
@@ -1454,27 +3641,10 @@ XV.prototype.updateEdgeStatusD3Layered = function(edgeD3) {
         .classed({"edge-status":true})
         .attr("id",function(d){return d.kGraphEdge.id})
         .each(function(d){
-            d.edgeG = this
+            d.edgeG = d3.select(this)
+            d.edgeGNode = this
         })
     
-// debug: intersections    
-self.svgG.selectAll('circle.debug-intersections-cross')
-      .data(self.transitionEdgesIntersections.cross)
-      .enter()
-      .append("circle")
-      .attr("cx",function(d){return d.x})
-      .attr("cy",function(d){return d.y})
-      .attr("r","2")
-      .style({"fill":"#f00"})
-self.svgG.selectAll('circle.debug-intersections-tip')
-      .data(self.transitionEdgesIntersections.tip)
-      .enter()
-      .append("circle")
-      .attr("cx",function(d){return d.x})
-      .attr("cy",function(d){return d.y})
-      .attr("r","2")
-      .style({"fill":"#0f0"})
-
    // Enter edges for the edge highlight effect on mouseover.
    var nodeEnterHighlight = nodeEnterG
         .append("path")
@@ -1487,58 +3657,15 @@ self.svgG.selectAll('circle.debug-intersections-tip')
         .append("path")
         .classed({"edge-path":true})
         .style({"fill":"none","opacity":"0.0"})
-        .attr({"transform":"scale(0)","stroke-dasharray":self.layout.edgeStatus.dashArray})
+        .attr({"transform":"scale(0)"})
     
+   // Enter edges for detecting mouseover.
    var nodeEnterMouseover = nodeEnterG
         .append("path")
         .classed({"edge-path-mouseover":true})
         .style({"stroke-width":edgesOverlayWidth,"fill":"none","opacity":"0.0","stroke":"transparent"})
         .attr({"transform":"scale(0)"})
-        .on("mouseover",function(){
-            var selfEl = this
-            switch(self.layout.edgeStatus.highlightMode){
-                case "ALL":
-                    var cX = d3.event.clientX
-                    var cY = d3.event.clientY
-                    var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
-                    self.triggerStatusEdgeHighlight(els)
-                    break;
-                case "TOPMOST":
-                    var par = selfEl.parentNode
-                    $('svg g.edge-status').last().after(par) // put edge in front
-                    XV.addClass(par,"is-mouseover") // highlight edge
-                    break;
-            }
-        })    
-        .on("mouseout",function(){
-            var selfEl = this            
-            switch(self.layout.edgeStatus.highlightMode){
-                case "ALL":
-                    var cX = d3.event.clientX
-                    var cY = d3.event.clientY
-                    var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
-                    self.triggerStatusEdgeHighlight(els)
-                    break;
-                case "TOPMOST":
-                    var par = selfEl.parentNode
-                    XV.removeClass(par,"is-mouseover") // remove highlight
-                    break;
-            }
-        })
-    var time = (new Date()).getTime()   
-    if (self.layout.edgeStatus.highlightMode=="ALL") {
-        nodeEnterMouseover.on("mousemove",function(){
-            var dt = (new Date()).getTime()-time
-            if (dt>XV.elementsAtPointDT){
-                var cX = d3.event.clientX
-                var cY = d3.event.clientY
-                var els = XV.allElementsAtMouse(cX,cY,"path.edge-path-mouseover")
-                self.triggerStatusEdgeHighlight(els)
-                time = (new Date()).getTime()
-            }
-        })
-    }
-
+    
    // Update highlight edges.
    var nodeUpdatePath = edgeD3.select("path.edge-path-highlight").attr("d",function(d){
         var kGraphEdge = d.kGraphEdge
@@ -1546,8 +3673,6 @@ self.svgG.selectAll('circle.debug-intersections-tip')
         var points = [kGraphEdge.sourcePoint].concat(bendPoints).concat([kGraphEdge.targetPoint])
         return self.lineInterpolator(points)
     })    
-    .transition("edge-enter-highlight")
-    .duration(500)
     .style({"opacity":"1.0"})
     .attr({"transform":"scale(1)"})  
 
@@ -1559,51 +3684,693 @@ self.svgG.selectAll('circle.debug-intersections-tip')
         var points = [kGraphEdge.sourcePoint].concat(bendPoints).concat([kGraphEdge.targetPoint])
         return self.lineInterpolator(points)
     })    
-    .transition("edge-enter")
-    .duration(500)
-    .style({"opacity":"1.0"})
-    .attr({"transform":"scale(1)"})  
+        .style({"opacity":"1.0"})
+        .attr({"transform":"scale(1)"})  
     
     // Update invisible edges for mouseover.
-    var nodeUpdateMouseover = edgeD3.select("path.edge-path-mouseover").attr("d",function(d){
+    var nodeUpdateMouseover = edgeD3.select("path.edge-path-mouseover")
+        .attr("d",function(d){
+            var kGraphEdge = d.kGraphEdge
+            var bendPoints = kGraphEdge.bendPoints
+            var points = [kGraphEdge.sourcePoint].concat(bendPoints).concat([kGraphEdge.targetPoint])
+            return self.lineInterpolator(points)
+        })    
+        .attr({"transform":"scale(1)"})
+}
+// Bend point of the edges.
+XV.prototype.updateEdgeNodeStatusD3Layered = function(edgeNodeD3) {
+    var self = this
+    var nodeEnter = edgeNodeD3.enter()
+    var directions = ["north", "south", "east", "west"]
+    var layoutStatus = self.layout.status
+    var svgsInbound = {
+        north: layoutStatus.edgeNodeInboundNorth,
+        east: layoutStatus.edgeNodeInboundEast,
+        west: layoutStatus.edgeNodeInboundWest,
+        south: layoutStatus.edgeNodeInboundSouth
+    }
+    var svgsOutbound = {
+        north: layoutStatus.edgeNodeOutboundNorth,
+        east: layoutStatus.edgeNodeOutboundEast,
+        west: layoutStatus.edgeNodeOutboundWest,
+        south: layoutStatus.edgeNodeOutboundSouth
+    }
+    var svgsTwobound = {
+        north: layoutStatus.edgeNodeTwoboundNorth,
+        east: layoutStatus.edgeNodeTwoboundEast,
+        west: layoutStatus.edgeNodeTwoboundWest,
+        south: layoutStatus.edgeNodeTwoboundSouth
+    }        
+
+    // Enter new edge nodes.
+    var nodeEnterG = nodeEnter.append("g")
+        .attr("id",function(d){return d.id})
+        .each(function(d){
+            d.edgeNodeG = d3.select(this)
+            d.edgeNodeGNode = this
+        })
+    
+    // Update new edge nodes.
+    edgeNodeD3.each(function(d){
+        var edgeNodeG = d.edgeNodeG
+        var inbound = d.inbound
+        var outbound = d.outbound
+        var nodeX = d.x
+        var nodeY = d.y
+        var directionsIn = _.reduce(directions,function(s,dir){return s + XV.mathSign(inbound[dir].length)},0)
+        var directionsOut = _.reduce(directions,function(s,dir){return s + XV.mathSign(outbound[dir].length)},0)
+        if (directionsIn > 1 || directionsOut > 1) {
+            directions.forEach(function(dir,idx){
+                if (outbound[dir].length===0 && inbound[dir].length>0) {
+                    // only inbound edges
+                    var svg = svgsInbound[dir]
+                    if (svg.active){
+                        var el = XV.clone(svg.svgGNode)
+                        XV.moveElementTo(edgeNodeG.node(),nodeX,nodeY-svg.bBox.height,{x:0,y:0})
+                        edgeNodeG.append(function(){return el})
+                    }
+                }
+                else if (inbound[dir].length===0 && outbound[dir].length>0) {
+                    // only outbound edges
+                    var svg = svgsOutbound[dir]
+                    if (svg.active){                    
+                        var el = XV.clone(svg.svgGNode)
+                        XV.moveElementTo(edgeNodeG.node(),nodeX,nodeY-svg.bBox.height,{x:0,y:0})
+                        edgeNodeG.append(function(){return el})
+                    }
+                }
+                else if (inbound[dir].length>0 && outbound[dir].length>0) {
+                    // both types of edges
+                    var svg = svgsTwobound[dir]
+                    if (svg.active){
+                        var el = XV.clone(svg.svgGNode)
+                        XV.moveElementTo(edgeNodeG.node(),nodeX,nodeY-svg.bBox.height,{x:0,y:0})
+                        edgeNodeG.append(function(){return el})                    
+                    }
+                }
+            })
+        }
+    })
+    
+}
+
+// Step 5: Setup global triggers, events etc. for the main diagram.
+// Proceed to step 6 upon completion.
+XV.prototype.setupGlobalEventsLayered = function(){
+    var self = this
+
+    self.setTooltipStatusTitle()
+    self.setTooltipActionIcon()
+    self.setTooltipTimedTransitionIcon()
+    self.setTooltipManualTransitionIcon()
+    self.setTooltipAutoTransitionIcon()
+    self.setTooltipDeletableIcon()
+    
+    self.setupManualEditor()
+    self.setupStatusNodeButtons()
+    self.setStatusToolbar()
+
+    self.setupEdgeHighlight()
+    self.setMainToolbar()
+    
+    $(window).on("resize",function(event){
+        var dims = self.getDimensions()
+        self.svg.attr({
+            width: dims.width+"px",
+            height: dims.height+"px"
+        })
+        self.onResize.forEach(function(handler){handler(event)})
+    })
+    
+    self.setLoadBar("Richte Ereignisbehandlung ein...",95)
+        
+    // Proceed to next step.
+    self.loadActionsNodesToDOMLayered()
+}
+
+// Step 6: Bind data to action nodes and load to DOM.
+// Proceed to step 7 upon completion.
+XV.prototype.loadActionsNodesToDOMLayered = function() {
+    var self = this     
+    var actionPaperTemplateNode = self.viewport.select('#actionsDialogTemplate').node()
+    var oldDefs = $('defs',actionPaperTemplateNode).detach()
+
+    self.statusNodes.forEach(function(statusNode){
+        var actions = statusNode.actions
+
+        var actionPaperNode = XV.clone(actionPaperTemplateNode)
+        var actionPaper = d3.select(actionPaperNode)
+        var actionSvg = actionPaper.select('.actions-paper-svg')
+            .attr({
+                width: 10,
+                height: 10
+            })
+
+        var actionSvgG = actionSvg.select('.action-paper-g')
+        var actionSvgNode = actionSvg.node()
+        var actionSvgGNode = actionSvgG.node()
+
+        // Add graph for these actions to the paper.
+        self.paper.appendChild(actionPaperNode)
+        
+        // Add zooming behavior to each dialog.
+        var zoomed = function() {
+            actionSvgG.attr("transform", "translate(" + d3.event.translate + "),scale(" + d3.event.scale + ")")
+        }
+        var zoom = d3.behavior.zoom()
+            .scaleExtent([self.layout.diagram.scaleMin,self.layout.diagram.scaleMax])
+            .on("zoom",zoomed)
+        actionSvg.call(zoom)
+        
+        statusNode.actionZoom = zoom
+        statusNode.edgeActionG = actionSvgG.select("g.containerEdgeAction")
+        statusNode.nodeActionG = actionSvgG.select("g.containerNodeAction")
+        statusNode.actionPaper = actionPaper
+        statusNode.actionsDialog = $(actionPaperNode)
+        statusNode.actionPaperNode = actionPaperNode
+        statusNode.actionSvg = actionSvg
+        statusNode.actionSvgNode = actionSvgNode
+        statusNode.actionSvgG = actionSvgG
+        statusNode.actionSvgGNode = actionSvgGNode    
+        
+        // Clone action nodes.
+        actions.forEach(function(actionNode,actionNodeIdx){
+            var actionMain = self.getActionNodeLayout(actionNode)
+            var svgData = actionMain.svgData
+            var svgGNode = actionMain.svgGNode
+
+            var newActionGNode = $(XV.clone(svgGNode))[0]
+            var newActionGNodeD3 = d3.select(newActionGNode)
+                        
+            actionNode.svgG = newActionGNodeD3
+            actionNode.svgGNode = newActionGNode
+            actionNode.selectors = actionMain.selectors
+            actionNode.classSelectors = actionMain.classSelectors
+
+        })
+        
+        // Load nodes to DOM.
+        self.newActionNodes(statusNode)    
+        
+        // Update IDs so that they reference to the cloned defs.
+        var newDefs = self.cleanupDefs(oldDefs,actionSvgGNode)
+        $(actionSvg.node()).prepend(newDefs)            
+    })
+
+    d3.select(actionPaperTemplateNode).style("display","none")
+    
+    // Proceed to next step.
+    self.prepareLayoutActionsLayered()
+}
+                             
+// Step 7: Generate the kGraph object for the action details.
+// Proceed to step 8 upon completion.
+XV.prototype.prepareLayoutActionsLayered = function(){
+    var self = this    
+    var layout = self.layout
+    var transitionID = 0
+    var portID = 0
+    
+    self.statusNodes.forEach(function(statusNode){
+        var kGraph = {}
+        var kGraphNodes = []
+        var kGraphEdges = []
+        var portsIn = {}
+        var portsOut = {}
+        var actions = statusNode.actions
+        var portsInMax = layout.status.actionsGraphPortsInMax
+        var transitionEdges = []
+            
+        function createPort(port,nodeBBox) {
+            var portBBox = self.getBBoxFix(port.node())
+            var port = {
+                id: "de.xima.fc.port-" + portID++,
+                width: portBBox.width,
+                height: portBBox.height,
+                x: portBBox.xmin - nodeBBox.xmin,
+                y: portBBox.ymin - nodeBBox.ymin,
+                properties: {}
+            }            
+            return port            
+        }
+        function createPortStandard(actionNode){
+            var portSelector = actionNode.classSelectors.ports.OUT.STANDARD.attach
+            var port = actionNode.svgG.select(portSelector)
+            var kGraphPort = createPort(port,actionNode.bBox0)
+            actionNode.ports.OUT.STANDARD = {D3: port, kGraphPort: kGraphPort}            
+            return kGraphPort
+        }
+        function createPortError(actionNode) {
+            var portSelector = actionNode.classSelectors.ports.OUT.ERROR.attach
+            var port = actionNode.svgG.select(portSelector)
+            var kGraphPort = createPort(port,actionNode.bBox0)
+            actionNode.ports.OUT.ERROR = {D3: port, kGraphPort: kGraphPort} 
+            return kGraphPort
+        }
+        function createPortMismatch(actionNode) {
+            var portSelector = actionNode.classSelectors.ports.OUT.MISMATCH.attach
+            var port = actionNode.svgG.select(portSelector)
+            var kGraphPort = createPort(port,actionNode.bBox0)
+            actionNode.ports.OUT.MISMATCH = {D3: port, kGraphPort: kGraphPort} 
+            return kGraphPort
+        }
+        function createPortIn(actionNode) {
+            portsIn[actionNode.id] = portsIn[actionNode.id] || []
+            var pIn = portsIn[actionNode.id]
+            var kGraphPort
+            if (pIn.length >= portsInMax || (portsInMax<1 && pIn.length>0)) {
+                kGraphPort = pIn[pIn.length-1]
+            }
+            else {
+                var portSelector = actionNode.classSelectors.ports.IN.attach
+                var port = actionNode.svgG.select(portSelector)
+                kGraphPort = createPort(port,actionNode.bBox0)
+                pIn.push(kGraphPort)
+                actionNode.ports.IN.push({D3: port, kGraphPort: kGraphPort})
+            }
+            return kGraphPort
+        }
+        
+        kGraph.id = statusNode.id + "-actions-workflow"
+        kGraph.children = kGraphNodes
+        kGraph.edges = kGraphEdges
+        kGraph.properties = {}
+        
+        kGraph.properties["de.cau.cs.kieler.direction"] = layout.actionsDiagram.direction
+        kGraph.properties["de.cau.cs.kieler.klay.layered.nodePlace"] = layout.actionsDiagram.nodePlace
+        kGraph.properties["de.cau.cs.kieler.edgeRouting"] = layout.actionsDiagram.edgeRouting
+        kGraph.properties["de.cau.cs.kieler.spacing"] = layout.actionsDiagram.spacing
+        kGraph.properties["de.cau.cs.kieler.borderSpacing"] = layout.actionsDiagram.borderSpacing        
+        kGraph.properties["de.cau.cs.kieler.klay.layered.edgeSpacingFactor"] = layout.actionsDiagram.edgeSpacingFactor
+        kGraph.properties["de.cau.cs.kieler.klay.layered.nodeLayering"] = layout.actionsDiagram.nodeLayering
+        kGraph.properties["de.cau.cs.kieler.klay.layered.thoroughness"] = layout.actionsDiagram.thoroughness
+        kGraph.properties["de.cau.cs.kieler.klay.layered.interactiveReferencePoint"] = layout.actionsDiagram.interactiveReferencePoint        
+
+        // Add ports object to each action node.
+        actions.forEach(function(actionNode,actionNodeIdx){
+            actionNode.ports = {
+                OUT: {STANDARD:null, MISMATCH:null, ERROR: null},
+                IN: []
+            }
+        })
+        
+        // Iterate over each status node and add the node and edge to the kGraph object.
+        actions.forEach(function(actionNode,actionNodeIdx){
+            portsOut[actionNode.id] = portsOut[actionNode.id] || []
+            portsIn[actionNode.id] = portsIn[actionNode.id] || []
+            
+            var kGraphNode = {}
+            var actionMain = self.getActionNodeLayout(actionNode)
+            var ximaAction = actionNode.ximaAction
+            var actionProps = ximaAction.properties
+            var condition = actionProps["de.xima.fc.action.condition"]
+            var nextActionID = null
+            
+            actionNode.nextActionMismatch = null
+            actionNode.nextActionStandard = null
+            actionNode.nextActionError = null
+
+            kGraphNode.properties = {}
+            kGraphNode.properties["de.cau.cs.kieler.portConstraints"] = "FIXED_POS"
+            kGraphNode.properties["de.cau.cs.kieler.portSpacing"] = 1
+            if (actionNodeIdx===0) {
+                kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "FIRST"
+            }
+            
+            // Get id of next action, if present.
+            if (actionNodeIdx<actions.length-1) { // check if next action exists
+                nextActionID = actions[actionNodeIdx+1].id
+            }
+            
+            // Add edges.
+            // On condition mismatch.
+            var onMismatchID = null
+            switch (condition.details.nextAction) {
+                case 'NEXT':
+                    if (nextActionID) {
+                        onMismatchID = nextActionID
+                    }
+                    break;
+                case 'STOP':
+                    break;
+                default:
+                    onMismatchID = condition.details.nextAction
+                    break;
+            }
+            switch (condition.type) {
+                case 'NONE':
+                    break;
+                case 'FORM':
+                    if (onMismatchID) {
+                        var port = createPortMismatch(actionNode)
+                        var targetNode = self.getActionResource(onMismatchID)
+                        var portIn = createPortIn(targetNode)
+                        var edge = {
+                            id: "de.xima.fc.transition-mismatch-" + transitionID++,
+                            source: ximaAction.id,
+                            target: onMismatchID,
+                            sourcePort: port.id,
+                            targetPort: portIn.id,
+                            properties: {}
+                        }
+                        actionNode.ports.OUT.MISMATCH.edge = edge
+                        targetNode.ports.IN[targetNode.ports.IN.length-1].edge = edge
+                        actionNode.nextActionMismatch = onMismatchID
+                        portsOut[actionNode.id].push(port)
+                        kGraphEdges.push(edge)
+                        transitionEdges.push({kGraphEdge: edge})
+                    }
+                    break;
+                case 'REGEXP':                  
+                    if (onMismatchID) {
+                        var port = createPortMismatch(actionNode)
+                        var targetNode = self.getActionResource(onMismatchID)
+                        var portIn = createPortIn(targetNode)                        
+                        var edge = {
+                            id: "de.xima.fc.transition-mismatch-" + transitionID++,
+                            source: ximaAction.id,
+                            target: onMismatchID,
+                            sourcePort: port.id,
+                            targetPort: portIn.id,
+                            properties: {}
+                        }
+                        actionNode.ports.OUT.MISMATCH.edge = edge
+                        targetNode.ports.IN[targetNode.ports.IN.length-1].edge = edge
+                        actionNode.nextActionMismatch = onMismatchID
+                        portsOut[actionNode.id].push(port)
+                        kGraphEdges.push(edge)   
+                        transitionEdges.push({kGraphEdge: edge})
+                    }
+                    break;
+            }
+            
+            // On error.
+            switch (actionProps["de.xima.fc.action.onError"]) {
+                case 'STOP':
+                    break;
+                default:                 
+                    var port = createPortError(actionNode)
+                    var targetNode = self.getActionResource(actionProps["de.xima.fc.action.onError"])
+                    var portIn = createPortIn(targetNode)
+                    var edge = {
+                        id: "de.xima.fc.transition-error-" + transitionID++,
+                        source: ximaAction.id,
+                        target: actionProps["de.xima.fc.action.onError"],
+                        sourcePort: port.id,
+                        targetPort: portIn.id,
+                        properties: {}
+                    }
+                    actionNode.ports.OUT.ERROR.edge = edge
+                    targetNode.ports.IN[targetNode.ports.IN.length-1].edge = edge
+                    actionNode.nextActionError = actionProps["de.xima.fc.action.onError"]
+                    portsOut[actionNode.id].push(port)
+                    kGraphEdges.push(edge)
+                    transitionEdges.push({kGraphEdge: edge})                    
+                    break;
+            }
+            
+            // On standard.
+            if (actionProps["de.xima.fc.action.stopsWorkflow"]) {            
+            }
+            else {
+                if (actionNodeIdx<actions.length-1) { // check if next action exists
+                    var port = createPortStandard(actionNode)
+                    var targetNode = self.getActionResource(nextActionID)
+                    var portIn = createPortIn(targetNode)                    
+                    var edge = {
+                        id: "de.xima.fc.transition-standard-" + transitionID++,
+                        source: ximaAction.id,
+                        target: nextActionID,
+                        sourcePort: port.id,
+                        targetPort: portIn.id,
+                        properties: {}
+                    }
+                    actionNode.ports.OUT.STANDARD.edge = edge
+                    targetNode.ports.IN[targetNode.ports.IN.length-1].edge = edge
+                    actionNode.nextActionStandard = nextActionID 
+                    portsOut[actionNode.id].push(port)                    
+                    kGraphEdges.push(edge)
+                    transitionEdges.push({kGraphEdge: edge})
+                }
+            }
+                        
+            // Add node.
+            kGraphNode.id = ximaAction.id
+            kGraphNode.labels = []
+            kGraphNode.width = actionMain.bBox.width
+            kGraphNode.height = actionMain.bBox.height
+            kGraphNode.ports = portsOut[actionNode.id].concat(portsIn[actionNode.id])
+                
+            kGraphNodes.push(kGraphNode)
+        })
+        
+        statusNode.actionTransitionEdges = transitionEdges
+        statusNode.actionsKGraph = kGraph
+    })
+    
+    // Proceed to next step.
+    self.generateActionsGraphLayered()
+}
+
+// Step 8: Run the KLay layouter for each actions graph.
+//         Bind node data and update nodes.
+//         Create edge data, bind it and update edges.
+// Proceed to step 9 upon completion.
+XV.prototype.generateActionsGraphLayered = function() {
+    var self = this
+    var statusNodesLength = self.statusNodes.length
+    var complete = 0
+    
+    self.statusNodes.forEach(function(statusNode,statusNodeIdx){
+        if (statusNode.actions.length===0){complete++;return} // no actions configured for this status
+        
+        var kGraph = statusNode.actionsKGraph
+        var transitionEdges = statusNode.actionTransitionEdges
+        var time = (new Date()).getTime()
+            
+        var onSuccess = function(layouted) {
+            console.log("Klay layout computation for actions of status node " + statusNodeIdx + " took " + ((new Date().getTime())-time)/1000 + "s.")
+            
+            var actionNodes = statusNode.actions
+            var nodeActionD3 = statusNode.nodeActionG.selectAll('g.node-action')
+            var edgeActionD3 = statusNode.edgeActionG.selectAll('g.edge-action')
+
+            actionNodes.forEach(function(actionNode,actionNodeIdx){
+                actionNode.kGraphNode = layouted.children[actionNodeIdx]
+            })
+
+            // Set bendingPoints to empty array in none were needed.
+
+            transitionEdges.forEach(function(edge){
+                edge.kGraphEdge.bendPoints = edge.kGraphEdge.bendPoints || []
+            })
+
+            // Get graph boundaries.
+            statusNode.actionsKGraphBBox = self.getKGraphBBox(actionNodes,transitionEdges)
+
+            // Generate lines from edge vertices.
+            transitionEdges.forEach(function(edge){
+                XV.generateTransitionLines(edge)
+            })
+
+            // Compute edge intersections.
+            statusNode.actionsTransitionEdgesIntersections = XV.computeEdgeIntersections(transitionEdges)
+
+            // Compute unique intersection points.
+            self.transitionEdgesNodes = XV.computeEdgeNodes(statusNode.actionsTransitionEdgesIntersections)
+
+            // Bind data to nodes.
+            var nodeActionData = nodeActionD3.data(actionNodes)
+            var edgeActionData = edgeActionD3.data(transitionEdges)
+
+            // Setup node position etc. and display them.
+            self.unhideNodeActionD3Layered(nodeActionData)
+            self.updateNodeActionD3Layered(nodeActionData)
+            self.updateEdgeActionD3Layered(edgeActionData)
+
+            // Proceed to penultimate step upon completion of all Klay layouters.
+            complete++
+            if (complete===statusNodesLength){
+                self.setupEventsActionsLayered()
+            }
+        }
+
+
+        var layouter = $klay.layout({
+            graph: kGraph,
+            options : {},
+            success : onSuccess,
+            error : function(error){self.handleError(error)}
+        })
+    })
+}
+XV.prototype.unhideNodeActionD3Layered = function(nodeD3) {
+    nodeD3.style({"opacity":"1.0","visibility":"visible"})
+}
+XV.prototype.updateNodeActionD3Layered = function(nodeD3) {
+    var self = this
+    var layoutAction = self.layout.action
+    
+    // Setup node content.
+    nodeD3.each(function(d){    
+        var thisNode = this
+        var jThisNode = $(thisNode)
+        var dThisNode = d3.select(thisNode)
+        var ximaProperties = d.ximaAction.properties
+        var actionMain = self.getActionNodeLayout(d)
+        
+        // Get properties.
+        var actionName = ximaProperties["de.xima.fc.action.name"]
+        var conditionType = ximaProperties["de.xima.fc.action.condition"].type
+        var onStandardStop = ximaProperties["de.xima.fc.action.stopsWorkflow"]
+        var onErrorStop = ximaProperties["de.xima.fc.action.onError"] === "STOP"
+        var onMismatchStop = ximaProperties["de.xima.fc.action.condition"].details.nextAction === "STOP"
+        var formConditionOperator = ximaProperties["de.xima.fc.action.condition"].details["conditionOperator"]
+        var textActionIcon = self.getImageFont(ximaProperties["de.xima.fc.action.icons"].action)
+        var portOutStandardHidden = d.ports.OUT.STANDARD === null && !d.ximaAction.properties["de.xima.fc.action.stopsWorkflow"]
+        
+        // Get DOM elements.
+        var elTextTitle = d.svgG.select(d.classSelectors.textTitle)
+        var elTextTitleBBox = d.svgG.select(d.classSelectors.textTitleBBox)
+        var elTextTitleEllipsis = d.svgG.select(d.classSelectors.textTitleEllipsis)
+        var elContainerCondition = d.svgG.select(d.classSelectors.containerCondition)
+        var elContainerNoCondition = d.svgG.select(d.classSelectors.containerNoCondition)
+        var elTextConditionTypeFormvalue = d.svgG.select(d.classSelectors.textConditionTypeFormvalue)
+        var elTextConditionTypeRegexp = d.svgG.select(d.classSelectors.textConditionTypeRegexp)      
+        var elTextAction = d.svgG.select(d.classSelectors.textAction)      
+        var elIconsCondition = d.svgG.select(d.classSelectors.iconsCondition)
+        var elIconOnStandardStop = d.svgG.select(d.classSelectors.iconOnStandardStop)
+        var elIconOnMismatchStop = d.svgG.select(d.classSelectors.iconOnMismatchStop)
+        var elIconOnErrorStop = d.svgG.select(d.classSelectors.iconOnErrorStop)
+        var elPortInIcon = d.svgG.select(d.classSelectors.ports.IN.icon)
+        var elPortInMouseover = d.svgG.select(d.classSelectors.ports.IN.mouseover)
+        var elPortOutStandardIcon = d.svgG.select(d.classSelectors.ports.OUT.STANDARD.icon)
+        var elPortOutStandardMouseover = d.svgG.select(d.classSelectors.ports.OUT.STANDARD.mouseover)
+        
+        // Apply properties.    
+        
+        // Condition name.
+        self.setWrappedText(elTextTitle.node(),elTextTitleBBox.node(),elTextTitleEllipsis.node(),actionName)
+
+        // Condition type icon.
+        elTextAction.style("font-family",textActionIcon.fontFamily)
+        elTextAction.text(textActionIcon.character)
+        
+        // Hide unused ports.
+        elPortInIcon.style("visibility", d.ports.IN.length === 0 ? "hidden" : "visible")
+        elPortInMouseover.style("visibility", d.ports.IN.length === 0 ? "hidden" : "visible")
+
+        elPortOutStandardIcon.style("visibility", portOutStandardHidden  ? "hidden" : "visible")
+        elPortOutStandardMouseover.style("visibility", portOutStandardHidden ? "hidden" : "visible")
+
+        
+        // Condition sub-node.
+        switch (conditionType) {
+            case "NONE":
+                //elContainerCondition.style("visibility","hidden")
+                break;
+            case "FORM":
+                //elContainerNoCondition.style("visibility","hidden")
+                for (var key in d.classSelectors.iconCondition) {
+                    var elConditionOperator = d.svgG.select(d.classSelectors.iconCondition[key])
+                    if (key !== formConditionOperator) {
+                        elConditionOperator.style("visibility","hidden")
+                    }
+                }              
+                elTextConditionTypeRegexp.style("visibility","hidden")
+                break;
+            case "REGEXP":
+                //elContainerNoCondition.style("visibility","hidden")
+                elTextConditionTypeFormvalue.style("visibility","hidden")
+                elIconsCondition.style("visibility","hidden")
+                break;
+        }
+
+        elIconOnStandardStop.style("visibility",onStandardStop ? "visible" : "hidden")
+        elIconOnMismatchStop.style("visibility",onMismatchStop ? "visible" : "hidden")
+        elIconOnErrorStop.style("visibility",onErrorStop ? "visible" : "hidden")
+        
+    })
+    
+    // Setup node position.
+    nodeD3.attr("transform",function(d){
+            var newX = d.kGraphNode.x
+            var newY = d.kGraphNode.y
+            var dx = newX - d.bBox0.xmin
+            var dy = newY - d.bBox0.ymin
+            var translate0 = d.translate0
+            var scale0 = d.scale0
+            var newTransform = XV.getNewTranslate(this,function(r){return Pt.addC(r,dx,dy)})
+            return newTransform
+        })
+}
+XV.prototype.updateEdgeActionD3Layered = function(edgeD3) {
+    var self = this
+    var nodeEnter = edgeD3.enter()
+    
+    // Enter visible edges container.
+    var nodeEnterG = nodeEnter.append("g")
+        .classed({"edge-action":true})
+        .attr("id",function(d){return d.kGraphEdge.id})
+        .each(function(d){
+            d.edgeG = d3.select(this)
+            d.edgeGNode = this
+        })
+      
+    // Enter visible edges.
+    var nodeEnterPath = nodeEnterG
+        .append("path")
+        .classed({"edge-path":true})
+        .style({"fill":"none","opacity":"1.0"})
+          
+    // Update visible edges.
+    var nodeUpdatePath = edgeD3.select("path.edge-path").attr("d",function(d){
         var kGraphEdge = d.kGraphEdge
         var bendPoints = kGraphEdge.bendPoints
         var points = [kGraphEdge.sourcePoint].concat(bendPoints).concat([kGraphEdge.targetPoint])
         return self.lineInterpolator(points)
-    })    
-    .transition("edge-enter-mouseover")
-    .duration(500)
-    .attr({"transform":"scale(1)"})
+        })    
 }
-// Step 5: Setup global triggers, events etc.
-XV.prototype.setupGlobalEvents = function(){
+
+// Step 9: Setup events for each action dialog graph.
+// Proceed to step 10 upon completion.
+XV.prototype.setupEventsActionsLayered = function(){
     var self = this
     
+    self.setupActionsDialog()
+    self.setTooltipPortOutMismatch()
+    self.setTooltipPortOutError()
+    self.setTooltipPortOutStandard()
+    self.setTooltipActionCondition()
+    self.setTooltipActionDetails()
     
-    /* Trigger events when mouse is close to an edge.
-    self.svgNode.setAttribute("pointer-events","visible")
-    var pos = self.getPositionFromMouse(d3.event)
-    var edge = self.getClosestEdge(pos.x,pos.y)
-    */
-
-    self.setTooltipActionIcon()
-
-    
-    self.setLoadBar("Finalisiere Darstellung...",99)
-
-    
-    self.removeLoadBar()
+    // Proceed to final step.
+    self.finalizeLayered()
 }
+
+// Step 10: Remove load bar, zoom to graph boundaries and display the graph.
+// This is the last step.
+XV.prototype.finalizeLayered = function() {
+    var self = this
+    self.setLoadBar("Finalisiere Darstellung...",99)
+    
+    self.removeLoadBar(function(){
+        self.zoomToKGraphBoundaries()
+    })
+}
+
 
 // Enter diagram mode.
 $(document).on("ready",function(){
     XV.checkBrowserSupport()
     var folder = "./"
-    var element = document.getElementById('paper')
+    var element = document.getElementById('viewport')
     var urlParams = XV.getJsonFromUrl()
     XV.setDefault(urlParams,"pid",parseInt,2300)
     XV.setDefault(urlParams,"lang",String,"de")
     var servlet = "http://naiad.formcloud.de/formcycle/flowchart.jsp?pid=" + urlParams.pid + "&lang=" + urlParams.lang
-    console.log(servlet)
+    console.log("Retrieving data from " + servlet)
     var xv = new XV(folder,servlet,element)
+    
+    //d3.select('#paper').on("mousemove",function(){k=D.getPositionFromMouse();$('#debug').text(k.x +" , " + k.y)})
 })

@@ -4,11 +4,6 @@
 //  and http://rtsys.informatik.uni-kiel.de/~kieler/epl-v10.html.
 //
 
-// http://naiad.formcloud.de/formcycle/flowchart.jsp?pid=2300
-// naiad.formcloud.de
-// root
-// /master_
-
 // https://storiesfailedentrepreneur.files.wordpress.com/2012/08/the-procrastination-flow-chart.png
 // https://plumsail.com/blog/2014/07/how-to-use-javascript-and-css-for-conditional-formatting-in-sharepoint-org-chart/
 
