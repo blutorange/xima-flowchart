@@ -2295,9 +2295,14 @@ XV.prototype.setTooltipActionDetails = function() {
                                         iFrameDoc.close()
                                     },
                                     method: 'GET',
-                                    success: function(data) {
+                                    success: function(a,b,recData) {
                                         iFrameDoc.open()
-                                        iFrameDoc.write(data)
+                                        if (recData.responseJSON){
+                                            iFrameDoc.write($("<pre>").text(recData.responseText)[0].outerHTML)
+                                        }
+                                        else {
+                                            iFrameDoc.write(recData.responseText)
+                                        }
                                         iFrameDoc.close()
                                     },
                                     url: actionDetails.resourceURL
