@@ -14,14 +14,15 @@
         de.xima.fc.diagramType : LAYERED | MINDMAP # Type of the rendered diagram. Only layered is supported currently.
         de.xima.fc.folder      : <STRING> # Path to folder with containg all the resources.
 		de.xima.fc.resources   : {
+            user      : <OBJECT[RESOURCE-USER.id,RESOURCE-USER]>
             userGroup : <OBJECT[RESOURCE-USERGROUP.id,RESOURCE-USERGROUP]>
-            html : <OBJECT[RESOURCE-HTML.id,RESOURCE-HTML]>
-            xsl : <OBJECT[RESOURCE-XSL.id,RESOURCE-XSL]>
-            url : <OBJECT[RESOURCE-URL.id,RESOURCE-URL]>
-            mailbox : <OBJECT[RESOURCE-MAILBOX.id,RESOURCE-MAILBOX]>
-            plugin : <OBJECT[RESOURCE-PLUGIN.id,RESOURCE-PLUGIN]>
-            file : <OBJECT[RESOURCE-FILE.id,RESOURCE-FILE]>
-            font: <OBJECT[RESOURCE-FONT.id,RESOURCE-FONT]>
+            html      : <OBJECT[RESOURCE-HTML.id,RESOURCE-HTML]>
+            xsl       : <OBJECT[RESOURCE-XSL.id,RESOURCE-XSL]>
+            url       : <OBJECT[RESOURCE-URL.id,RESOURCE-URL]>
+            mailbox   : <OBJECT[RESOURCE-MAILBOX.id,RESOURCE-MAILBOX]>
+            plugin    : <OBJECT[RESOURCE-PLUGIN.id,RESOURCE-PLUGIN]>
+            file      : <OBJECT[RESOURCE-FILE.id,RESOURCE-FILE]>
+            font      : <OBJECT[RESOURCE-FONT.id,RESOURCE-FONT]>
             image : {
                 font : {
                     <OBJECT[RESOURCE-IMAGE-FONT.id,RESOURCE-IMAGE-FONT]>
@@ -138,11 +139,32 @@
 }
 
 
+* RESOURCE-USER *
+{
+    id : "de.xima.fc.resource.userGroup-<UNIQUE_ID>" # Unique id for the html template resource.
+    name : <STRING> # User name.
+    systemID : <NUMBER> # System-defined id of this user group.
+    oldPassowrd : NULL # For safety reasons.
+    clearTextPassord : NULL # For safety reasons.
+    password : NULL # For safety reasons.
+    eMail : <STRING> # The user's mail address.
+    phone : <STRING> # The user's phone number.
+    fullName : <STRING> # Personal 
+    familyName : <STRING> # The user's family name (last name in English).
+    personalName : <STRING> # The user's personal name (first/given name in English).
+    loginName : <STRING> # 
+    userType : INTERNAL | LDAP # 
+    formOfAddress : LADY | SIR | NONE_GIVEN # 
+    formOfAddressDisplayName : <STRING> # Localized name of the form of address.
+    status: ACTIVE | LOCKED | DELETED #
+    statusDisplayName : <STRING> # Localized name of the user's status.
+    userGroups : <ARRAY[STRING]> # List of IDs of user groups this user belongs to.
+}
+
 * RESOURCE-USERGROUP *
 {
     id : "de.xima.fc.resource.userGroup-<UNIQUE_ID>" # Unique id for the html template resource.
     name : <STRING> # User group name.
-    # All keys below CURRENTLY UNUSED.
     systemID : <NUMBER> # System-defined id of this user group.
     description : <STRING> # User group description.
     users : <ARRAY[RESOURCE-USER]> # Ids of users part of this user group.
@@ -176,18 +198,13 @@
     name : <STRING> # Mailbox name.
     description : <STRING> # Mailbox description. Currently unused.
     restrictToUserGroup : <ARRAY[STRING]> # Array of ids of the user groups to which the mailbox is available. Currently unused.
+    deletable : <BOOL> # Whether the mailbox can be deleted.
 }
 
 * RESOURCE-PLUGIN *
 {
     id : "de.xima.fc.resource.plugin-<UNIQUE_ID>" # Unique id for the plugin.
-    name : <STRING> # Plugin name.
-    keys : <ARRAY[{ # CURRENTLY UNUSED
-        name : <STRING> # Name of the key.
-        required : <BOOL> # Whether a value needs to be set for this key.
-    }
-    ]>
-    
+    class : <STRING> # Name of the class of the plugin.
 }
 
 * RESOURCE-FILE *
@@ -281,7 +298,7 @@
 
 * ACTION-DETAILS-CALLBACK *
 {
-    targetCallback : <STRING> # Class of the target callback.
+    callbackName : <STRING> # Name of the target callback.
 }
 
 * ACTION-DETAILS-DATEIANVORGANGANHANGEN *
@@ -332,7 +349,7 @@
      formChanges : <ARRAY[
         {
             key   : <STRING> # Text of the form input field selector.
-            value : <STRING> # New value to be assigned to the form input field.
+            value : NULL | <STRING> # New value to be assigned to the form input field.
         }
     ]>
 }
@@ -345,8 +362,9 @@
 
 * ACTION-DETAILS-PDFFILL *
 {
-    sourceType : EXTERNAL | TENANT | FORM # Resource type to use.
-    resourceName : <STRING> # URL or file name of the resource.
+    sourceType : EXTERNAL | TENANT | FORM | PROJECT # Resource type to use.
+    displayNameSourceType : <STRING> # Localized name of the resource type.
+    resourceName : <STRING> # File name of the file used for filling the pdf.
     saveAs : <STRING> # Name of the file created.
 }
 
@@ -357,9 +375,9 @@
     noFiles         : <BOOL> # Whether no files should be send with the request.
     urlParameters   : <ARRAY[{
         key: <STRING> # Parameter key.
-        value : <STRING> # Parameter value.
+        value : NULL | <STRING> # Parameter value.
     }]>
-    xslTemplate      : <STRING> # xslTemplate to use.
+    xslTemplate      : NULL | <STRING> # xslTemplate to use.
     requestEncoding   : <STRING> # Encoding of the post request.
     responseEncoding : <STRING> # Encoding requested to be used in the response.
 }
@@ -367,9 +385,10 @@
 * ACTION-DETAILS-PLUGINAUSFUHREN *
 {
     plugin : <STRING> # ID of the plugin to execute.
+    name : <STRING> # Name of the plugin to execute.
     parameters : <ARRAY[ # CURRENTLY UNUSED
         key : <STRING> # Parameter name.
-        value : <STRING> # Parameter value, may be form input fields selector.
+        value : NULL | <STRING> # Parameter value, may be form input fields selector.
         required : <BOOL> # Whether a value is required for this key.
     ]>
 }
@@ -379,6 +398,7 @@
     targetDirectory : <STRING> # Name of the target directory, may contain form input fields selector.
     loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to save.
     usePID : <BOOL> # Whether the process id should be used.
+    useTimeStamp : <BOOL> # Whether a time stamp should be used.
 }
 
 * ACTION-DETAILS-STATUSANDERUNG *
@@ -394,8 +414,7 @@
 
 * ACTION-DETAILS-UPLOADBEREITSTELLEN *
 {
-    uploadElementName : <ARRAY[STRING]> # Name of the formcycle upload element.
-    saveAs : <STRING> # Name of the file created.
+    uploadElementNames : <ARRAY[STRING]> # Names of the formcycle upload elements.
 }
 
 * ACTION-DETAILS-VERARBEITUNGABBRECHEN *
@@ -414,6 +433,7 @@
 * ACTION-DETAILS-VORGANGINPOSTFACHKOPIEREN *
 {
     targetMailBox : <STRING> # ID of the target mail box.
+    keepStatus : <BOOL> # Whether to keep the current status.
 }
 
 * ACTION-DETAILS-VORGANGINPOSTFACHVERSCHIEBEN *
@@ -430,7 +450,7 @@
     redirectTemplate : <STRING> # ID of the url template.
     urlParameters   : <ARRAY[{
         key: <STRING> # Parameter key.
-        value : <STRING> # Parameter value.
+        value : NULL | <STRING> # Parameter value.
     }]>
 }
 
@@ -443,11 +463,11 @@
 
 * ACTION-DETAILS-XMLEINLESENUNDFORMULARFELDERSETZEN *
 {
-    loadFrom : <ARRAY[STRING]> # IDs of the actions providing the files to be interpreted as XML.
+    sourceAction : <STRING> # ID of the actions providing the files to be interpreted as XML.
     xslTemplate : <STRING> # ID of the xsl template used.
-    xpath       : <ARRAY[
+    xPath       : <ARRAY[
         key   : <STRING> # Field name, may contain form input field selector(s).
-        value : <STRING> # XPath, may form input field selector(s).
+        value : NULL | <STRING> # XPath, may form input field selector(s).
     ]>
 }
 

@@ -102,7 +102,7 @@
     <filter
        inkscape:label="Opacity"
        style="color-interpolation-filters:sRGB;"
-       id="filter-inactive">
+       id="filter4314">
       <feColorMatrix
          values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 5 -1 "
          result="colormatrix"
@@ -221,7 +221,7 @@
        id="container-body"
        inkscape:label="#g4464"
        transform="translate(65.652819,-21.541282)"
-       style="filter:url(#filter-inactive)">
+       style="filter:url(#filter4314)">
       <rect
          style="opacity:1;fill:#e4e7eb;fill-opacity:1;stroke:#a4abb2;stroke-width:1.09000003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          id="node-body"

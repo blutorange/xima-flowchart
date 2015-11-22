@@ -16,9 +16,21 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="actionNodeWithoutCondition.svg">
+   sodipodi:docname="actionNodeWithoutConditionFirst.svg">
   <defs
      id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4246">
+      <stop
+         style="stop-color:#c4c4ed;stop-opacity:1"
+         offset="0"
+         id="stop4248" />
+      <stop
+         style="stop-color:#b2b0e2;stop-opacity:1"
+         offset="1"
+         id="stop4250" />
+    </linearGradient>
     <marker
        inkscape:stockid="Arrow1Lstart"
        orient="auto"
@@ -99,23 +111,29 @@
        x2="346.5"
        y1="437.36218"
        x1="200.5" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4246"
+       id="linearGradient4252"
+       x1="152.68365"
+       y1="929.72229"
+       x2="152.68365"
+       y2="1006.4723"
+       gradientUnits="userSpaceOnUse" />
     <filter
        inkscape:label="Opacity"
-       style="color-interpolation-filters:sRGB"
+       style="color-interpolation-filters:sRGB;"
        id="filter-inactive">
       <feColorMatrix
-         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 -0 "
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 5 -1 "
          result="colormatrix"
-         id="feColorMatrix4931" />
+         id="feColorMatrix4274" />
       <feComposite
          in2="colormatrix"
          operator="arithmetic"
          k2="0.3"
          result="composite"
-         id="feComposite4933"
-         k1="0"
-         k3="0"
-         k4="0" />
+         id="feComposite4276" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -125,9 +143,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0000001"
-     inkscape:cx="176.65345"
-     inkscape:cy="58.280218"
+     inkscape:zoom="1"
+     inkscape:cx="523.57496"
+     inkscape:cy="-74.854027"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -147,7 +165,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -271,7 +289,7 @@
         </g>
       </g>
       <rect
-         style="opacity:1;fill:#e4e7eb;fill-opacity:1;stroke:#a4abb2;stroke-width:1.09000003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         style="opacity:1;fill:url(#linearGradient4252);fill-opacity:1;stroke:#96ace4;stroke-width:1.09000003;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          id="node-body"
          width="296.64432"
          height="77.733871"
@@ -417,7 +435,7 @@
            inkscape:label="#g4430"
            id="port-out-standard-icon-sub">
           <rect
-             style="opacity:1;fill:#e1e5e9;fill-opacity:1;stroke:#a4abb2;stroke-width:0.49999997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+             style="opacity:1;fill:#d1d1ef;fill-opacity:1;stroke:#96ace4;stroke-width:0.49999997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
              id="rect4906"
              width="21.084326"
              height="20.578131"
@@ -427,12 +445,12 @@
           <g
              id="g4418"
              transform="matrix(0.02600931,0,0,-0.02600931,159.44825,1016.3723)"
-             style="fill:#a4abb2;fill-opacity:1">
+             style="fill:#96ace4;fill-opacity:1">
             <path
                id="path4420"
                d="m 0,457 q 0,15 11,25 11,10 25,11 l 500,0 q 14,0 25,-11 11,-11 10,-25 -1,-14 -10,-25 L 311,182 q -11,-11 -25,-11 -14,0 -25,11 L 11,432 Q 0,443 0,457 Z"
                inkscape:connector-curvature="0"
-               style="fill:#a4abb2;fill-opacity:1" />
+               style="fill:#96ace4;fill-opacity:1" />
           </g>
         </g>
       </g>
@@ -453,13 +471,13 @@
            height="20.270697"
            width="20.769329"
            id="rect4906-0"
-           style="opacity:1;fill:#e1e5e9;fill-opacity:1;stroke:#a4abb2;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+           style="opacity:1;fill:#d1d1ef;fill-opacity:1;stroke:#96ace4;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
         <g
-           style="fill:#a4abb2;fill-opacity:1"
+           style="fill:#96ace4;fill-opacity:1"
            transform="matrix(0.01708989,0,0,-0.01708989,8.3239562,973.95171)"
            id="g4437">
           <path
-             style="fill:#a4abb2;fill-opacity:1"
+             style="fill:#96ace4;fill-opacity:1"
              inkscape:connector-curvature="0"
              d="m 1,300 112,461 q 2,8 9,13 7,5 15,5 l 183,0 q 11,0 18,-7 7,-7 7,-17 0,-4 -2,-10 l -96,-258 221,54 q 5,2 7,2 11,0 19,-9 10,-11 4,-24 L 196,-136 q -7,-14 -23,-14 l -8,1 q -9,3 -14,11 -5,8 -3,16 L 258,329 32,273 q -2,-1 -7,-1 -10,0 -17,7 -10,8 -7,21 z"
              id="path4439" />

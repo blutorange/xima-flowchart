@@ -903,37 +903,57 @@ XV.zoomGraphToBoundaries = function (bBox,svgGNode,zoom,positionX,positionY,scal
     
     return transform
 }
+XV.getCssUrl = function(val) {
+    var urlToken = new URLToken()
+    var hashToken = new HashToken()
+    hashToken.value = val
+    urlToken.value = XV.stringifyCSSToken(hashToken)
+    return XV.stringifyCSSToken(urlToken)
+}
 
 XV.tableWidget = function(el,displayNames) {
     el = $(el)
     var children = el.children()
     var rows = []
     var elsHash = {}
-    for (var i=0; i<children.length-1; i+=2) {
-        var elLeft = $(children[i])
-        var elRight = $(children[i+1])
-        var idLeft = elLeft.attr("id")
-        var idRight = elRight.attr("id")
-        elsHash[idLeft] = elLeft
-        elsHash[idRight] = elRight
-        elLeft.removeAttr("id").addClass(idLeft).attr("original-id",idLeft)
-        elRight.removeAttr("id").addClass(idRight).attr("original-id",idRight)
-        elLeft.find("[id]").each(function(){
-            var self = $(this)
-            var id = self.attr("id")
-            elsHash[id] = self
-            self.removeAttr("id").addClass(id).attr("original-id",id)
-        })
-        elRight.find("[id]").each(function(){
-            var self = $(this)
-            var id = self.attr("id")
-            elsHash[id] = self
-            self.removeAttr("id").addClass(id).attr("original-id",id)
-        })        
-        rows.push([
-            {id: idLeft, element: elLeft.detach()},
-            {id: idRight, element: elRight.detach()}
-        ])
+    var elLeft = null
+    var elRight = null
+    for (var i=0; i<children.length; i++) {
+        var e = $(children[i])
+        if (!e.hasClass("no-entry")) {
+            if (elLeft) {
+                elRight = e
+            }
+            else {
+                elLeft = e
+            }        
+        }
+        if (elLeft && elRight) {
+            var idLeft = elLeft.attr("id")
+            var idRight = elRight.attr("id")
+            elsHash[idLeft] = elLeft
+            elsHash[idRight] = elRight
+            elLeft.removeAttr("id").addClass(idLeft).attr("original-id",idLeft)
+            elRight.removeAttr("id").addClass(idRight).attr("original-id",idRight)
+            elLeft.find("[id]").each(function(){
+                var self = $(this)
+                var id = self.attr("id")
+                elsHash[id] = self
+                self.removeAttr("id").addClass(id).attr("original-id",id)
+            })
+            elRight.find("[id]").each(function(){
+                var self = $(this)
+                var id = self.attr("id")
+                elsHash[id] = self
+                self.removeAttr("id").addClass(id).attr("original-id",id)
+            })        
+            rows.push([
+                {id: idLeft, element: elLeft.detach()},
+                {id: idRight, element: elRight.detach()}
+            ])
+            elLeft = null
+            elRight = null
+        }        
     }
     el.empty()
     this.displayNames = displayNames || XV.tableWidget.displayNames
@@ -955,8 +975,15 @@ XV.tableWidget.prototype.setDisplayNames = function () {
 XV.tableWidget.prototype.update = function(setupCallback){
     ;(setupCallback || $.noop).call(this.elsHash,this.rowsHash)
 }
+XV.tableWidget.prototype.show = function(setupCallback){
+    this.widget().show()
+    this.setDisplayNames()
+    this.update(setupCallback)
+}
 XV.tableWidget.prototype.asTable = function(clone,setupCallback){
-    this.container.empty().append(this._asABC("tr","td","td",$('<table class="tableWidgetTable"></table>'),clone,setupCallback))
+    var table = $('<table class="tableWidgetTable"><tbody></tbody></table>')
+    this._asABC("tr","td","td",table.children(),clone,setupCallback)
+    this.container.empty().append(table)
     return this
 }
 XV.tableWidget.prototype.asDivDiv = function(clone,setupCallback){
@@ -1047,7 +1074,7 @@ XV.prototype.cleanupDefs = function(defs,svg){
             var attrs = item.attributes
             for (var j = attrs.length; j--;){
                 var attr = attrs[j]
-                ;(referencesProps.indexOf(attr.name)!=-1) && (m=attr.value.match(refsRegUrl)) && (h=idHash[m[2]]) && (hToken.value=h) && (urlToken.value=hToken.toSource) && (attr.value=urlToken.toSource())
+                ;(referencesProps.indexOf(attr.name)!=-1) && (m=attr.value.match(refsRegUrl)) && (h=idHash[m[2]]) && (hToken.value=h) && (urlToken.value=hToken.toSource) && (attr.value=urlToken.toSource()) && item.setAttribute("xima-filter-id",h)
                 ;(attr.name === "xlink:href") && (m=attr.value.match(refsRegHref)) && (h=idHash[m[1]]) && (hToken.value=h) && (attr.value=hToken.toSource())
                 if (attr.name === "style"){
                     // parse the css..
@@ -1057,18 +1084,18 @@ XV.prototype.cleanupDefs = function(defs,svg){
                     while(k<len-2) {
                         var token = css[k]
                         var q = XV.findIndex(css,function(t){return !(t instanceof WhitespaceToken)},k+1)
-                        if(q<0){break;}
+                        if(q<0){break}
                         var r = XV.findIndex(css,function(t){return !(t instanceof WhitespaceToken)},q+1)
-                        if(r<0){break;}
+                        if(r<0){break}
                         var val = css[r]
                         if ((token instanceof IdentToken) && (referencesProps.indexOf(token.value)!=-1) && (css[q] instanceof ColonToken)) {
                             if (val instanceof URLToken) {
                                 var id = val.value.substring(1,val.value.length)
-                                ;(h=idHash[id]) && (hToken.value=h) && (val.value=hToken.toSource())
+                                ;(h=idHash[id]) && (hToken.value=h) && (val.value=hToken.toSource()) && item.setAttribute("xima-filter-id",h)
                             }
                             else if ((val instanceof Func) && val.name==="url"){
                                 var id = val.value[0].value.substring(1,val.value[0].length)
-                                ;(h=idHash[id]) && (hToken.value=h) && (val.value[0].value=hToken.toSource())
+                                ;(h=idHash[id]) && (hToken.value=h) && (val.value[0].value=hToken.toSource()) && item.setAttribute("xima-filter-id",h)
                             }
                         }
                         k = q
@@ -1127,10 +1154,14 @@ XV.prototype.newActionNodes = function(statusNode) {
 }
 XV.prototype.setLoadBar = function(text,pct){
     var self = this
-    self.loadDialog.bar.animate({"opacity":Math.random()*0.3+0.6},0*(Math.random()*90+30),"swing",function(){
+    /*
+    self.loadDialog.bar.animate({"opacity":Math.random()*0.3+0.6},500,"swing",function(){
         self.loadDialog.bar.progressbar("value",pct)
-        self.loadDialog.details.text(text)        
+        self.loadDialog.details.text(text)
     })
+    */
+    self.loadDialog.bar.progressbar("value",pct)
+    self.loadDialog.details.text(text)
 }
 XV.prototype.removeLoadBar = function(callback) {
     var self=this
@@ -1468,6 +1499,43 @@ XV.prototype.setTooltipActionIcon = function(){
                 li.appendChild(span2)
                 li.appendChild(span3)
                 jActions.append(li)
+            })
+            return jTooltip
+        }
+    })
+}
+XV.prototype.setTooltipActionEllipsisIcon = function() {
+    var self = this
+    var jTooltip = $('#actionEllipsisTooltip').detach()
+    var jActionType = jTooltip.find('.actionType')
+    var jDisplayName = jTooltip.find('.displayName')
+    var jActionList = jTooltip.find('.actionList')
+    var jActionItem = jTooltip.find('.actionItem')
+    var jActionName = jTooltip.find('.actionName')
+    var jActionCondition = jTooltip.find('.actionCondition')
+    var jActionStatus = jTooltip.find('.actionStatus')
+    $('.text-action-ellipsis-active').tooltip({
+        items: '.text-action-ellipsis-active',
+        track: true,
+        content: function() {
+            var elD3 = d3.select(this)
+            var d = elD3.datum()
+            var actionsTypes = d.actions
+            jTooltip.empty()
+            actionsTypes.forEach(function(actionsType){
+                var displayName = actionsType[0].ximaAction.properties["de.xima.fc.action.displayName"]
+                jActionList.empty()
+                jDisplayName.text(displayName)
+                actionsType.forEach(function(action){
+                    var cond = action.ximaAction.properties["de.xima.fc.action.condition"]
+                    var active = action.ximaAction.properties["de.xima.fc.action.active"]
+                    var displayNameDeactivated = self.layout.status.displayNameActionDeactivated
+                    jActionName.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                    jActionCondition.text(cond.type==="NONE" ? "" : (" (" + cond.displayName + ")"))
+                    jActionStatus.text(active ? "" : (" (" + displayNameDeactivated + ")"))
+                    jActionList.append(jActionItem.clone(false,true))
+                })
+                jTooltip.append(jActionType.clone(false,true))
             })
             return jTooltip
         }
@@ -1938,6 +2006,7 @@ XV.prototype.setTooltipActionDetails = function() {
     
     // Container for the action details for each action.
     var jDetails = jTooltip.find('.details')
+    
     var jDetailsShowTemplate = jTooltip.find('.detailsShowTemplate')
     var jDetailsCallback = jTooltip.find('.detailsCallback')
     var jDetailsAttachFileToBatch = jTooltip.find('.detailsAttachFileToBatch')
@@ -1948,24 +2017,55 @@ XV.prototype.setTooltipActionDetails = function() {
     var jDetailsExportXml = jTooltip.find('.detailsExportXml')
     var jDetailsExternalResource= jTooltip.find('.detailsExternalResource')
     var jDetailsWriteToForm= jTooltip.find('.detailsWriteToForm')
+    var jDetailsCompressAsZip = jTooltip.find('.detailsCompressAsZip')
+    var jDetailsPdfFill = jTooltip.find('.detailsPdfFill')
+    var jDetailsPostRequest = jTooltip.find('.detailsPostRequest')
+    var jDetailsExecPlugin = jTooltip.find('.detailsExecPlugin')
+    var jDetailsSaveToFileSystem = jTooltip.find('.detailsSaveToFileSystem')
+    var jDetailsChangeStatus = jTooltip.find('.detailsChangeStatus')
+    var jDetailsCreateTxt = jTooltip.find('.detailsCreateTxt')
+    var jDetailsProvideUpload = jTooltip.find('.detailsProvideUpload')
     var jDetailsStopBatch = jTooltip.find('.detailsStopBatch')
+    var jDetailsCopyStatus = jTooltip.find('.detailsCopyStatus')
+    var jDetailsCopyToMailBox = jTooltip.find('.detailsCopyToMailBox')
+    var jDetailsMoveToMailBox = jTooltip.find('.detailsMoveToMailBox')
     var jDetailsRenewProcessId = jTooltip.find('.detailsRenewProcessId')
     var jDetailsDeleteBatch = jTooltip.find('.detailsDeleteBatch')
-    
+    var jDetailsRedirect = jTooltip.find('.detailsRedirect')
+    var jDetailsWordFill = jTooltip.find('.detailsWordFill')
+    var jDetailsXmlToForm = jTooltip.find('.detailsXmlToForm')
+    var jDetailsCallback = jTooltip.find('.detailsCallback')
+
     // Setup table.    
     XV.tableWidget.displayNames = displayNames
-    var tShowTemplate = (new XV.tableWidget(jDetailsShowTemplate)).asTable()
-    var tAttachFileToBatch = (new XV.tableWidget(jDetailsAttachFileToBatch)).asTable()
-    var tReturnFile = (new XV.tableWidget(jDetailsReturnFile)).asDivSpan()
-    var tDbSqlStatement = (new XV.tableWidget(jDetailsDbSqlStatement)).asDivDiv()
-    var tEMail = (new XV.tableWidget(jDetailsEMail)).asDivDiv()
-    var tExportPersistence = (new XV.tableWidget(jDetailsExportPersistence)).asTable()
-    var tExportXml = (new XV.tableWidget(jDetailsExportXml)).asTable()
-    var tExternalResource = (new XV.tableWidget(jDetailsExternalResource)).asTable()
-    var tWriteToForm = (new XV.tableWidget(jDetailsWriteToForm)).asTable()
-    var tStopBatch = (new XV.tableWidget(jDetailsStopBatch)).asTable()
-    var tRenewProcessId = (new XV.tableWidget(jDetailsRenewProcessId)).asTable()
-    var tDeleteBatch = (new XV.tableWidget(jDetailsDeleteBatch)).asTable()
+    var t = {}
+    t.showTemplate = (new XV.tableWidget(jDetailsShowTemplate)).asTable()
+    t.attachFileToBatch = (new XV.tableWidget(jDetailsAttachFileToBatch)).asTable()
+    t.returnFile = (new XV.tableWidget(jDetailsReturnFile)).asDivSpan()
+    t.dbSqlStatement = (new XV.tableWidget(jDetailsDbSqlStatement)).asDivDiv()
+    t.eMail = (new XV.tableWidget(jDetailsEMail)).asDivDiv()
+    t.exportPersistence = (new XV.tableWidget(jDetailsExportPersistence)).asTable()
+    t.exportXml = (new XV.tableWidget(jDetailsExportXml)).asTable()
+    t.externalResource = (new XV.tableWidget(jDetailsExternalResource)).asTable()
+    t.writeToForm = (new XV.tableWidget(jDetailsWriteToForm)).asTable()
+    t.compressAsZip = (new XV.tableWidget(jDetailsCompressAsZip)).asTable()
+    t.pdfFill = (new XV.tableWidget(jDetailsPdfFill)).asTable()
+    t.postRequest = (new XV.tableWidget(jDetailsPostRequest)).asTable()
+    t.execPlugin = (new XV.tableWidget(jDetailsExecPlugin)).asTable()
+    t.saveToFileSystem = (new XV.tableWidget(jDetailsSaveToFileSystem)).asTable()
+    t.changeStatus = (new XV.tableWidget(jDetailsChangeStatus)).asTable()
+    t.createTxt = (new XV.tableWidget(jDetailsCreateTxt)).asTable()
+    t.provideUpload = (new XV.tableWidget(jDetailsProvideUpload)).asTable()
+    t.stopBatch = (new XV.tableWidget(jDetailsStopBatch)).asTable()
+    t.copyStatus = (new XV.tableWidget(jDetailsCopyStatus)).asTable()
+    t.copyToMailBox = (new XV.tableWidget(jDetailsCopyToMailBox)).asTable()
+    t.moveToMailBox = (new XV.tableWidget(jDetailsMoveToMailBox)).asTable()
+    t.renewProcessId = (new XV.tableWidget(jDetailsRenewProcessId)).asTable()
+    t.deleteBatch = (new XV.tableWidget(jDetailsDeleteBatch)).asTable()
+    t.redirect = (new XV.tableWidget(jDetailsRedirect)).asTable()
+    t.wordFill = (new XV.tableWidget(jDetailsWordFill)).asTable()
+    t.xmlToForm = (new XV.tableWidget(jDetailsXmlToForm)).asTable()
+    t.callback = (new XV.tableWidget(jDetailsCallback)).asTable()
 
     // Setup code syntax highlighting.
     var cmDbSqlStatement = CodeMirror(jDetailsDbSqlStatement.find('.dbSqlStatementEditor')[0], {
@@ -1984,10 +2084,86 @@ XV.prototype.setTooltipActionDetails = function() {
         lineNumbers: true,
         readOnly: true
     })
-    
-    // Get additional data.
+    var cmPostRequest = CodeMirror(jDetailsPostRequest.find('.postRequestPreviewEditor')[0], {
+        value: "",
+        mode: "text/xml",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })
+    var cmCreateTxt = CodeMirror(jDetailsCreateTxt.find('.createTxtContentEditor')[0], {
+        value: "",
+        mode: "text/plain",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })
+    var cmRedirect = CodeMirror(jDetailsRedirect.find('.redirectPreviewEditor')[0], {
+        value: "",
+        mode: "text/plain",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })
+    var cmXmlToForm = CodeMirror(jDetailsXmlToForm.find('.xmlToFormPreviewEditor')[0], {
+        value: "",
+        mode: "text/xml",
+        theme: "eclipse",
+        lineWrapping: true,
+        lineNumbers: true,
+        readOnly: true
+    })    
+        
+    // Allow only one active request at a time.
     var ajaxRequest = null
 
+    function generateLoadFromList(tField,name,loadFrom){
+        return generateItemsList(tField,name,_.map(loadFrom,function(actionID){
+            var action = self.getActionResource(actionID)
+            return action.ximaAction.properties["de.xima.fc.action.name"]
+        }))
+    }
+    function generateItemsList(tField,name,items) {
+        var none = name + "None"
+        var list = name + "List"
+        var item = name + "Item"
+        var content = name + "Content"
+        tField[list].empty()
+        items.length===0 && tField[none].show() && tField[list].hide()
+        items.length!==0 && tField[none].hide() && tField[list].show()
+        items.forEach(function(itemName){
+            tField[content].text(itemName)
+            tField[list].append(tField[item].clone(false,true))
+        })
+    }
+    function generateParameterTable(tField,name,parameters){
+        var none = name + "None"
+        var table = name + "Table"
+        var row = name + "Row"
+        var key = name + "Key"
+        var value = name + "Value"
+        var header = name + "Header"
+        parameters.length===0 && tField[none].show() && tField[table].hide()
+        parameters.length!==0 && tField[none].hide() && tField[table].show()
+        tField[table].empty()
+        tField[table].append(tField[header].clone(false,true))
+        parameters.forEach(function(parameter){
+            tField[key].text(parameter.key || "")
+            tField[value].text(parameter.value || "")
+            tField[table].append(tField[row].clone(false,true))
+        })
+    }
+    function setOptionalText(tField,name,string) {
+        var text = name + "Text"
+        var none = name + "None"
+        string===null && tField[none].show() && tField[text].hide()
+        string!==null && tField[none].hide() && tField[text].show()
+        tField[text].text(string||"")
+    }
+    
     // Set tooltip for each action node.
     self.statusNodes.forEach(function(statusNode){
         statusNode.actions.forEach(function(actionNode){        
@@ -2064,15 +2240,17 @@ XV.prototype.setTooltipActionDetails = function() {
                     var actionDetails = ximaProps["de.xima.fc.action.details"]
                     
                     // Make tooltip draggable (useful for large tooltips).
-                    ui.tooltip.draggable()
+                    ui.tooltip.draggable({
+                        scroll: false,
+                        cancel: "input,textarea,button,select,option,span,li"
+                    })
                     
                     // Setup data and event handlers after the tooltip has been
                     // loaded to the DOM.
                     switch (ximaProps["de.xima.fc.action.type"]) {
                         case 0:
-                            //ui.tooltip.css("max-width","70vw")                            
                             // Update iframe with content
-                            tShowTemplate.update(function(){
+                            t.showTemplate.update(function(){
                                 var iFrame = this.showTemplatePreviewRight[0]
                                 var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
                                 var htmlResource = self.getHtmlResource(actionDetails.targetTemplate)
@@ -2082,15 +2260,15 @@ XV.prototype.setTooltipActionDetails = function() {
                             })
                             break;
                         case 4:
-                            //ui.tooltip.css("max-width","70vw")
                             // Update text editor with the sql statement.
-                            cmDbSqlStatement.setValue(actionDetails.sqlStatement)
-                            cmDbSqlStatement.refresh()
+                            if (actionDetails.sqlStatement!==null){
+                                cmDbSqlStatement.setValue(actionDetails.sqlStatement)
+                                cmDbSqlStatement.refresh()
+                            }
                             break;
                         case 5:
-                            //ui.tooltip.css("max-width","70vw")
                             // Update iframe with content
-                            tEMail.update(function(){
+                            t.eMail.update(function(){
                                 var iFrame = this.eMailBodyRight[0]
                                 var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
                                 iFrameDoc.open()
@@ -2099,14 +2277,14 @@ XV.prototype.setTooltipActionDetails = function() {
                             })
                             break;
                         case 7:
-                            //ui.tooltip.css("max-width","70vw")
                             // Update text editor with the xsl statement.
-                            cmExportXml.setValue(self.getXslResource(actionDetails.xslTemplate).xsl)
-                            cmExportXml.refresh()                            
+                            if (actionDetails.xslTemplate!==null){
+                                cmExportXml.setValue(self.getXslResource(actionDetails.xslTemplate).xsl)
+                                cmExportXml.refresh()                            
+                            }
                             break;
                         case 8:
-                            //ui.tooltip.css("max-width","70vw")
-                            tExternalResource.update(function(){
+                            t.externalResource.update(function(){
                                 var iFrame = this.externalResourcePreviewRight[0]
                                 var iFrameDoc = XV.getIFrameContentDocument(iFrame).document
                                 ajaxRequest = $.ajax({
@@ -2125,8 +2303,38 @@ XV.prototype.setTooltipActionDetails = function() {
                                     url: actionDetails.resourceURL
                                 })
                             })
-
-                            break;                            
+                            break; 
+                        case 12:
+                            // Update text editor with the xsl statement.
+                            if (actionDetails.xslTemplate !== null) {
+                                cmPostRequest.setValue(self.getXslResource(actionDetails.xslTemplate).xsl)
+                                cmPostRequest.refresh()                                                
+                            }
+                            break;
+                        case 16:
+                            // Update text editor with the text content.
+                            if (actionDetails.textContent!==null){
+                                cmCreateTxt.setValue(actionDetails.textContent)
+                                cmCreateTxt.refresh()
+                            }
+                            break;
+                        case 24:
+                            var urlID = actionDetails.redirectTemplate
+                            var url = self.getUrlResource(urlID)
+                            if (url!==null){
+                                cmRedirect.setValue(url.url)
+                                cmRedirect.refresh()
+                            }                            
+                            break;
+                        case 26:
+                            var xslID = actionDetails.xslTemplate
+                            if (xslID!==null){
+                                var xsl = self.getXslResource(xslID)
+                                cmXmlToForm.setValue(xsl.xsl)
+                                cmXmlToForm.refresh()
+                            }
+                            break;
+                    
                     }
                 },
                 content: function(){
@@ -2141,89 +2349,54 @@ XV.prototype.setTooltipActionDetails = function() {
                     
                     switch (ximaProps["de.xima.fc.action.type"]) {
                         case 0:
-                            tShowTemplate.widget().show()
-                            tShowTemplate.setDisplayNames()
-                            tShowTemplate.update(function(){
+                            t.showTemplate.show(function(){
                                 this.showTemplateNameRight.text(self.getHtmlResource(actionDetails.targetTemplate).name)
                             })
                             break;
                             
 
                         case 1:
-                            jDetailsCallback.show()
+                            t.callback.show(function(){
+                                this.callbackNameRight.text(actionDetails.callbackName)
+                            })
                             break;
-                            
                             
                         case 2:
-                            tAttachFileToBatch.widget().show()
-                            tAttachFileToBatch.setDisplayNames()
-                            tAttachFileToBatch.update(function(rows){
-                                var _this = this
-                                _this.attachFileToBatchFilesRight.empty()
-                                actionDetails.loadFrom.length===0 ? rows.attachFileToBatchFilesLeft.hide() : rows.attachFileToBatchFilesLeft.show()
-                                actionDetails.loadFrom.forEach(function(actionID){
-                                    var action = self.getActionResource(actionID)
-                                    _this.attachFileToBatchFilesItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.attachFileToBatchFilesRight.append(_this.attachFileToBatchFilesItem.clone(false,true))
-                                })
+                            t.attachFileToBatch.show(function(){
+                                this.attachFileToBatchLoadFromList.empty()
+                                generateLoadFromList(this,"attachFileToBatchLoadFrom",actionDetails.loadFrom)                                
                             })
                             break;
-                            
                             
                         case 3:
-                            tReturnFile.widget().show()
-                            tReturnFile.setDisplayNames()
-                            tReturnFile.update(function(rows){
-                                var _this = this
-                                actionDetails.forceDownload && _this.returnFileForceDownloadYes.show() && _this.returnFileForceDownloadNo.hide()
-                                !actionDetails.forceDownload && _this.returnFileForceDownloadYes.hide() && _this.returnFileForceDownloadNo.show()
-                                actionDetails.loadFrom.length===0 ? rows.returnFileSaveAsLeft.hide() : rows.returnFileSaveAsLeft.show()
-                                _this.returnFileSaveAsRight.empty()
-                                actionDetails.loadFrom.forEach(function(actionID){
-                                    var action = self.getActionResource(actionID)
-                                    _this.returnFileSaveAsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.returnFileSaveAsRight.append(_this.returnFileSaveAsItem.clone(false,true))
-                                })                                
+                            t.returnFile.show(function(rows){
+                                actionDetails.forceDownload && this.returnFileForceDownloadYes.show() && this.returnFileForceDownloadNo.hide()
+                                !actionDetails.forceDownload && this.returnFileForceDownloadYes.hide() && this.returnFileForceDownloadNo.show()
+                                generateLoadFromList(this,"returnFileLoadFrom",actionDetails.loadFrom)                                
                             })
                             break;
                             
-                            
                         case 4:
-                            tDbSqlStatement.widget().show()
-                            tDbSqlStatement.setDisplayNames()
+                            t.dbSqlStatement.show()
                             break;
                             
-                            
                         case 5:
-                            tEMail.widget().show()
-                            tEMail.setDisplayNames()
-                            tEMail.update(function(rows) {
-                                var _this = this
+                            t.eMail.show(function() {
                                 this.eMailToRight.text(actionDetails.headerTo)
                                 this.eMailFromRight.text(actionDetails.headerFrom)
                                 this.eMailSubjectRight.text(actionDetails.headerSubject)
-                                this.eMailAttachmentsRight.empty()
-                                actionDetails.loadFrom.length===0 ? rows.eMailAttachmentsLeft.hide() : rows.eMailAttachmentsLeft.show()
-                                actionDetails.loadFrom.forEach(function(actionID) {
-                                    var action = self.getActionResource(actionID)                                
-                                    _this.eMailAttachmentsItem.text(action.ximaAction.properties["de.xima.fc.action.name"])
-                                    _this.eMailAttachmentsRight.append(_this.eMailAttachmentsItem.clone(false,true))
-                                })
+                                generateLoadFromList(this,"eMailLoadFrom",actionDetails.loadFrom)                                
                             })
                             break;
                             
-                            
                         case 6:
-                            tExportPersistence.widget().show()
-                            tExportPersistence.setDisplayNames()
-                            tExportPersistence.update(function(){this.exportPersistenceSaveAsRight.text(actionDetails.saveAs)})
+                            t.exportPersistence.show(function(){
+                                this.exportPersistenceSaveAsRight.text(actionDetails.saveAs)
+                            })
                             break;
                             
-                            
                         case 7:
-                            tExportXml.widget().show()
-                            tExportXml.setDisplayNames()
-                            tExportXml.update(function(){
+                            t.exportXml.show(function(){
                                 this.exportXmlSaveAsRight.text(actionDetails.saveAs)
                                 this.exportXmlTemplateNameRight.text(self.getXslResource(actionDetails.xslTemplate).name)
                                 actionDetails.sanitizeOutput && this.exportXmlCleanupYes.show() && this.exportXmlCleanupNo.hide()
@@ -2231,77 +2404,176 @@ XV.prototype.setTooltipActionDetails = function() {
                             })
                             break;
                             
-                            
                         case 8:
-                            tExternalResource.widget().show()
-                            tExternalResource.setDisplayNames()
-                            tExternalResource.update(function(){
+                            t.externalResource.show(function(){
                               this.externalResourceUrlRight.text(actionDetails.resourceURL)
                               this.externalResourceSaveAsRight.text(actionDetails.saveAs)
                             })
                             break;
                             
-                            
                         case 9:
-                            tWriteToForm.widget().show()
-                            tWriteToForm.setDisplayNames()
-                            tWriteToForm.update(function(){
-                                var _this = this
-                                _this.writeToFormValuesRight.empty()
-                                actionDetails.formChanges.forEach(function(formChange){
-                                    _this.writeToFormValuesKey.text(formChange.key)
-                                    _this.writeToFormValuesValue.text(formChange.value)
-                                    _this.writeToFormValuesRight.append(_this.writeToFormValuesRow.clone(false,true))
-                                })
+                            t.writeToForm.show(function(){
+                                actionDetails.formChanges.length!==0 && this.writeToFormValuesTable.show() && this.writeToFormValuesNone.hide()
+                                actionDetails.formChanges.length===0 && this.writeToFormValuesTable.hide() && this.writeToFormValuesNone.show()                              
+                                generateParameterTable(this,"writeToFormValues",actionDetails.formChanges)                                
+                            })
+                            break;
+                            
+                        case 10:
+                            t.compressAsZip.show(function(){
+                                this.compressAsZipSaveAsRight.text(actionDetails.saveAs)
+                                generateLoadFromList(this,"compressAsZipLoadFrom",actionDetails.loadFrom)                                
+                            })
+                            break;
+                            
+                        case 11:
+                            t.pdfFill.show(function(){
+                                this.pdfFillSourceRight.text(actionDetails.sourceTypeDisplayName)
+                                this.pdfFillResourceNameRight.text(actionDetails.resourceName)
+                                this.pdfFillSaveAsRight.text(actionDetails.saveAs)
+                                actionDetails.sourceType === "EXTERNAL" && this.pdfFillResourceNameLeft.text(displayNames.pdfFillSourceExternalLeft)
+                                actionDetails.sourceType === "TENANT" && this.pdfFillResourceNameLeft.text(displayNames.pdfFillSourceTenantLeft)
+                                actionDetails.sourceType === "PROJECT" && this.pdfFillResourceNameLeft.text(displayNames.pdfFillSourceProjectLeft)
+                                actionDetails.sourceType === "FORM" && this.pdfFillResourceNameLeft.text(displayNames.pdfFillSourceFormLeft)                                
+                            })
+                            break;
+                            
+                        case 12:
+                            t.postRequest.show(function(){
+                                this.postRequestTargetUrlRight.text(actionDetails.targetURL)
+                                this.postRequestRequestEncodingRight.text(actionDetails.requestEncoding)
+                                this.postRequestResponseEncodingRight.text(actionDetails.responseEncoding)
+                                actionDetails.allValues && this.postRequestAllValuesYes.show() && this.postRequestAllValuesNo.hide()
+                                !actionDetails.allValues && this.postRequestAllValuesYes.hide() && this.postRequestAllValuesNo.show()
+                                actionDetails.noFiles && this.postRequestNoFilesYes.show() && this.postRequestNoFilesNo.hide()
+                                !actionDetails.noFiles && this.postRequestNoFilesYes.hide() && this.postRequestNoFilesNo.show()
+                                actionDetails.xslTemplate===null && this.postRequestPreviewNone.show() && this.postRequestPreviewEditor.hide()
+                                actionDetails.xslTemplate!==null && this.postRequestPreviewNone.hide() && this.postRequestPreviewEditor.show()                                       
+                                generateParameterTable(this,"postRequestUrlParameters",actionDetails.urlParameters)
                             })
                             break;
                             
                             
-                        case 10:
-                            break;
-                            
-                            
-                        case 11:
-                            break;
-                        case 12:
-                            break;
                         case 13:
+                            t.execPlugin.show(function(){
+                                this.execPluginNameRight.text(actionDetails.name)
+                                generateParameterTable(this,"execPluginParameters",actionDetails.parameters)
+                            })
                             break;
+                                              
                         case 14:
-                            break;
-                        case 15:
-                            break;
-                        case 16:
-                            break;
-                        case 17:
-                            break;
-                        case 18:
-                            tStopBatch.widget().show()
-                            tStopBatch.setDisplayNames()                            
-                            break;
-                        case 19:
-                            break;
-                        case 20:
-                            tRenewProcessId.widget().show()
-                            tRenewProcessId.setDisplayNames()                        
+                            t.saveToFileSystem.show(function(){
+                                setOptionalText(this,"saveToFileSystemSaveAs",actionDetails.saveAs)
+                                generateLoadFromList(this,"saveToFileSystemLoadFrom",actionDetails.loadFrom)
+                                actionDetails.usePID && this.saveToFileSystemUsePidYes.show() && this.saveToFileSystemUsePidNo.hide()
+                                !actionDetails.usePID && this.saveToFileSystemUsePidYes.hide() && this.saveToFileSystemUsePidNo.show()
+                                actionDetails.useTimeStamp && this.saveToFileSystemUseTimeStampYes.show() && this.saveToFileSystemUseTimeStampNo.hide()
+                                !actionDetails.useTimeStamp && this.saveToFileSystemUseTimeStampYes.hide() && this.saveToFileSystemUseTimeStampNo.show()
+                            })
                             break;
                             
+                        case 15:
+                            t.changeStatus.show(function(){
+                                var statusID = actionDetails.targetStatus
+                                var status = self.getStatusResource(statusID)                                
+                                this.changeStatusTargetRight.text(status.ximaNode.properties["de.xima.fc.status.name"])
+                            })
+                            break;
+                            
+                        case 16:
+                            t.createTxt.show(function(){
+                                this.createTxtSaveAsRight.text(actionDetails.saveAs)
+                            })
+                            break;
+                            
+                        case 17:
+                            t.provideUpload.show(function(){
+                                generateItemsList(this,"provideUploadElements",actionDetails.uploadElementNames)
+                            })                            
+                            break;
+                            
+                        case 18:
+                            t.stopBatch.show()
+                            break;
+                            
+                        case 19:
+                            t.copyStatus.show(function(){
+                                var statusID = actionDetails.targetStatus
+                                var status = self.getStatusResource(statusID)
+                                this.copyStatusTargetRight.text(status.ximaNode.properties["de.xima.fc.status.name"])
+                            })                            
+                            break;
+                            
+                        case 20:
+                            t.renewProcessId.show()
+                            break;
                             
                         case 21:
-                            break;
-                        case 22:
-                            break;
-                        case 23:
-                            tDeleteBatch.widget().show()
-                            tDeleteBatch.setDisplayNames()                            
+                            t.copyToMailBox.show(function(){
+                                var mailboxID = actionDetails.targetMailBox
+                                var mailbox = self.getMailBoxResource(mailboxID)
+                                this.copyToMailBoxNameRight.text(mailbox.name)
+                                this.copyToMailBoxDescriptionRight.text(mailbox.description || "")
+                                mailbox.deletable && this.copyToMailBoxDeletableYes.show() && this.copyToMailBoxDeletableNo.hide()
+                                !mailbox.deletable && this.copyToMailBoxDeletableYes.hide() && this.copyToMailBoxDeletableNo.show()
+                                mailbox.keepStatus && this.copyToMailBoxKeepStatusYes.show() && this.copyToMailBoxKeepStatusNo.hide()
+                                !mailbox.keepStatus && this.copyToMailBoxKeepStatusYes.hide() && this.copyToMailBoxKeepStatusNo.show()
+                            })
                             break;
                             
+                        case 22:
+                            t.moveToMailBox.show(function(){
+                                var mailboxID = actionDetails.targetMailBox
+                                var mailbox = self.getMailBoxResource(mailboxID)
+                                this.moveToMailBoxNameRight.text(mailbox.name)
+                                this.moveToMailBoxDescriptionRight.text(mailbox.description || "")
+                                mailbox.deletable && this.moveToMailBoxDeletableYes.show() && this.moveToMailBoxDeletableNo.hide()
+                                !mailbox.deletable && this.moveToMailBoxDeletableYes.hide() && this.moveToMailBoxDeletableNo.show()
+                            })                            
+                            break;
+                            
+                        case 23:
+                            t.deleteBatch.show()
+                            break;
                             
                         case 24:
+                            t.redirect.show(function(){
+                                var urlID = actionDetails.redirectTemplate
+                                var url = self.getUrlResource(urlID)
+                                this.redirectUrlTemplateRight.text(url.name)
+                                generateParameterTable(this,"redirectParameters",actionDetails.urlParameters)
+                            })                            
+                            
                             break;
+                            
                         case 25:
+                            t.wordFill.show(function(){
+                                this.wordFillSourceRight.text(actionDetails.sourceTypeDisplayName)
+                                this.wordFillResourceNameRight.text(actionDetails.resourceName)
+                                this.wordFillSaveAsRight.text(actionDetails.saveAs)
+                                actionDetails.sourceType === "EXTERNAL" && this.wordFillResourceNameLeft.text(displayNames.wordFillSourceExternalLeft)
+                                actionDetails.sourceType === "TENANT" && this.wordFillResourceNameLeft.text(displayNames.wordFillSourceTenantLeft)
+                                actionDetails.sourceType === "PROJECT" && this.wordFillResourceNameLeft.text(displayNames.wordFillSourceProjectLeft)
+                                actionDetails.sourceType === "FORM" && this.wordFillResourceNameLeft.text(displayNames.wordFillSourceFormLeft)                                
+                            })
                             break;
+                            
                         case 26:
+                            t.xmlToForm.show(function(){
+                                var actionID = actionDetails.sourceAction
+                                var xslTemplateID = actionDetails.xslTemplate
+                                var action = self.getActionResource(actionID)
+                                this.xmlToFormSourceNameRight.text(action.ximaAction.properties["de.xima.fc.action.name"])
+                                generateParameterTable(this,"xmlToFormXPath",actionDetails.xPath)
+                                xslTemplateID===null && this.xmlToFormTemplateNameNone.show() && this.xmlToFormTemplateNameText.hide()
+                                xslTemplateID!==null && this.xmlToFormTemplateNameNone.hide() && this.xmlToFormTemplateNameText.show()
+                                xslTemplateID===null && this.xmlToFormPreviewNone.show() && this.xmlToFormPreviewEditor.hide()
+                                xslTemplateID!==null && this.xmlToFormPreviewNone.hide() && this.xmlToFormPreviewEditor.show()
+                                if (xslTemplateID!==null) {
+                                    xslTemplate = self.getXslResource(xslTemplateID)
+                                    this.xmlToFormTemplateNameText.text(xslTemplate.name)
+                                }
+                            })
                             break;
                     }
                     
@@ -2743,7 +3015,6 @@ XV.prototype.setupActionsDialog = function() {
                     $(this).parent().promise().done(function(){
                         statusNode.actionsDialog.dialogExtend("maximize")
                         XV.zoomGraphToBoundaries(statusNode.actionsKGraphBBox,statusNode.actionSvgGNode,statusNode.actionZoom,0.5,0.5,null,function(transform){
-                            console.log(transform)
                             this.attr({opacity: 0.0, transform: transform})
                                 .transition()
                                 .duration(400)
@@ -2870,10 +3141,10 @@ XV.prototype.getActionNodeLayout = function(node){
     var self = this
     var nodeLayout
     if (node.ximaAction.properties["de.xima.fc.action.condition"].type==="NONE"){
-        nodeLayout = self.layout.action.mainWithoutCondition
+        nodeLayout = (node.index===0) ? self.layout.action.mainWithoutConditionFirst : self.layout.action.mainWithoutCondition
     }
     else {
-        nodeLayout = self.layout.action.mainWithCondition
+        nodeLayout = (node.index===0) ? self.layout.action.mainWithConditionFirst : self.layout.action.mainWithCondition
     }
     return nodeLayout
 }
@@ -2894,6 +3165,12 @@ XV.prototype.getHtmlResource = function(id) {
 }
 XV.prototype.getXslResource = function(id) {
     return this.resources.xsl[id]
+}
+XV.prototype.getMailBoxResource = function(id) {
+    return this.resources.mailbox[id]
+}
+XV.prototype.getUrlResource = function(id) {
+    return this.resources.url[id]
 }
 
 // Button callback (navigation etc.)
@@ -2962,12 +3239,13 @@ XV.prototype.main = function(){
     })
     loadBar.progressbar({
         value: 0,
+        max: 100,
         change: function(){
             loadLabel.text((loadBar.progressbar("value").toFixed(1))+ "% abgeschlossen")
         },
         complete: function(){
             loadDialog.dialog("close")
-            loadBlock.animate({"opacity":"0"},1000,"swing",function(){$(this).hide()})
+            loadBlock.animate({"opacity":"0"},500,"swing",function(){$(this).hide()})
         }
     })
 
@@ -3007,7 +3285,7 @@ XV.prototype.main = function(){
         return path = _.map(points,function(r){return r[0] + " " + r[1]}).join("L")
     })
 
-    self.loadDialog = {dialog:loadDialog,bar:loadBar,block:loadBlock,details:loadDetails}
+    self.loadDialog = {dialog:loadDialog,bar:loadBar,block:loadBlock,details:loadDetails,steps:5}
     self.lineInterpolator = lineInterpolator    
     self.svgGZoom = zoom
     self.readLayoutSVG()
@@ -3034,12 +3312,14 @@ XV.prototype.readLayoutSVG = function() {
         [self.layout.status.edgeNodeTwoboundSouth,self.svgDefsNode],
         [self.layout.status.edgeNodeTwoboundWest,self.svgDefsNode],
         [self.layout.action.mainWithCondition,document.getElementById('actionsPaperSvgDefsTemplate')],
-        [self.layout.action.mainWithoutCondition,document.getElementById('actionsPaperSvgDefsTemplate')]
+        [self.layout.action.mainWithoutCondition,document.getElementById('actionsPaperSvgDefsTemplate')],
+        [self.layout.action.mainWithConditionFirst,document.getElementById('actionsPaperSvgDefsTemplate')],
+        [self.layout.action.mainWithoutConditionFirst,document.getElementById('actionsPaperSvgDefsTemplate')]        
     ]
     var promises = []
-    var len = entries.length
-    var pct = 2, dpct = (9-2)/len
     var time = (new Date()).getTime()
+
+    self.setLoadBar("Lade Resourcen...",100/self.loadDialog.steps)
     
     // Read svg file and replace all selectors (eg. #button-expand => .id-button-expand).
     entries.forEach(function(entry,idx){
@@ -3088,7 +3368,7 @@ XV.prototype.loadNodesToDomLayered = function(){
         
         var newStatusGNode = $(XV.clone(svgGNode))[0]
         var newStatusGNodeD3 = d3.select(newStatusGNode)
-        var actions = _.map(node.children,function(xa){return {ximaAction:xa, id:xa.id}})
+        var actions = _.map(node.children,function(xa,idx){return {ximaAction:xa, id:xa.id, index: idx}})
         var statusNode = {
             svgG : newStatusGNodeD3,
             svgGNode : newStatusGNode,
@@ -3119,7 +3399,6 @@ XV.prototype.loadNodesToDomLayered = function(){
 // Proceed to Step 4 upon completion.
 XV.prototype.prepareLayoutLayered = function () {
     var self = this
-    self.setLoadBar("Erstelle kGraph-Datenstruktur...",41)
     var data = self.data
     var layout = self.layout
     var status = layout.status
@@ -3156,7 +3435,6 @@ XV.prototype.prepareLayoutLayered = function () {
     // Parse transition edges and add to kGraph.
     // Also creates one port for each transition.
     data.edges.forEach(function(edge,idx){
-        self.setLoadBar("Füge Graphkante " + edge.id +" hinzu...",41+idx*(60-41)/(data.edges.length-1))
         var kGraphEdge = {}
         var sourceID = edge.source
         var targetID = edge.target
@@ -3188,8 +3466,6 @@ XV.prototype.prepareLayoutLayered = function () {
             MANUAL : svgGTarget.select(classSelectorsTarget.portInManual),
             TIMED : svgGTarget.select(classSelectorsTarget.portInTimed)
         }
-        A=svgGSource
-        console.log(classSelectorsSource.portOutAuto)
         var portsOutBBox = {
             AUTO : self.getBBoxFix(portsOut.AUTO.node()),
             MANUAL : self.getBBoxFix(portsOut.MANUAL.node()),
@@ -3276,8 +3552,6 @@ XV.prototype.prepareLayoutLayered = function () {
     // Parse status nodes and add to kGraph.
     // Also add ports to the status node.
     data.children.forEach(function(node,idx){    
-        self.setLoadBar("Füge Graphknoten " + node.id +" hinzu...",60+idx*(70-60)/(data.children.length-1))
-
         var kGraphNode = {}
         var allPorts = kGraphAllPorts[node.id]
         var allPortsArray = []
@@ -3308,7 +3582,7 @@ XV.prototype.prepareLayoutLayered = function () {
         kGraphNode.properties["de.cau.cs.kieler.portSpacing"] = 1
         
         if (node.properties["de.xima.fc.status.isIncoming"]) {
-            //kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "FIRST"
+            kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "FIRST"
         }
         if (node.properties["de.xima.fc.status.isOutgoing"]) {
             kGraphNode.properties["de.cau.cs.kieler.klay.layered.layerConstraint"] = "LAST"
@@ -3395,6 +3669,8 @@ XV.prototype.generateMainGraphLayered = function() {
     }
     
     // Start layouter.
+    self.setLoadBar("Berechne Statusknotenlayout...",2*100/self.loadDialog.steps)
+
     var layouter = $klay.layout({
         graph: kGraph,
         options : {},
@@ -3453,6 +3729,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         var elOnErrorNext = d.svgG.select(d.classSelectors.iconOnErrorNext)
         var elOnErrorStop = d.svgG.select(d.classSelectors.iconOnErrorStop) 
 
+        var elActionsGeneralEllipsis = d.svgG.select(d.classSelectors.textActionGeneralEllipsis)    
         var elActionsGeneralMain = []
         var elActionsGeneralSub = []        
         d.classSelectors.textActionGeneralIconsMain.forEach(function(selector) {
@@ -3553,6 +3830,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         // Actions
         var elActionsGeneral
         var actionsDataGeneral = []
+        var actionsDataEllipsis = []
         
         // Show large icons if there aren't many actions configured.
         if (actionsUnique.GENERAL.length > elActionsGeneralSub.length) {
@@ -3602,16 +3880,38 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
                 }
                 else {
                     XV.addClass(elActionGeneral.node(),"text-action-has-not-condition")
-                }                
+                }
             }
             else {
+                // No more actions, hide icon.
                 XV.addClass(elActionGeneral.node(),"text-action-inactive")
                 XV.addClass(elActionGeneral.node(),"text-action-general")
                 elActionGeneral.style({"visibility":"hidden"})
                 actionsDataGeneral.push({exists:false,actions:[]})
             }
-        })        
+        })
+        
+        // Show ellipsis only if there are more action types than icons.
+        if (actionsUnique.GENERAL.length>elActionsGeneral.length) {
+            elActionsGeneralEllipsis.style("visibility","visible")
+                .classed('text-action-ellipsis-active',true)
+            actionsDataEllipsis = {
+                exists: true,
+                actions: _.slice(actionsUnique.GENERAL,elActionsGeneral.length)
+            }
+        }
+        else {
+            elActionsGeneralEllipsis.style("visibility","hidden")
+                .classed('text-action-ellipsis-active',false)
+            actionsDataEllipsis = {
+                exists: false,
+                actions: []
+            }
+        }
+
+        d.actionsEllipsisD3 = elActionsGeneralEllipsis
         d.actionsD3 = d3.selectAll(_.flatten(elActionsGeneral,1))
+        d.actionsEllipsisD3.data([actionsDataEllipsis])
         d.actionsD3.data(actionsDataGeneral)
     })
     
@@ -3776,6 +4076,7 @@ XV.prototype.setupGlobalEventsLayered = function(){
 
     self.setTooltipStatusTitle()
     self.setTooltipActionIcon()
+    self.setTooltipActionEllipsisIcon()
     self.setTooltipTimedTransitionIcon()
     self.setTooltipManualTransitionIcon()
     self.setTooltipAutoTransitionIcon()
@@ -3796,8 +4097,6 @@ XV.prototype.setupGlobalEventsLayered = function(){
         })
         self.onResize.forEach(function(handler){handler(event)})
     })
-    
-    self.setLoadBar("Richte Ereignisbehandlung ein...",95)
         
     // Proceed to next step.
     self.loadActionsNodesToDOMLayered()
@@ -4145,7 +4444,8 @@ XV.prototype.generateActionsGraphLayered = function() {
             
         var onSuccess = function(layouted) {
             console.log("Klay layout computation for actions of status node " + statusNodeIdx + " took " + ((new Date().getTime())-time)/1000 + "s.")
-            
+            self.setLoadBar("Berechne Aktionsknodenlayout für Statusknoten " + statusNode.id + "...",(statusNodeIdx/(self.statusNodes.length-1))*100/self.loadDialog.steps+2*100/self.loadDialog.steps)
+
             var actionNodes = statusNode.actions
             var nodeActionD3 = statusNode.nodeActionG.selectAll('g.node-action')
             var edgeActionD3 = statusNode.edgeActionG.selectAll('g.edge-action')
@@ -4223,8 +4523,10 @@ XV.prototype.updateNodeActionD3Layered = function(nodeD3) {
         var formConditionOperator = ximaProperties["de.xima.fc.action.condition"].details["conditionOperator"]
         var textActionIcon = self.getImageFont(ximaProperties["de.xima.fc.action.icons"].action)
         var portOutStandardHidden = d.ports.OUT.STANDARD === null && !d.ximaAction.properties["de.xima.fc.action.stopsWorkflow"]
+        var activeStatus = ximaProperties["de.xima.fc.action.active"]
         
         // Get DOM elements.
+        var elContainerBody = d.svgG.select(d.classSelectors.containerBody)
         var elTextTitle = d.svgG.select(d.classSelectors.textTitle)
         var elTextTitleBBox = d.svgG.select(d.classSelectors.textTitleBBox)
         var elTextTitleEllipsis = d.svgG.select(d.classSelectors.textTitleEllipsis)
@@ -4241,6 +4543,8 @@ XV.prototype.updateNodeActionD3Layered = function(nodeD3) {
         var elPortInMouseover = d.svgG.select(d.classSelectors.ports.IN.mouseover)
         var elPortOutStandardIcon = d.svgG.select(d.classSelectors.ports.OUT.STANDARD.icon)
         var elPortOutStandardMouseover = d.svgG.select(d.classSelectors.ports.OUT.STANDARD.mouseover)
+        var elPortOutMismatchIcon = d.svgG.select(d.classSelectors.ports.OUT.MISMATCH.icon)
+        var elPortOutMismatchMouseover = d.svgG.select(d.classSelectors.ports.OUT.MISMATCH.mouseover)
         
         // Apply properties.    
         
@@ -4251,21 +4555,26 @@ XV.prototype.updateNodeActionD3Layered = function(nodeD3) {
         elTextAction.style("font-family",textActionIcon.fontFamily)
         elTextAction.text(textActionIcon.character)
         
+        // Gray out inactive actions.
+        activeStatus ? elContainerBody.style("filter",null) : elContainerBody.style("filter",XV.getCssUrl(elContainerBody.attr("xima-filter-id")))
+        
         // Hide unused ports.
         elPortInIcon.style("visibility", d.ports.IN.length === 0 ? "hidden" : "visible")
         elPortInMouseover.style("visibility", d.ports.IN.length === 0 ? "hidden" : "visible")
 
         elPortOutStandardIcon.style("visibility", portOutStandardHidden  ? "hidden" : "visible")
         elPortOutStandardMouseover.style("visibility", portOutStandardHidden ? "hidden" : "visible")
-
+    
+        if (conditionType!=="NONE" && ximaProperties["de.xima.fc.action.condition"].details.nextAction!=="STOP" && d.nextActionMismatch===null) {
+            elPortOutMismatchIcon.style("visibility","hidden")
+            elPortOutMismatchMouseover.style("visibility","hidden")
+        }
         
         // Condition sub-node.
         switch (conditionType) {
             case "NONE":
-                //elContainerCondition.style("visibility","hidden")
                 break;
             case "FORM":
-                //elContainerNoCondition.style("visibility","hidden")
                 for (var key in d.classSelectors.iconCondition) {
                     var elConditionOperator = d.svgG.select(d.classSelectors.iconCondition[key])
                     if (key !== formConditionOperator) {
@@ -4347,10 +4656,14 @@ XV.prototype.setupEventsActionsLayered = function(){
 // This is the last step.
 XV.prototype.finalizeLayered = function() {
     var self = this
-    self.setLoadBar("Finalisiere Darstellung...",99)
-    
+    self.setLoadBar("Schließe Ladevorgang ab...",100)
+    self.svgG.attr("opacity",0)    
     self.removeLoadBar(function(){
-        self.zoomToKGraphBoundaries()
+        self.zoomToKGraphBoundaries(null,null,null,function(transform){
+            this.transition()
+                .duration(1000)
+                .attr({opacity:1,transform:transform})
+        })
     })
 }
 

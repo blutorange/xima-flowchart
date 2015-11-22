@@ -57,7 +57,7 @@
         "displayNameErrorTransition": "Bei Fehler",
         "displayNameStandardTransition": "Nach Ausführung der Aktion",
         "displayNameStandardTransitionProceed": "nächste Aktion",
-        "displayNameStandardTransitionStop": "Verarbeitung abbrechen",
+        "displayNameStandardTransitionStop": "Aktionsverarbeitung abbrechen",
         "displayNameConditionFormElement": "Formularelement",
     
         "displayNames" : {
@@ -66,9 +66,12 @@
             "showTemplateNameLeft": "Template-Name",
             "showTemplatePreviewLeft": "Vorschau",
             
+            "callbackNameLeft": "Name des Callbacks",
+            
             "attachFileToBatchFilesLeft": "Anzuhängende Dateien",
             
-            "returnFileSaveAsLeft": "Auszuliefernde Dateien: ",
+            "attachFileToBatchLoadFromLeft": "Auszuliefernde Dateien: ",
+            "attachFileToBatchLoadFromNone": "Keine",
             "returnFileForceDownloadLeft": "Rückgabe als Dateidownload erzwingen: ",
             "returnFileForceDownloadYes": "Ja",
             "returnFileForceDownloadNo": "Nein",
@@ -79,7 +82,8 @@
             "eMailFromLeft": "E-Mail von",
             "eMailSubjectLeft": "Betreff",
             "eMailBodyLeft": "Inhalt",
-            "eMailAttachmentsLeft": "Anzuhängende Dateien",
+            "eMailLoadFromLeft": "Anzuhängende Dateien",
+            "eMailLoadFromNone": "Keine",
             
             "exportPersistenceSaveAsLeft": "Name der Ausgabedatei",
             
@@ -94,13 +98,109 @@
             "externalResourceSaveAsLeft": "Name der Ausgabedatei",
             "externalResourcePreviewLeft": "Vorschau",
             
-            "writeToFormValuesLeft": "Schreibe",
+            "writeToFormValuesLeft": "Formularänderungen",
+            "writeToFormValuesHeaderLeft": "Formularfeld",
+            "writeToFormValuesHeaderRight": "Wert",
+            "writeToFormValuesNone": "Keine",
+            
+            "compressAsZipSaveAsLeft": "Name der Ausgabedatei",
+            "compressAsZipLoadFromLeft": "Zu komprimierende Dateien",
+            "compressAsZipLoadFromNone" : "Keine",
+            
+            "pdfFillSourceLeft": "Quelle",
+            "pdfFillSourceExternalLeft": "Ressourcen-URL",
+            "pdfFillSourceTenantLeft": "Mandantenressource",
+            "pdfFillSourceProjectLeft": "Projektressource",            
+            "pdfFillSourceFormLeft": "Formularressource",
+            "pdfFillSaveAsLeft": "Name der Ausgabedatei",
+            
+            "postRequestTargetUrlLeft": "Sende URL",
+            "postRequestAllValuesLeft": "Alle Formularwerte übertragen",
+            "postRequestAllValuesYes": "Ja",
+            "postRequestAllValuesNo": "Nein",
+            "postRequestNoFilesLeft": "Keine Dateien übertragen (kein Multipart-Request)",
+            "postRequestNoFilesYes": "Ja",
+            "postRequestNoFilesNo": "Nein",
+            "postRequestUrlParametersLeft": "Zusätzliche Parameter",
+            "postRequestUrlParametersNone" : "Keine",
+            "postRequestUrlParametersHeaderLeft": "Parameter",
+            "postRequestUrlParametersHeaderRight": "Wert",
+            "postRequestXslTemplateLeft": "XSL-Template",
+            "postRequestPreviewNone": "Keines",
+            "postRequestRequestEncodingLeft": "Zeichensatz des Aufrufs",
+            "postRequestResponseEncodingLeft": "Zeichensatz der Antwortseite",
+            
+            "execPluginNameLeft": "Plugin-Name",
+            "execPluginParametersLeft": "Plugin-Parameter",
+            "execPluginParametersNone": "Keine",
+            "execPluginParametersHeaderLeft": "Parameter",
+            "execPluginParametersHeaderRight": "Wert",
+            
+            "saveToFileSystemSaveAsLeft": "Zielverzeichnis",
+            "saveToFileSystemSaveAsNone": "Ohne Angabe",
+            "saveToFileSystemLoadFromLeft": "Zu speichernde Dateien des Workflows",
+            "saveToFileSystemLoadFromNone": "Keine",
+            "saveToFileSystemUsePidLeft": "Prozess-ID verwenden",
+            "saveToFileSystemUsePidYes": "Ja",
+            "saveToFileSystemusePidNo": "Nein",
+            "saveToFileSystemUseTimeStampLeft": "Zeitstempel verwenden",
+            "saveToFileSystemUseTimeStampYes": "Ja",
+            "saveToFileSystemUseTimeStampNo": "Nein",
+            
+            "changeStatusTargetLeft": "Zielstatus",
+            
+            "createTxtContentLeft": "Dateiinhalt",
+            "createTxtSaveAsLeft": "Name der Ausgabedatei",
+            
+            "provideUploadElementsLeft": "Upload-Elemente",
+            "provideUploadElementsNone": "Keine",
             
             "stopBatchWarningRight": "Bitte beachten Sie, dass die Verarbeitung abgebrochen wird und alle folgenden Aktionen nicht durchgeführt werden!",
             
+            "copyStatusTargetLeft": "Status",
+            
             "renewProcessIdWarningRight": "Bitte beachten Sie, beim Ändern der ProzessID können eventuell bestehende Verknüpfungen mit anderen Systemen verloren gehen und das Formular nicht mehr über zuvor generierte Formularlinks aufgerufen werden.",
             
-            "deleteBatchWarningRight": "Bitte beachten Sie, dass beim Löschen des Vorgangs die Verarbeitung abgebrochen wird und alle Daten verloren gehen!"
+            "copyToMailBoxNameLeft": "Postfachname",
+            "copyToMailBoxDescriptionLeft": "Beschreibung",
+            "copyToMailBoxDeletableLeft": "Löschbar",
+            "copyToMailBoxDeletableYes": "Ja",
+            "copyToMailBoxDeletableNo": "Nein",
+            "copyToMailBoxKeepStatusLeft": "Status beibehalten",
+            "copyToMailBoxKeepStatusYes": "Ja",
+            "copyToMailBoxKeepStatusNo": "Nein",
+            
+            "moveToMailBoxNameLeft": "Postfachname",
+            "moveToMailBoxDescriptionLeft": "Beschreibung",
+            "moveToMailBoxDeletableLeft": "Löschbar",
+            "moveToMailBoxDeletableYes": "Ja",
+            "moveToMailBoxDeletableNo": "Nein",
+                    
+            "deleteBatchWarningRight": "Bitte beachten Sie, dass beim Löschen des Vorgangs die Verarbeitung abgebrochen wird und alle Daten verloren gehen!",
+
+            "redirectUrlTemplateLeft": "URL-Template",
+            "redirectParametersLeft": "Zusätzliche URL Parameter",
+            "redirectParametersNone": "Keine",
+            "redirectParametersHeaderLeft": "Parameter",
+            "redirectParametersHeaderRight": "Wert",
+            "redirectPreviewLeft": "Vorschau",
+            
+            "wordFillSourceLeft": "Quelle",
+            "wordFillSourceExternalLeft": "Ressourcen-URL",
+            "wordFillSourceTenantLeft": "Mandantenressource",
+            "wordFillSourceProjectLeft": "Projektressource",            
+            "wordFillSourceFormLeft": "Formularressource",
+            "wordFillSaveAsLeft": "Name der Ausgabedatei",
+            
+            "xmlToFormSourceNameLeft": "XML-Quelle aus Aktion",
+            "xmlToFormTemplateNameLeft": "XSL-Template",
+            "xmlToFormTemplateNameNone": "Keines",
+            "xmlToFormXPathLeft": "XPath",
+            "xmlToFormXPathNone": "Keine Einträge vorhanden",
+            "xmlToFormXPathHeaderLeft": "Feldname",
+            "xmlToFormXPathHeaderRight": "XPath",
+            "xmlToFormPreviewLeft": "XSL-Vorschau",
+            "xmlToFormPreviewNone": "Kein XSL-Template ausgewählt."
         },
         
         "actionDetailsTooltipCloseTimeout": 500,
@@ -143,10 +243,14 @@
             {"maxWidth": "800px"},
             {"maxWidth": "800px"},
             {"maxWidth": "800px"},
+            {"maxWidth": "800px"},
             {"maxWidth": "800px"}
         ],          
         "mainWithoutCondition": {
             "svg": "img/actionNodeWithoutCondition.svg",
+            "filters": {
+              "filterInactive": "#filter-inactive"  
+            },
 			"selectors": {
 				"MAIN" : "#layer1",
                 "nodeBody": "#node-body",                                
@@ -189,6 +293,9 @@
 		},
         "mainWithCondition": {
             "svg": "img/actionNodeWithCondition.svg",
+            "filters": {
+              "filterInactive": "#filter-inactive"  
+            },            
 			"selectors": {
 				"MAIN" : "#layer1",
                 "nodeBody": "#node-body",                
@@ -246,6 +353,114 @@
                     }
                 }
 			}
+        },
+        "mainWithoutConditionFirst": {
+            "svg": "img/actionNodeWithoutConditionFirst.svg",
+            "filters": {
+              "filterInactive": "#filter-inactive"  
+            },            
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                                
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerNoCondition": "#container-nocondition",
+                "containerActionNodeMouseover" : "#container-action-node-mouseover",
+                "textAction": "#text-action>tspan",
+                "textTitle": "#text-title>tspan",
+                "textTitleBBox": "#text-title-bbox",
+                "textTitleEllipsis": "#text-title-ellipsis",
+                "nodeHighlight": "#node-highlight",
+                "iconOnErrorStop": "#icon-on-error-stop",
+                "iconOnStandardStop": "#icon-on-standard-stop",
+                "ports": {
+                    "OUT": {
+                        "STANDARD": {
+                            "icon": "#port-out-standard-icon",
+                            "attach": "#port-out-standard",
+                            "mouseover": "#port-out-standard-mouseover"
+                        },
+                        "MISMATCH": {
+                            "icon": "#port-out-mismatch-icon",
+                            "attach": "#port-out-mismatch",
+                            "mouseover": "#port-out-mismatch-mouseover"
+                        },       
+                        "ERROR": {
+                            "icon": "#port-out-error-icon",
+                            "attach": "#port-out-error",
+                            "mouseover": "#port-out-error-mouseover"
+                        }                        
+                    },
+                    "IN": {
+                        "icon": "#port-in-icon",
+                        "attach": "#port-in",
+                        "mouseover": "#port-in"
+                    }
+                }              
+			}
+        },
+        "mainWithConditionFirst": {
+            "svg": "img/actionNodeWithConditionFirst.svg",
+            "filters": {
+              "filterInactive": "#filter-inactive"  
+            },            
+			"selectors": {
+				"MAIN" : "#layer1",
+                "nodeBody": "#node-body",                
+                "nodeHighlight" : "#node-highlight",
+				"containerBody": "#container-body",
+                "containerCondition": "#container-condition",
+                "containerConditionNode": "#container-condition-node",
+                "containerConditionNodeMouseover": "#container-condition-node-mouseover",                
+                "containerActionNodeMouseover" : "#container-action-node-mouseover",
+                "textAction": "#text-action>tspan",
+                "textTitle": "#text-title>tspan",
+                "textTitleBBox": "#text-title-bbox",
+                "textTitleEllipsis": "#text-title-ellipsis",
+                "nodeHighlight": "#node-highlight",
+                "iconOnErrorStop": "#icon-on-error-stop",
+                "iconOnMismatchStop": "#icon-on-mismatch-stop",
+                "iconOnStandardStop": "#icon-on-standard-stop",
+                "textConditionTypeFormvalue": "#text-condition-type-formvalue",
+                "textConditionTypeRegexp": "#text-condition-type-regexp",
+                "iconsCondition": "#icon-condition-operator",
+                "iconCondition": {
+                    "EMPTY": "#icon-condition-empty",
+                    "NONEMPTY": "#icon-condition-nonempty",
+                    "EQUAL": "#icon-condition-equal",
+                    "NOTEQUAL": "#icon-condition-notequal",
+                    "CONTAINS": "#icon-condition-contains",
+                    "GREATER": "#icon-condition-greater",
+                    "SMALLER": "#icon-condition-smaller",
+                    "STARTSWITH": "#icon-condition-startswith",
+                    "ENDSON": "#icon-condition-endson",
+                    "MATCHES": "#icon-condition-matches"
+                },
+                "ports": {
+                    "OUT": {
+                        "STANDARD": {
+                            "icon": "#port-out-standard-icon",
+                            "attach": "#port-out-standard",
+                            "mouseover": "#port-out-standard-mouseover"
+                        },
+                        "MISMATCH": {
+                            "icon": "#port-out-mismatch-icon",
+                            "attach": "#port-out-mismatch",
+                            "mouseover": "#port-out-mismatch-mouseover"
+                        },       
+                        "ERROR": {
+                            "icon": "#port-out-error-icon",
+                            "attach": "#port-out-error",
+                            "mouseover": "#port-out-error-mouseover"
+                        }                        
+                    },
+                    "IN": {
+                        "icon": "#port-in-icon",
+                        "attach": "#port-in",
+                        "mouseover": "#port-in"
+                    }
+                }
+			}            
 		}        
     },
     "status": {
@@ -411,6 +626,7 @@
                 "portOutTimedMouseover" : "#port-out-timed-mouseover",
                 "textActionGeneralMain": "#text-action-general-main",
                 "textActionGeneralSub": "#text-action-general-sub",
+                "textActionGeneralEllipsis": "#text-action-general-ellipsis",                
 				"textActionGeneralIconsMain": [
 					"#text-action-general-0 tspan",
 					"#text-action-general-1 tspan",
@@ -452,7 +668,7 @@
 			}
 		}, 
         "mainSubmission": {
-            "svg": "img/statusNodeVar3.svg",
+            "svg": "img/statusNodeVar2.svg",
 			"selectors": {
 				"MAIN" : "#layer1",
                 "nodeBody": "#node-body",                
@@ -495,6 +711,7 @@
                 "portOutTimedMouseover" : "#port-out-timed-mouseover",
                 "textActionGeneralMain": "#text-action-general-main",
                 "textActionGeneralSub": "#text-action-general-sub",
+                "textActionGeneralEllipsis": "#text-action-general-ellipsis",                
 				"textActionGeneralIconsMain": [
 					"#text-action-general-0 tspan",
 					"#text-action-general-1 tspan",
@@ -579,6 +796,7 @@
                 "portOutTimedMouseover" : "#port-out-timed-mouseover",
                 "textActionGeneralMain": "#text-action-general-main",
                 "textActionGeneralSub": "#text-action-general-sub",
+                "textActionGeneralEllipsis": "#text-action-general-ellipsis",
 				"textActionGeneralIconsMain": [
 					"#text-action-general-0 tspan",
 					"#text-action-general-1 tspan",

@@ -14,6 +14,7 @@
 
 body{
     margin: 0;
+    overflow: hidden;    
 }
 html {
     font-size: 12px;
@@ -22,7 +23,6 @@ html {
 
 #viewport {
     background-color: #fbfbfb;
-    overflow: hidden;
 }
 
 #paper {
@@ -47,7 +47,7 @@ h1 {
 .id-container-condition-node-mouseover, .id-port-out-mismatch-mouseover, .id-port-out-error-mouseover, .id-port-out-standard-mouseover, .id-text-title-bbox, .id-port-out-standard, .id-port-out-error, .id-port-out-mismatch, .id-container-action-node-mouseover {
     opacity: 0 !important;    
 }
-.disable-mask-edit-manual {
+.disable-mask-edit-manual, .id-text-action-general-ellipsis-rect {
     opacity: 0 !important;
 }
 
@@ -107,14 +107,14 @@ div.actionsDialog {
     font-size: 0.8em;
     color: #666;
 }
-#actionTooltip .displayName {
+#actionTooltip .displayName, #actionEllipsisTooltip .displayName {
     font-size: 1.2em;
     font-weight: 700;
 }
-#actionTooltip .tooltip-action-status-name {
+#actionTooltip .tooltip-action-status-name, #actionEllipsisTooltip .actionName {
     font-weight: 700;
 }
-#actionTooltip .tooltip-action-condition-active-status {
+#actionTooltip .tooltip-action-condition-active-status, #actionEllipsisTooltip .actionStatus {
     color: #888;
 }
 /* Tooltip for timed transition port on the statusbox */
@@ -167,10 +167,45 @@ div.actionsDialog {
     font-weight: 700;
 }
 #actionDetailsTooltip .tableWidgetLeft {
+    vertical-align: top;
     font-weight: 700;
 }
 #actionDetailsTooltip .tableWidgetTable .tableWidgetLeft {
     max-width: 200px;
+}
+#actionDetailsTooltip .tableWidgetTable .tableWidgetRight ul {
+    margin-top: 0;
+}
+#actionDetailsTooltip .keyValueTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+#actionDetailsTooltip .keyValueTableHeader {
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: #5a5a5a;
+}
+#actionDetailsTooltip .keyValueTable tr:nth-child(odd) {
+    background-color: #eee;
+}
+#actionDetailsTooltip .keyValueTable tr:nth-child(even) {
+    background-color: #fff;
+}
+#actionDetailsTooltip .keyValueTable td {
+    word-break: break-all;
+    vertical-align: top;
+    color: #5a5a5a;    
+}
+#actionDetailsTooltip .keyValueTable .keyValueTableLeft {
+    width: 50%;
+    padding-right: 5px;
+    font-weight: 700;
+    text-align: left;
+}
+#actionDetailsTooltip .keyValueTable .keyValueTableRight {
+    width: 50%;
+    padding-left: 5px;
+    text-align: left;
 }
 #actionDetailsTooltip .detailsIFrameLarge {
     width: 600px;

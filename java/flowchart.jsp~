@@ -1371,7 +1371,6 @@
           autoTransition.put("target", "de.xima.fc.status-" + String.valueOf(procCopyState.getStatusId()));
           autoTransition.put("properties", autoTransitionProps);
           transitionsJsonArray.put(autoTransition);
-          stopsWorkflow = true;
           break;
         case DB_SQL_STATEMENT:
           VerarbeitungDbSQLQuery procSql = (VerarbeitungDbSQLQuery)(proc);    

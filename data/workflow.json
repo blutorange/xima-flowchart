@@ -24,6 +24,10 @@
 
 
 
+
+
+
+
     
 
 
@@ -53,7 +57,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 },
@@ -126,7 +130,7 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"uploadElementNames": ["upl_unterlagen"]},
                         "de.xima.fc.action.displayName": "Upload bereitstellen",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-2",
@@ -159,7 +163,10 @@
                             "nextActionDisplayName": "konfigurierte Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "loadFrom": ["de.xima.fc.action-2301"],
+                            "saveAs": "asd"
+                        },
                         "de.xima.fc.action.displayName": "Komprimieren (Zip)",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-3",
@@ -192,7 +199,7 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"uploadElementNames": ["upl_unterlagen"]},
                         "de.xima.fc.action.displayName": "Upload bereitstellen",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-2",
@@ -436,7 +443,7 @@
                             "condition": "",
                             "error": ""
                         },
-                        "de.xima.fc.action.name": "Ausgeliefert",
+                        "de.xima.fc.action.name": "exportXml",
                         "de.xima.fc.action.onError": "STOP",
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": true,
@@ -473,6 +480,610 @@
                         "de.xima.fc.action.stopsWorkflow": false,
                         "de.xima.fc.action.type": 8
                     }
+                },
+                {
+                    "id": "de.xima.fc.action-2872",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"formChanges": [{
+                            "key": "qweqweqew",
+                            "value": "ertr"
+                        }]},
+                        "de.xima.fc.action.displayName": "Formular ändern",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-7",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "preq2",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 9
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2875",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "allValues": false,
+                            "noFiles": false,
+                            "requestEncoding": "UTF-8",
+                            "responseEncoding": "UTF-8",
+                            "targetURL": "example.com",
+                            "urlParameters": [],
+                            "xslTemplate": null
+                        },
+                        "de.xima.fc.action.displayName": "POST-Request",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-12",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "4546",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 12
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2876",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "name": "AKDB:EPayment verifizieren",
+                            "parameters": [
+                                {
+                                    "key": "mandantNr",
+                                    "value": "213"
+                                },
+                                {
+                                    "key": "kassenzeichen",
+                                    "value": null
+                                },
+                                {
+                                    "key": "PayPageStatus",
+                                    "value": null
+                                },
+                                {
+                                    "key": "WebserviceErgebnisText",
+                                    "value": null
+                                }
+                            ],
+                            "plugin": "de.xima.fc.resource.plugin-de.xima.akdb.logic.plugin.EPaymentVerifyPlugin"
+                        },
+                        "de.xima.fc.action.displayName": "Plugin ausführen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-13",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "execPlug",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 13
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2877",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "loadFrom": [
+                                "de.xima.fc.action-2359",
+                                "de.xima.fc.action-2550"
+                            ],
+                            "saveAs": null,
+                            "usePID": true,
+                            "useTimeStamp": false
+                        },
+                        "de.xima.fc.action.displayName": "Speichern (Dateisystem)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-14",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "2345aq",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 14
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2879",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"uploadElementNames": ["upl_unterlagen"]},
+                        "de.xima.fc.action.displayName": "Upload bereitstellen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-2",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Uploaden",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 17
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2880",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2409"},
+                        "de.xima.fc.action.displayName": "Vorgang duplizieren (Statusänderung)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-15",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Copyme",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
+                        "de.xima.fc.action.type": 19
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2881",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-300"},
+                        "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-16",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Mailboxen",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 22
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2882",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "keepStatus": false,
+                            "targetMailBox": "de.xima.fc.resource.mailbox-350"
+                        },
+                        "de.xima.fc.action.displayName": "Vorgang in Postfach kopieren",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-17",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "plugin222",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 21
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2883",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "redirectTemplate": "de.xima.fc.resource.url-501",
+                            "urlParameters": []
+                        },
+                        "de.xima.fc.action.displayName": "Weiterleitung",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-18",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Weiterrecten",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 24
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2884",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "resourceName": "http://example.com",
+                            "saveAs": "me.docx",
+                            "sourceType": "EXTERNAL",
+                            "sourceTypeDisplayName": "Externe Ressource"
+                        },
+                        "de.xima.fc.action.displayName": "Word (Fill)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-19",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "WordFüller",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 25
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2885",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "sourceAction": "de.xima.fc.action-2879",
+                            "xPath": [{
+                                "key": "123",
+                                "value": "4561"
+                            }],
+                            "xslTemplate": "de.xima.fc.resource.xsl-300"
+                        },
+                        "de.xima.fc.action.displayName": "XML Einlesen und Formularfelder setzen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-20",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "XmlToFd",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 26
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2886",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "sourceAction": "de.xima.fc.action-2303",
+                            "xPath": [],
+                            "xslTemplate": null
+                        },
+                        "de.xima.fc.action.displayName": "XML Einlesen und Formularfelder setzen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-20",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "test",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 26
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2887",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"callbackName": "jw34k5jkhjhj"},
+                        "de.xima.fc.action.displayName": "Callback",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-21",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Callbacker",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 1
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2888",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"loadFrom": [
+                            "de.xima.fc.action-2359",
+                            "de.xima.fc.action-2550"
+                        ]},
+                        "de.xima.fc.action.displayName": "Datei an Vorgang anhängen",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-9",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "anhängen",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 2
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2889",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "forceDownload": true,
+                            "loadFrom": [
+                                "de.xima.fc.action-2359",
+                                "de.xima.fc.action-2550"
+                            ]
+                        },
+                        "de.xima.fc.action.displayName": "Datei ausliefern",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-22",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Ausgelieferter",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 3
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2890",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"sqlStatement": "SELECT SANTACLAUS FROM MYTHICALBEINGS"},
+                        "de.xima.fc.action.displayName": "Datenbank (SQL Statement)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-23",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "SQL",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 4
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2891",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"saveAs": "persistent"},
+                        "de.xima.fc.action.displayName": "Export (Persistence)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-24",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Persistent",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 6
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2892",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "resourceName": "http://example.com",
+                            "saveAs": "qwertz.pdf",
+                            "sourceType": "EXTERNAL",
+                            "sourceTypeDisplayName": "Externe Ressource"
+                        },
+                        "de.xima.fc.action.displayName": "PDF (Fill)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-25",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "pdfFüller",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 11
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2893",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "allValues": true,
+                            "noFiles": false,
+                            "requestEncoding": "UTF-8",
+                            "responseEncoding": "UTF-8",
+                            "targetURL": "example.com",
+                            "urlParameters": [],
+                            "xslTemplate": "de.xima.fc.resource.xsl-800"
+                        },
+                        "de.xima.fc.action.displayName": "POST-Request",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-12",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Poster",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 12
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2894",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2407"},
+                        "de.xima.fc.action.displayName": "Statusänderung",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Status Meister",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
+                        "de.xima.fc.action.type": 15
+                    }
                 }
             ],
             "id": "de.xima.fc.status-2400",
@@ -491,7 +1102,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status trotzdem wechseln",
                 "de.xima.fc.status.restrictionsFrom": [],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": []
             }
         },
@@ -510,7 +1121,7 @@
                         "de.xima.fc.action.details": {"sqlStatement": "CREATE TABLE IF NOT EXISTS `COUNTER_S` (`PID` INT NOT NULL, `COUNT_S` INT NOT NULL);\ninsert into `COUNTER_S` VALUES(1,0); insert into `COUNTER_S` (Select 1, `COUNT_S` + 1 from `COUNTER_S` where PID=1 GROUP BY COUNT_S); delete from `COUNTER_S` where PID=1 and COUNT_S < ( SELECT MAXO FROM (SELECT MAX(count_s) AS MAXO FROM `COUNTER_S` WHERE PID=1) AS TMP);"},
                         "de.xima.fc.action.displayName": "Datenbank (SQL Statement)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-12",
+                            "action": "de.xima.fc.resource.image.font-23",
                             "condition": "",
                             "error": ""
                         },
@@ -536,7 +1147,7 @@
                         "de.xima.fc.action.details": {"sqlStatement": "select PID, COUNT_S from `COUNTER_S`;"},
                         "de.xima.fc.action.displayName": "Datenbank (SQL Statement)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-12",
+                            "action": "de.xima.fc.resource.image.font-23",
                             "condition": "",
                             "error": ""
                         },
@@ -708,7 +1319,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-2409"]
             }
         },
@@ -724,10 +1335,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-52"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -757,10 +1368,13 @@
                             "nextActionDisplayName": "konfigurierte Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "saveAs": "tmp.txt",
+                            "textContent": "loeschen"
+                        },
                         "de.xima.fc.action.displayName": "Textdatei erzeugen",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-14",
+                            "action": "de.xima.fc.resource.image.font-26",
                             "condition": "",
                             "error": ""
                         },
@@ -770,7 +1384,7 @@
                         "de.xima.fc.action.providesFile": true,
                         "de.xima.fc.action.requiresFile": false,
                         "de.xima.fc.action.stopsWorkflow": false,
-                        "de.xima.fc.action.type": 14
+                        "de.xima.fc.action.type": 16
                     }
                 },
                 {
@@ -978,10 +1592,24 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {"formChanges": [{
-                            "key": "tfStatus_Mail_send_ok",
-                            "value": "ok"
-                        }]},
+                        "de.xima.fc.action.details": {"formChanges": [
+                            {
+                                "key": "tfStatus_Mail_send_ok",
+                                "value": "ok"
+                            },
+                            {
+                                "key": "tfStatus_Mail_send_bad",
+                                "value": "bad"
+                            },
+                            {
+                                "key": "tfStatus_Mail_receive_ok",
+                                "value": "ok"
+                            },
+                            {
+                                "key": "tfStatus_Post_exec_harmonius",
+                                "value": "misya"
+                            }
+                        ]},
                         "de.xima.fc.action.displayName": "Formular ändern",
                         "de.xima.fc.action.icons": {
                             "action": "de.xima.fc.resource.image.font-7",
@@ -1022,8 +1650,37 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-2870",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {
+                            "loadFrom": ["de.xima.fc.action-2231"],
+                            "saveAs": "Zypresse"
+                        },
+                        "de.xima.fc.action.displayName": "Komprimieren (Zip)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-3",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "Kompresse",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": true,
+                        "de.xima.fc.action.requiresFile": true,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 10
                     }
                 }
             ],
@@ -1042,7 +1699,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": [
                     "de.xima.fc.status-2409",
                     "de.xima.fc.status-2400",
@@ -1111,10 +1768,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-100"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -1144,10 +1801,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-150"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -1176,7 +1833,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-2402"]
             }
         },
@@ -1192,10 +1849,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-300"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -1251,7 +1908,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-1"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-2406"]
             }
         },
@@ -1268,10 +1925,10 @@
                                 "conditionRHS": "loadDoku",
                                 "displayNameConditionOperator": "Gleich",
                                 "hasRHS": true,
-                                "nextAction": "STOP"
+                                "nextAction": "NEXT"
                             },
                             "displayName": "Übereinstimmung mit Formularwert erforderlich",
-                            "nextActionDisplayName": "Verarbeitung abbrechen",
+                            "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
                         "de.xima.fc.action.details": {"targetStatus": "de.xima.fc.status-2405"},
@@ -1286,7 +1943,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "konfigurierte Aktion",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 },
@@ -1319,7 +1976,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 },
@@ -1352,7 +2009,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 },
@@ -1385,7 +2042,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 }
@@ -1405,7 +2062,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-2400"]
             }
         },
@@ -1453,10 +2110,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-300"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -1485,7 +2142,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-2406"]
             }
         },
@@ -1501,10 +2158,10 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "NONE"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {"targetMailBox": "de.xima.fc.resource.mailbox-200"},
                         "de.xima.fc.action.displayName": "Vorgang in Postfach verschieben",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-13",
+                            "action": "de.xima.fc.resource.image.font-16",
                             "condition": "",
                             "error": ""
                         },
@@ -1534,10 +2191,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Gas.docx",
+                            "saveAs": "Textteil_Gas.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1567,10 +2229,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Gas_abholung.docx",
+                            "saveAs": "Textteil_Gas.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1600,10 +2267,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Strom.docx",
+                            "saveAs": "Textteil_Strom.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1633,10 +2305,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Strom_abholung.docx",
+                            "saveAs": "Textteil_Strom.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1666,10 +2343,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Netzschutz.docx",
+                            "saveAs": "Textteil_Netzschutz.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1699,10 +2381,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Netzschutz_abholung.docx",
+                            "saveAs": "Textteil_Netszchutz.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1732,10 +2419,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Fernwaerme.docx",
+                            "saveAs": "Textteil_Fernw.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1765,10 +2457,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Fernwaerme_abholung.docx",
+                            "saveAs": "Textteil_Fernw.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1798,10 +2495,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Verkehr.docx",
+                            "saveAs": "Textteil_Verkehr.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1831,10 +2533,15 @@
                             "nextActionDisplayName": "nächste Aktion",
                             "type": "FORM"
                         },
-                        "de.xima.fc.action.details": {},
+                        "de.xima.fc.action.details": {
+                            "resourceName": "Versorgungsunterlagen_Verkehr_abholung.docx",
+                            "saveAs": "Textteil_Verkehr.pdf",
+                            "sourceType": "PROJECT",
+                            "sourceTypeDisplayName": "Formular"
+                        },
                         "de.xima.fc.action.displayName": "Word (Fill)",
                         "de.xima.fc.action.icons": {
-                            "action": "de.xima.fc.resource.image.font-15",
+                            "action": "de.xima.fc.resource.image.font-19",
                             "condition": "",
                             "error": ""
                         },
@@ -1901,7 +2608,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": [
                     "de.xima.fc.status-2409",
                     "de.xima.fc.status-2408",
@@ -1936,7 +2643,7 @@
                         "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
                         "de.xima.fc.action.providesFile": false,
                         "de.xima.fc.action.requiresFile": false,
-                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.stopsWorkflow": true,
                         "de.xima.fc.action.type": 15
                     }
                 },
@@ -1982,7 +2689,7 @@
                 "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
                 "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
                 "de.xima.fc.status.timedTransitionSeconds": 0,
-                "de.xima.fc.status.timedTransitionTarget": "de.xima.fc.null",
+                "de.xima.fc.status.timedTransitionTarget": null,
                 "de.xima.fc.status.transitionsFrom": [
                     "de.xima.fc.status-2409",
                     "de.xima.fc.status-2400",
@@ -2003,6 +2710,24 @@
             },
             "source": "de.xima.fc.status-2400",
             "target": "de.xima.fc.status-2409"
+        },
+        {
+            "id": "de.xima.fc.transition-auto_2880",
+            "properties": {
+                "de.xima.fc.transition.details": {"initiator": "de.xima.fc.action-2880"},
+                "de.xima.fc.transition.type": "AUTO"
+            },
+            "source": "de.xima.fc.status-2400",
+            "target": "de.xima.fc.status-2409"
+        },
+        {
+            "id": "de.xima.fc.transition-auto_2894",
+            "properties": {
+                "de.xima.fc.transition.details": {"initiator": "de.xima.fc.action-2894"},
+                "de.xima.fc.transition.type": "AUTO"
+            },
+            "source": "de.xima.fc.status-2400",
+            "target": "de.xima.fc.status-2407"
         },
         {
             "id": "de.xima.fc.transition-manual-2409-0",
@@ -2319,34 +3044,100 @@
                         "id": "de.xima.fc.resource.image.font-11"
                     },
                     "de.xima.fc.resource.image.font-12": {
-                        "codepoint": 59513,
+                        "codepoint": 59995,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-12"
                     },
                     "de.xima.fc.resource.image.font-13": {
-                        "codepoint": 59901,
+                        "codepoint": 59515,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-13"
                     },
                     "de.xima.fc.resource.image.font-14": {
-                        "codepoint": 59714,
+                        "codepoint": 60247,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-14"
                     },
                     "de.xima.fc.resource.image.font-15": {
-                        "codepoint": 59718,
+                        "codepoint": 59432,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-15"
+                    },
+                    "de.xima.fc.resource.image.font-16": {
+                        "codepoint": 59901,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-16"
+                    },
+                    "de.xima.fc.resource.image.font-17": {
+                        "codepoint": 59713,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-17"
+                    },
+                    "de.xima.fc.resource.image.font-18": {
+                        "codepoint": 60017,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-18"
+                    },
+                    "de.xima.fc.resource.image.font-19": {
+                        "codepoint": 59718,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-19"
                     },
                     "de.xima.fc.resource.image.font-2": {
                         "codepoint": 59679,
                         "color": null,
                         "font": "de.xima.fc.resource.font-0",
                         "id": "de.xima.fc.resource.image.font-2"
+                    },
+                    "de.xima.fc.resource.image.font-20": {
+                        "codepoint": 59725,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-20"
+                    },
+                    "de.xima.fc.resource.image.font-21": {
+                        "codepoint": 59804,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-21"
+                    },
+                    "de.xima.fc.resource.image.font-22": {
+                        "codepoint": 59678,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-22"
+                    },
+                    "de.xima.fc.resource.image.font-23": {
+                        "codepoint": 59513,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-23"
+                    },
+                    "de.xima.fc.resource.image.font-24": {
+                        "codepoint": 60168,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-24"
+                    },
+                    "de.xima.fc.resource.image.font-25": {
+                        "codepoint": 59717,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-25"
+                    },
+                    "de.xima.fc.resource.image.font-26": {
+                        "codepoint": 59714,
+                        "color": null,
+                        "font": "de.xima.fc.resource.font-0",
+                        "id": "de.xima.fc.resource.image.font-26"
                     },
                     "de.xima.fc.resource.image.font-3": {
                         "codepoint": 59722,
@@ -2394,32 +3185,305 @@
                 "image": {},
                 "svg": {}
             },
-            "mailbox": {},
-            "plugin": {},
-            "url": {},
+            "mailbox": {
+                "de.xima.fc.resource.mailbox-1": {
+                    "deletable": false,
+                    "description": "Das Standard-Postfach, dass nicht gelöscht werden kann.",
+                    "id": "de.xima.fc.resource.mailbox-1",
+                    "name": "Zentrales Postfach",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-2"]
+                },
+                "de.xima.fc.resource.mailbox-300": {
+                    "deletable": true,
+                    "description": "Alle abgeschlossenen Vorgänge",
+                    "id": "de.xima.fc.resource.mailbox-300",
+                    "name": "Archiv",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-400"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-350": {
+                    "deletable": true,
+                    "description": "Dies ist ein beispielsloses Postfache ohne Vergleiche. Ich bin sprachlos und verliere gleich die Worte.",
+                    "id": "de.xima.fc.resource.mailbox-350",
+                    "name": "Demo Sammelpostfach",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-400"]
+                },
+                "de.xima.fc.resource.mailbox-700": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-700",
+                    "name": "sg11_de-de",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-400"]
+                },
+                "de.xima.fc.resource.mailbox-711": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-711",
+                    "name": "Posteingang",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-712": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-712",
+                    "name": "Personalabteilung",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-715": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-715",
+                    "name": "pdveingang",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                }
+            },
+            "plugin": {"de.xima.fc.resource.plugin-de.xima.akdb.logic.plugin.EPaymentVerifyPlugin": {
+                "class": "class de.xima.akdb.logic.plugin.EPaymentVerifyPlugin",
+                "id": "de.xima.fc.resource.plugin-de.xima.akdb.logic.plugin.EPaymentVerifyPlugin"
+            }},
+            "url": {"de.xima.fc.resource.url-501": {
+                "id": "de.xima.fc.resource.url-501",
+                "name": "FORMLINK",
+                "url": "[%$FORM_PROZESS_LINK%]"
+            }},
+            "user": {
+                "de.xima.fc.resource.user-1": {
+                    "clearTextPassword": null,
+                    "eMail": "swe@xima.de",
+                    "familyName": "Admin",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "System Admin",
+                    "id": "de.xima.fc.resource.user-1",
+                    "loginName": "admin",
+                    "name": "admin",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "System",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "1",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-200": {
+                    "clearTextPassword": null,
+                    "eMail": "sas@xima.de",
+                    "familyName": "Schulze",
+                    "formOfAddress": "LADY",
+                    "formOfAddressDisplayName": "Frau",
+                    "fullName": "Sabrina Schulze",
+                    "id": "de.xima.fc.resource.user-200",
+                    "loginName": "sas",
+                    "name": "sas",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Sabrina",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "200",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-400"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-201": {
+                    "clearTextPassword": null,
+                    "eMail": "aul@xima.de",
+                    "familyName": "U",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "Alex U",
+                    "id": "de.xima.fc.resource.user-201",
+                    "loginName": "aul",
+                    "name": "aul",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Alex",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "201",
+                    "userGroups": ["de.xima.fc.resource.userGroup-400"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-350": {
+                    "clearTextPassword": null,
+                    "eMail": "ttr@xima.de",
+                    "familyName": "user",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "rest user",
+                    "id": "de.xima.fc.resource.user-350",
+                    "loginName": "projektRest",
+                    "name": "projektRest",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "rest",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "350",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-600": {
+                    "clearTextPassword": null,
+                    "eMail": "aul@xima.de",
+                    "familyName": "Schrafl",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "Pascal Schrafl",
+                    "id": "de.xima.fc.resource.user-600",
+                    "loginName": "psc",
+                    "name": "psc",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Pascal",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "600",
+                    "userGroups": ["de.xima.fc.resource.userGroup-400"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-607": {
+                    "clearTextPassword": null,
+                    "eMail": "swe@xima.de",
+                    "familyName": "udo",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "udo udo",
+                    "id": "de.xima.fc.resource.user-607",
+                    "loginName": "udo",
+                    "name": "udo",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "udo",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "607",
+                    "userGroups": ["de.xima.fc.resource.userGroup-2"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-900": {
+                    "clearTextPassword": null,
+                    "eMail": "ap@tps-rechtsanwaelte.de",
+                    "familyName": "Przybilla",
+                    "formOfAddress": "LADY",
+                    "formOfAddressDisplayName": "Frau",
+                    "fullName": "Anja Przybilla",
+                    "id": "de.xima.fc.resource.user-900",
+                    "loginName": "przybilla",
+                    "name": "przybilla",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Anja",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "900",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                }
+            },
             "userGroup": {
                 "de.xima.fc.resource.userGroup-1": {
                     "description": "",
                     "id": "de.xima.fc.resource.userGroup-1",
-                    "mailboxAccess": [],
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-712",
+                        "de.xima.fc.resource.mailbox-711",
+                        "de.xima.fc.resource.mailbox-715"
+                    ],
                     "name": "Benutzer",
                     "systemID": "1",
-                    "users": []
+                    "users": [
+                        "de.xima.fc.resource.user-900",
+                        "de.xima.fc.resource.user-1",
+                        "de.xima.fc.resource.user-350"
+                    ]
                 },
                 "de.xima.fc.resource.userGroup-2": {
                     "description": "",
                     "id": "de.xima.fc.resource.userGroup-2",
-                    "mailboxAccess": [],
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-712",
+                        "de.xima.fc.resource.mailbox-711",
+                        "de.xima.fc.resource.mailbox-1",
+                        "de.xima.fc.resource.mailbox-715"
+                    ],
                     "name": "Administratoren",
                     "systemID": "2",
-                    "users": []
+                    "users": [
+                        "de.xima.fc.resource.user-900",
+                        "de.xima.fc.resource.user-200",
+                        "de.xima.fc.resource.user-1",
+                        "de.xima.fc.resource.user-350",
+                        "de.xima.fc.resource.user-607"
+                    ]
+                },
+                "de.xima.fc.resource.userGroup-400": {
+                    "description": "",
+                    "id": "de.xima.fc.resource.userGroup-400",
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-350",
+                        "de.xima.fc.resource.mailbox-700"
+                    ],
+                    "name": "SG 11",
+                    "systemID": "400",
+                    "users": [
+                        "de.xima.fc.resource.user-201",
+                        "de.xima.fc.resource.user-600",
+                        "de.xima.fc.resource.user-200"
+                    ]
                 }
             },
-            "xsl": {"de.xima.fc.resource.xsl-51": {
-                "id": "de.xima.fc.resource.xsl-51",
-                "name": "postfach",
-                "xsl": "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n<?mso-application progid=\"Excel.Sheet\"?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:html=\"http://www.w3.org/TR/REC-html40\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\r\n    <xsl:key name=\"projects\" match=\"process\" use=\"@project-name\"/>\r\n    <xsl:key name=\"headers\" match=\"field\" use=\"concat(../../@project-name,@name)\"/>\r\n    <xsl:template match=\"/\">\r\n        <Workbook>\r\n            <Styles>\r\n                <Style ss:ID=\"Default\" ss:Name=\"Normal\">\r\n                    <Alignment ss:Vertical=\"Bottom\"/>\r\n                    <Borders/>\r\n                    <Font/>\r\n                    <Interior/>\r\n                    <NumberFormat/>\r\n                    <Protection/>\r\n                <\/Style>\r\n                <Style ss:ID=\"bold\">\r\n                    <Font ss:Size=\"12\" ss:Bold=\"1\"/>\r\n                <\/Style>\r\n                <Style ss:ID=\"norm\">\r\n                    <Font ss:Size=\"10\" ss:Bold=\"0\"/>\r\n                <\/Style>\r\n            <\/Styles>\r\n            <xsl:for-each select=\"//xfc-data/processes/process[generate-id() = generate-id(key('projects',@project-name))]\">\r\n                <xsl:variable name=\"pname\" select=\"@project-name\"/>\r\n                <Worksheet ss:Name=\"{$pname}\">\r\n                    <Table>\r\n                        <Row>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">ProzessId<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Datum<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Status<\/Data>\r\n                            <\/Cell>\r\n                            <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                <Cell ss:StyleID=\"bold\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"string(@name)\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                            <\/xsl:for-each>\r\n                        <\/Row>\r\n                        <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]\">\r\n                            <xsl:variable name=\"row\" select=\".\"/>\r\n                            <Row>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@process-uid\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@creation-date\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@status\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                    <xsl:variable name=\"header\" select=\"@name\"/>\r\n                                    <xsl:for-each select=\"$row\">\r\n                                        <Cell ss:StyleID=\"norm\">\r\n                                            <Data ss:Type=\"String\">\r\n                                                <xsl:value-of select=\"string($row/form/field[@name=$header]/plainValue)\"/>\r\n                                            <\/Data>\r\n                                        <\/Cell>\r\n                                    <\/xsl:for-each>\r\n                                <\/xsl:for-each>\r\n                            <\/Row>\r\n                        <\/xsl:for-each>\r\n                    <\/Table>\r\n                <\/Worksheet>\r\n            <\/xsl:for-each>\r\n        <\/Workbook>\r\n    <\/xsl:template>\r\n<\/xsl:stylesheet>"
-            }}
+            "xsl": {
+                "de.xima.fc.resource.xsl-300": {
+                    "id": "de.xima.fc.resource.xsl-300",
+                    "name": "KontaktFormular",
+                    "xsl": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\r\n\t<xsl:output method=\"xml\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>\r\n\t<xsl:template match=\"form\">\r\n\t\t<Kontaktformular>\r\n            <CountryCode>\r\n\t\t\t\t<xsl:value-of select=\"field[@name='CountryCode']/plainValue/text()\"/>\r\n            <\/CountryCode>\r\n\t\t\t<CategoryKey>\r\n\t\t\t<\/CategoryKey>\r\n\t\t\t<TeamKey>\r\n\t\t\t<\/TeamKey>\r\n\t\t\t<RecipientSalutation>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n  \t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientSalutation']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientSalutation>\r\n\t\t\t<RecipientFirstName>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientFirstName']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientFirstName>\r\n\t\t\t<RecipientLastName>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientLastName']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientLastName>\r\n\t\t\t<RecipientStreet>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientStreet']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientStreet>\r\n\t\t\t<RecipientHouseNo>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientHouseNo']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientHouseNo>\r\n\t\t\t<RecipientZipCode>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientZipCode']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientZipCode>\r\n\t\t\t<RecipientCity>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientCity']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientCity>\r\n\t\t\t<RecipientEmail>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientEmail']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/RecipientEmail>\r\n\t\t\t<RecipientPhone>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientPhone']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/RecipientPhone>\r\n\t\t\t<CaseAffiliateNo>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n                    <xsl:value-of select=\"concat(field[@name='StoreCity']/plainValue/text(),' ')\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='StoreStreet']/plainValue/text()\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseAffiliateNo>\r\n\t\t\t<CaseNotes>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseNotes']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseNotes>\r\n\t\t\t<CaseArticleDescription>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseArticleDescription_quality']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n                                        <xsl:value-of select=\"field[@name='CaseArticleDescription_ware']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseArticleDescription>\r\n\t\t\t<CaseArticleEan>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseArticleEan']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseArticleEan>\r\n\t\t\t<MHD>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='MHD']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/MHD>\r\n\t\t\t<Charge>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='Charge']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/Charge>\r\n\t\t\t<ZeitpunktBewerbung>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='ZeitpunktBewerbung']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/ZeitpunktBewerbung>\r\n\t\t<\/Kontaktformular>\r\n\t<\/xsl:template>\r\n<\/xsl:stylesheet>"
+                },
+                "de.xima.fc.resource.xsl-51": {
+                    "id": "de.xima.fc.resource.xsl-51",
+                    "name": "postfach",
+                    "xsl": "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\r\n<?mso-application progid=\"Excel.Sheet\"?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:html=\"http://www.w3.org/TR/REC-html40\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">\r\n    <xsl:key name=\"projects\" match=\"process\" use=\"@project-name\"/>\r\n    <xsl:key name=\"headers\" match=\"field\" use=\"concat(../../@project-name,@name)\"/>\r\n    <xsl:template match=\"/\">\r\n        <Workbook>\r\n            <Styles>\r\n                <Style ss:ID=\"Default\" ss:Name=\"Normal\">\r\n                    <Alignment ss:Vertical=\"Bottom\"/>\r\n                    <Borders/>\r\n                    <Font/>\r\n                    <Interior/>\r\n                    <NumberFormat/>\r\n                    <Protection/>\r\n                <\/Style>\r\n                <Style ss:ID=\"bold\">\r\n                    <Font ss:Size=\"12\" ss:Bold=\"1\"/>\r\n                <\/Style>\r\n                <Style ss:ID=\"norm\">\r\n                    <Font ss:Size=\"10\" ss:Bold=\"0\"/>\r\n                <\/Style>\r\n            <\/Styles>\r\n            <xsl:for-each select=\"//xfc-data/processes/process[generate-id() = generate-id(key('projects',@project-name))]\">\r\n                <xsl:variable name=\"pname\" select=\"@project-name\"/>\r\n                <Worksheet ss:Name=\"{$pname}\">\r\n                    <Table>\r\n                        <Row>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">ProzessId<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Datum<\/Data>\r\n                            <\/Cell>\r\n                            <Cell ss:StyleID=\"bold\">\r\n                                <Data ss:Type=\"String\">Status<\/Data>\r\n                            <\/Cell>\r\n                            <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                <Cell ss:StyleID=\"bold\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"string(@name)\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                            <\/xsl:for-each>\r\n                        <\/Row>\r\n                        <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]\">\r\n                            <xsl:variable name=\"row\" select=\".\"/>\r\n                            <Row>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@process-uid\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@creation-date\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <Cell ss:StyleID=\"norm\">\r\n                                    <Data ss:Type=\"String\">\r\n                                        <xsl:value-of select=\"@status\"/>\r\n                                    <\/Data>\r\n                                <\/Cell>\r\n                                <xsl:for-each select=\"//xfc-data/processes/process[@project-name=$pname]/form/field[generate-id(.) = generate-id(key('headers',concat($pname,@name)))]\">\r\n                                    <xsl:variable name=\"header\" select=\"@name\"/>\r\n                                    <xsl:for-each select=\"$row\">\r\n                                        <Cell ss:StyleID=\"norm\">\r\n                                            <Data ss:Type=\"String\">\r\n                                                <xsl:value-of select=\"string($row/form/field[@name=$header]/plainValue)\"/>\r\n                                            <\/Data>\r\n                                        <\/Cell>\r\n                                    <\/xsl:for-each>\r\n                                <\/xsl:for-each>\r\n                            <\/Row>\r\n                        <\/xsl:for-each>\r\n                    <\/Table>\r\n                <\/Worksheet>\r\n            <\/xsl:for-each>\r\n        <\/Workbook>\r\n    <\/xsl:template>\r\n<\/xsl:stylesheet>"
+                },
+                "de.xima.fc.resource.xsl-800": {
+                    "id": "de.xima.fc.resource.xsl-800",
+                    "name": "lidl_prod",
+                    "xsl": "<?xml version=\"1.0\" encoding=\"ISO-8859-2\"?>\r\n<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\r\n\t<xsl:output method=\"xml\" version=\"1.0\" encoding=\"ISO-8859-2\" indent=\"yes\"/>\r\n\t<xsl:template match=\"form\">\r\n\t\t<Kontaktformular>\r\n            <CountryCode>\r\n\t\t\t\t<xsl:value-of select=\"field[@name='CountryCode']/plainValue/text()\"/>\r\n            <\/CountryCode>\r\n\t\t\t<CategoryKey>\r\n\t\t\t<\/CategoryKey>\r\n\t\t\t<TeamKey>\r\n\t\t\t<\/TeamKey>\r\n\t\t\t<RecipientSalutation>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n  \t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientSalutation']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientSalutation>\r\n\t\t\t<RecipientFirstName>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientFirstName']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientFirstName>\r\n\t\t\t<RecipientLastName>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientLastName']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientLastName>\r\n\t\t\t<RecipientStreet>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientStreet']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientStreet>\r\n\t\t\t<RecipientHouseNo>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientHouseNo']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientHouseNo>\r\n\t\t\t<RecipientZipCode>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientZipCode']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientZipCode>\r\n\t\t\t<RecipientCity>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientCity']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\t\r\n\t\t\t<\/RecipientCity>\r\n\t\t\t<RecipientEmail>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientEmail']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/RecipientEmail>\r\n\t\t\t<RecipientPhone>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='RecipientPhone']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/RecipientPhone>\r\n\t\t\t<CaseAffiliateNo>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n                    <xsl:value-of select=\"concat(field[@name='StoreCity']/plainValue/text(),' ')\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='StoreStreet']/plainValue/text()\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseAffiliateNo>\r\n\t\t\t<CaseNotes>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseNotes']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseNotes>\r\n\t\t\t<CaseArticleDescription>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseArticleDescription_quality']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n                                        <xsl:value-of select=\"field[@name='CaseArticleDescription_ware']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseArticleDescription>\r\n\t\t\t<CaseArticleEan>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='CaseArticleEan']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/CaseArticleEan>\r\n\t\t\t<MHD>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='MHD']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/MHD>\r\n\t\t\t<Charge>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='Charge']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/Charge>\r\n\t\t\t<ZeitpunktBewerbung>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">&lt;![CDATA[<\/xsl:text>\r\n\t\t\t\t\t<xsl:value-of select=\"field[@name='ZeitpunktBewerbung']/plainValue/text()\" disable-output-escaping=\"yes\"/>\r\n\t\t\t\t<xsl:text disable-output-escaping=\"yes\">]]&gt;<\/xsl:text>\r\n\t\t\t<\/ZeitpunktBewerbung>\r\n\t\t<\/Kontaktformular>\r\n\t<\/xsl:template>\r\n<\/xsl:stylesheet>"
+                }
+            }
         },
         "de.xima.fc.statusOnResubmission": "de.xima.fc.status-2404",
         "de.xima.fc.statusOnSubmission": "de.xima.fc.status-2400"
