@@ -1,2 +1,0 @@
-# xima-flowchart
-xima flowchart
