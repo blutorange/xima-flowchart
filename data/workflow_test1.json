@@ -1,0 +1,967 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+{
+    "children": [
+        {
+            "children": [
+                {
+                    "id": "de.xima.fc.action-3300",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "﻿﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3305",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "﻿﻿﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3306",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3307",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "﻿﻿﻿﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3308",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ỹ﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3309",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "==",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                }
+            ],
+            "id": "de.xima.fc.status-3100",
+            "properties": {
+                "de.xima.fc.status.comments": "Der Status 'Eingegangen' ist der initiale Status der beim ersten Senden des Formulars durchlaufen wird.",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": false,
+                "de.xima.fc.status.hasSourceTransitions": false,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "Eingegangen",
+                "de.xima.fc.status.isIncoming": true,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "﻿ỹ",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": [],
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": []
+            }
+        },
+        {
+            "children": [{
+                "id": "de.xima.fc.action-3311",
+                "properties": {
+                    "de.xima.fc.action.active": true,
+                    "de.xima.fc.action.condition": {
+                        "details": {},
+                        "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                        "nextActionDisplayName": "nächste Aktion",
+                        "type": "NONE"
+                    },
+                    "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                    "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                    "de.xima.fc.action.icons": {
+                        "action": "de.xima.fc.resource.image.font-0",
+                        "condition": "",
+                        "error": ""
+                    },
+                    "de.xima.fc.action.name": "==",
+                    "de.xima.fc.action.onError": "STOP",
+                    "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                    "de.xima.fc.action.providesFile": false,
+                    "de.xima.fc.action.requiresFile": false,
+                    "de.xima.fc.action.stopsWorkflow": false,
+                    "de.xima.fc.action.type": 0
+                }
+            }],
+            "id": "de.xima.fc.status-3852",
+            "properties": {
+                "de.xima.fc.status.comments": "﻿",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": true,
+                "de.xima.fc.status.hasSourceTransitions": true,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "status-a236d2611033119456",
+                "de.xima.fc.status.isIncoming": false,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "﻿﻿",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
+                "de.xima.fc.status.timedTransitionOnlyForUnread": false,
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-3855"]
+            }
+        },
+        {
+            "children": [
+                {
+                    "id": "de.xima.fc.action-3301",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ỹ﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3302",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ỹ﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3303",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ỹ﻿﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3304",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "ỹ﻿﻿﻿﻿",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                },
+                {
+                    "id": "de.xima.fc.action-3310",
+                    "properties": {
+                        "de.xima.fc.action.active": true,
+                        "de.xima.fc.action.condition": {
+                            "details": {},
+                            "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                            "nextActionDisplayName": "nächste Aktion",
+                            "type": "NONE"
+                        },
+                        "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                        "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                        "de.xima.fc.action.icons": {
+                            "action": "de.xima.fc.resource.image.font-0",
+                            "condition": "",
+                            "error": ""
+                        },
+                        "de.xima.fc.action.name": "==",
+                        "de.xima.fc.action.onError": "STOP",
+                        "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                        "de.xima.fc.action.providesFile": false,
+                        "de.xima.fc.action.requiresFile": false,
+                        "de.xima.fc.action.stopsWorkflow": false,
+                        "de.xima.fc.action.type": 0
+                    }
+                }
+            ],
+            "id": "de.xima.fc.status-3853",
+            "properties": {
+                "de.xima.fc.status.comments": "ỹ",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": true,
+                "de.xima.fc.status.hasSourceTransitions": true,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "status-a24d3dc21335973394",
+                "de.xima.fc.status.isIncoming": false,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "ỹ",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-503"],
+                "de.xima.fc.status.timedTransitionOnlyForUnread": false,
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-3852"]
+            }
+        },
+        {
+            "children": [{
+                "id": "de.xima.fc.action-3312",
+                "properties": {
+                    "de.xima.fc.action.active": true,
+                    "de.xima.fc.action.condition": {
+                        "details": {},
+                        "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                        "nextActionDisplayName": "nächste Aktion",
+                        "type": "NONE"
+                    },
+                    "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                    "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                    "de.xima.fc.action.icons": {
+                        "action": "de.xima.fc.resource.image.font-0",
+                        "condition": "",
+                        "error": ""
+                    },
+                    "de.xima.fc.action.name": "==",
+                    "de.xima.fc.action.onError": "STOP",
+                    "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                    "de.xima.fc.action.providesFile": false,
+                    "de.xima.fc.action.requiresFile": false,
+                    "de.xima.fc.action.stopsWorkflow": false,
+                    "de.xima.fc.action.type": 0
+                }
+            }],
+            "id": "de.xima.fc.status-3854",
+            "properties": {
+                "de.xima.fc.status.comments": "ỹ",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": true,
+                "de.xima.fc.status.hasSourceTransitions": true,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "status-8a5a1ad71245496982",
+                "de.xima.fc.status.isIncoming": false,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "ỹ﻿",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-504"],
+                "de.xima.fc.status.timedTransitionOnlyForUnread": false,
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-3853"]
+            }
+        },
+        {
+            "children": [{
+                "id": "de.xima.fc.action-3313",
+                "properties": {
+                    "de.xima.fc.action.active": true,
+                    "de.xima.fc.action.condition": {
+                        "details": {},
+                        "displayName": "Wird immer abgearbeitet (keine Bedingung)",
+                        "nextActionDisplayName": "nächste Aktion",
+                        "type": "NONE"
+                    },
+                    "de.xima.fc.action.details": {"targetTemplate": "de.xima.fc.resource.html-2"},
+                    "de.xima.fc.action.displayName": "Abschlussseite (Template)",
+                    "de.xima.fc.action.icons": {
+                        "action": "de.xima.fc.resource.image.font-0",
+                        "condition": "",
+                        "error": ""
+                    },
+                    "de.xima.fc.action.name": "W̊̄̌͌̾͆ͤ̌͌̏ͯ͏̶̧͓̯̰͎̥̫̣̦̹̠̳̬͢͡",
+                    "de.xima.fc.action.onError": "STOP",
+                    "de.xima.fc.action.onErrorDisplayName": "Verarbeitung abbrechen",
+                    "de.xima.fc.action.providesFile": false,
+                    "de.xima.fc.action.requiresFile": false,
+                    "de.xima.fc.action.stopsWorkflow": false,
+                    "de.xima.fc.action.type": 0
+                }
+            }],
+            "id": "de.xima.fc.status-3855",
+            "properties": {
+                "de.xima.fc.status.comments": "???",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": true,
+                "de.xima.fc.status.hasSourceTransitions": true,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "status-d4c6f1b21074565148",
+                "de.xima.fc.status.isIncoming": false,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "W̢̳̝͎̰͓̤͚̺̰̖͔̝̦͙̬̘̥͍̉̊̋ͯ́͘ę̴̵̰̥̪̣͍̲̥̗̖̽̽͒ͤͯ͞ͅͅ",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-503"],
+                "de.xima.fc.status.timedTransitionOnlyForUnread": false,
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": [
+                    "de.xima.fc.status-3853",
+                    "de.xima.fc.status-3854",
+                    "de.xima.fc.status-3100"
+                ]
+            }
+        },
+        {
+            "children": [],
+            "id": "de.xima.fc.status-3856",
+            "properties": {
+                "de.xima.fc.status.comments": "",
+                "de.xima.fc.status.deletable": false,
+                "de.xima.fc.status.hasSourceRestrictions": true,
+                "de.xima.fc.status.hasSourceTransitions": true,
+                "de.xima.fc.status.hasTimedTransition": false,
+                "de.xima.fc.status.icon": null,
+                "de.xima.fc.status.identifier": "status-c13e2f86968810194",
+                "de.xima.fc.status.isIncoming": false,
+                "de.xima.fc.status.isOutgoing": false,
+                "de.xima.fc.status.name": "effective. Power لُلُصّبُلُلصّبُررً ॣ ॣh ॣ ॣ 冗",
+                "de.xima.fc.status.onError": "STOP",
+                "de.xima.fc.status.onErrorDisplayName": "Status nicht wechseln",
+                "de.xima.fc.status.restrictionsFrom": ["de.xima.fc.resource.userGroup-2"],
+                "de.xima.fc.status.timedTransitionOnlyForUnread": false,
+                "de.xima.fc.status.timedTransitionSeconds": 0,
+                "de.xima.fc.status.timedTransitionTarget": null,
+                "de.xima.fc.status.transitionsFrom": ["de.xima.fc.status-3852"]
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "de.xima.fc.transition-manual-3852-0",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-2"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3855",
+            "target": "de.xima.fc.status-3852"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3853-0",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-503"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3852",
+            "target": "de.xima.fc.status-3853"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3854-0",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-504"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3853",
+            "target": "de.xima.fc.status-3854"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3855-0",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-503"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3853",
+            "target": "de.xima.fc.status-3855"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3855-1",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-503"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3854",
+            "target": "de.xima.fc.status-3855"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3855-2",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-503"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3100",
+            "target": "de.xima.fc.status-3855"
+        },
+        {
+            "id": "de.xima.fc.transition-manual-3856-0",
+            "properties": {
+                "de.xima.fc.transition.details": {"restrictToUserGroup": ["de.xima.fc.resource.userGroup-2"]},
+                "de.xima.fc.transition.type": "MANUAL"
+            },
+            "source": "de.xima.fc.status-3852",
+            "target": "de.xima.fc.status-3856"
+        }
+    ],
+    "id": "de.xima.fc.workflow",
+    "properties": {
+        "de.xima.fc.diagramType": "LAYERED",
+        "de.xima.fc.resources": {
+            "font": {"de.xima.fc.resource.font-0": {
+                "id": "de.xima.fc.resource.font-0",
+                "mime": "",
+                "sourceData": "de.xima.fc.resource.font.sentinel",
+                "sourceType": "FAMILY"
+            }},
+            "html": {"de.xima.fc.resource.html-2": {
+                "html": "<style type=\"text/css\">h1, h2 {font-weight: normal;padding-left: 20px;color: #767676;} h1 {font-size: 30px; margin-bottom: 15px; color: #6a0034;} h2 {font-size: 16px;}<\/style><div lang=\"de\"><h1>Allgemeiner Fehler<\/h1><h2>Es ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter noch einmal.<\/h2><\/div><div lang=\"en\"><h1>General Error<\/h1><h2>An error has occurred. Please try again later.<\/h2><\/div>",
+                "id": "de.xima.fc.resource.html-2",
+                "name": "Allgemeiner Fehler / General Error"
+            }},
+            "image": {
+                "font": {"de.xima.fc.resource.image.font-0": {
+                    "codepoint": 59938,
+                    "color": null,
+                    "font": "de.xima.fc.resource.font-0",
+                    "id": "de.xima.fc.resource.image.font-0"
+                }},
+                "image": {},
+                "svg": {}
+            },
+            "mailbox": {
+                "de.xima.fc.resource.mailbox-1": {
+                    "deletable": false,
+                    "description": "Das Standard-Postfach, dass nicht gelöscht werden kann.",
+                    "id": "de.xima.fc.resource.mailbox-1",
+                    "name": "Zentrales Postfach",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-2"]
+                },
+                "de.xima.fc.resource.mailbox-300": {
+                    "deletable": true,
+                    "description": "Alle abgeschlossenen Vorgänge",
+                    "id": "de.xima.fc.resource.mailbox-300",
+                    "name": "Archiv",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-400"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-350": {
+                    "deletable": true,
+                    "description": "Dies ist ein beispielsloses Postfache ohne Vergleiche. Ich bin sprachlos und verliere gleich die Worte.",
+                    "id": "de.xima.fc.resource.mailbox-350",
+                    "name": "Demo Sammelpostfach",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-400"]
+                },
+                "de.xima.fc.resource.mailbox-700": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-700",
+                    "name": "sg11_de-de",
+                    "restrictToUserGroup": ["de.xima.fc.resource.userGroup-400"]
+                },
+                "de.xima.fc.resource.mailbox-711": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-711",
+                    "name": "Posteingang",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-712": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-712",
+                    "name": "Personalabteilung",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                },
+                "de.xima.fc.resource.mailbox-715": {
+                    "deletable": true,
+                    "description": "",
+                    "id": "de.xima.fc.resource.mailbox-715",
+                    "name": "pdveingang",
+                    "restrictToUserGroup": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-1"
+                    ]
+                }
+            },
+            "plugin": {},
+            "url": {},
+            "user": {
+                "de.xima.fc.resource.user-1": {
+                    "clearTextPassword": null,
+                    "eMail": "swe@xima.de",
+                    "familyName": "Admin",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "System Admin",
+                    "id": "de.xima.fc.resource.user-1",
+                    "loginName": "admin",
+                    "name": "admin",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "System",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "1",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-200": {
+                    "clearTextPassword": null,
+                    "eMail": "sas@xima.de",
+                    "familyName": "Schulze",
+                    "formOfAddress": "LADY",
+                    "formOfAddressDisplayName": "Frau",
+                    "fullName": "Sabrina Schulze",
+                    "id": "de.xima.fc.resource.user-200",
+                    "loginName": "sas",
+                    "name": "sas",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Sabrina",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "200",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-2",
+                        "de.xima.fc.resource.userGroup-400"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-201": {
+                    "clearTextPassword": null,
+                    "eMail": "aul@xima.de",
+                    "familyName": "U",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "Alex U",
+                    "id": "de.xima.fc.resource.user-201",
+                    "loginName": "aul",
+                    "name": "aul",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Alex",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "201",
+                    "userGroups": ["de.xima.fc.resource.userGroup-400"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-350": {
+                    "clearTextPassword": null,
+                    "eMail": "ttr@xima.de",
+                    "familyName": "user",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "rest user",
+                    "id": "de.xima.fc.resource.user-350",
+                    "loginName": "projektRest",
+                    "name": "projektRest",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "rest",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "350",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-600": {
+                    "clearTextPassword": null,
+                    "eMail": "aul@xima.de",
+                    "familyName": "Schrafl",
+                    "formOfAddress": "SIR",
+                    "formOfAddressDisplayName": "Herr",
+                    "fullName": "Pascal Schrafl",
+                    "id": "de.xima.fc.resource.user-600",
+                    "loginName": "psc",
+                    "name": "psc",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Pascal",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "600",
+                    "userGroups": ["de.xima.fc.resource.userGroup-400"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-607": {
+                    "clearTextPassword": null,
+                    "eMail": "swe@xima.de",
+                    "familyName": "udo",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "udo udo",
+                    "id": "de.xima.fc.resource.user-607",
+                    "loginName": "udo",
+                    "name": "udo",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "udo",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "607",
+                    "userGroups": ["de.xima.fc.resource.userGroup-2"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-702": {
+                    "clearTextPassword": null,
+                    "eMail": "christines@test.com",
+                    "familyName": "S",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "Christine S",
+                    "id": "de.xima.fc.resource.user-702",
+                    "loginName": "Mietverwaltung_Christine_S",
+                    "name": "Mietverwaltung_Christine_S",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Christine",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "702",
+                    "userGroups": ["de.xima.fc.resource.userGroup-503"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-703": {
+                    "clearTextPassword": null,
+                    "eMail": "odoheinzel@test.com",
+                    "familyName": "Heinzel",
+                    "formOfAddress": "NONE_GIVEN",
+                    "formOfAddressDisplayName": "Keine Angabe",
+                    "fullName": "Odo Heinzel",
+                    "id": "de.xima.fc.resource.user-703",
+                    "loginName": "Mietverwaltung_Odo_Heinzel",
+                    "name": "Mietverwaltung_Odo_Heinzel",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Odo",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "703",
+                    "userGroups": ["de.xima.fc.resource.userGroup-504"],
+                    "userType": "INTERNAL"
+                },
+                "de.xima.fc.resource.user-900": {
+                    "clearTextPassword": null,
+                    "eMail": "ap@tps-rechtsanwaelte.de",
+                    "familyName": "Przybilla",
+                    "formOfAddress": "LADY",
+                    "formOfAddressDisplayName": "Frau",
+                    "fullName": "Anja Przybilla",
+                    "id": "de.xima.fc.resource.user-900",
+                    "loginName": "przybilla",
+                    "name": "przybilla",
+                    "oldPassword": null,
+                    "password": null,
+                    "personalName": "Anja",
+                    "phone": "",
+                    "status": "ACTIVE",
+                    "statusDisplayName": "aktiv",
+                    "systemID": "900",
+                    "userGroups": [
+                        "de.xima.fc.resource.userGroup-1",
+                        "de.xima.fc.resource.userGroup-2"
+                    ],
+                    "userType": "INTERNAL"
+                }
+            },
+            "userGroup": {
+                "de.xima.fc.resource.userGroup-1": {
+                    "description": "",
+                    "id": "de.xima.fc.resource.userGroup-1",
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-712",
+                        "de.xima.fc.resource.mailbox-711",
+                        "de.xima.fc.resource.mailbox-715"
+                    ],
+                    "name": "Benutzer",
+                    "systemID": "1",
+                    "users": [
+                        "de.xima.fc.resource.user-900",
+                        "de.xima.fc.resource.user-1",
+                        "de.xima.fc.resource.user-350"
+                    ]
+                },
+                "de.xima.fc.resource.userGroup-2": {
+                    "description": "",
+                    "id": "de.xima.fc.resource.userGroup-2",
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-712",
+                        "de.xima.fc.resource.mailbox-711",
+                        "de.xima.fc.resource.mailbox-1",
+                        "de.xima.fc.resource.mailbox-715"
+                    ],
+                    "name": "Administratoren",
+                    "systemID": "2",
+                    "users": [
+                        "de.xima.fc.resource.user-900",
+                        "de.xima.fc.resource.user-200",
+                        "de.xima.fc.resource.user-1",
+                        "de.xima.fc.resource.user-350",
+                        "de.xima.fc.resource.user-607"
+                    ]
+                },
+                "de.xima.fc.resource.userGroup-400": {
+                    "description": "",
+                    "id": "de.xima.fc.resource.userGroup-400",
+                    "mailboxAccess": [
+                        "de.xima.fc.resource.mailbox-300",
+                        "de.xima.fc.resource.mailbox-350",
+                        "de.xima.fc.resource.mailbox-700"
+                    ],
+                    "name": "SG 11",
+                    "systemID": "400",
+                    "users": [
+                        "de.xima.fc.resource.user-201",
+                        "de.xima.fc.resource.user-600",
+                        "de.xima.fc.resource.user-200"
+                    ]
+                },
+                "de.xima.fc.resource.userGroup-503": {
+                    "description": "Nutzer mit normalen Rechten, kann die meisten Registerkarten sehen.",
+                    "id": "de.xima.fc.resource.userGroup-503",
+                    "mailboxAccess": [],
+                    "name": "Mietverwaltung Nutzer Normal",
+                    "systemID": "503",
+                    "users": ["de.xima.fc.resource.user-702"]
+                },
+                "de.xima.fc.resource.userGroup-504": {
+                    "description": "Nutzer mit hohen Rechten, kann alle Registerkarten sehen.",
+                    "id": "de.xima.fc.resource.userGroup-504",
+                    "mailboxAccess": [],
+                    "name": "Mietverwaltung Nutzer Super",
+                    "systemID": "504",
+                    "users": ["de.xima.fc.resource.user-703"]
+                }
+            },
+            "xsl": {}
+        },
+        "de.xima.fc.statusOnResubmission": "de.xima.fc.status-3100",
+        "de.xima.fc.statusOnSubmission": "de.xima.fc.status-3100"
+    }
+}

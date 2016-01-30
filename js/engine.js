@@ -7,10 +7,18 @@
 // https://storiesfailedentrepreneur.files.wordpress.com/2012/08/the-procrastination-flow-chart.png
 // https://plumsail.com/blog/2014/07/how-to-use-javascript-and-css-for-conditional-formatting-in-sharepoint-org-chart/
 
+
+/*
+    Main function. Creates a new graph.
+    folder - Path to the folder containing the data files (layout.json)
+    servlet - The graph data is loaded from this url.
+    viewport - HTML element which will contain the graph.
+    dimensionsCallback - Unused/Internal.
+*/
 XV = function (folder,servlet,viewport,dimensionsCallback) {
     var self = this
     dimensionsCallback = dimensionsCallback || $.noop
-D = this // debug
+    D = this // debug
     self.viewportNode = viewport
     self.viewport = d3.select(viewport)
     self.dimensionsCallback = dimensionsCallback
@@ -147,10 +155,21 @@ $.fn.height = function(){
     }
 }
 
+/* 
+    Utility methods.
+*/
+
 XV.MODE_VIEW = 0
 XV.MODE_EDIT_MANUAL = 1
 XV.EDGE_NODE_STATUS_ID = 0
 XV.IDS = {}
+
+/*
+    If obj contains key, set obj[key] to type(obj[key]), or def otherwise.
+    For example,
+        XV.setDefault(urlParams,"pid",parseInt,2300)
+    converts urlParams["pid"] to an integer and defaults to 2300.
+*/
 XV.setDefault = function(obj,key,type,def){
     try {
         obj[key] = obj.hasOwnProperty(key) ? type(obj[key]) : def
@@ -159,7 +178,11 @@ XV.setDefault = function(obj,key,type,def){
         obj[key] = def
     }
 }
-// http://stackoverflow.com/questions/8486099/how-do-i-parse-a-url-query-parameters-in-javascript
+
+/*
+    Parses URL parameters from the current location, taken from
+    http://stackoverflow.com/questions/8486099/how-do-i-parse-a-url-query-parameters-in-javascript
+*/
 XV.findIndex = function(arr,val,start){
     for (var i=start;i<arr.length;i++){
         if (val(arr[i])){return i}
@@ -202,14 +225,17 @@ XV.getJsonFromUrl = function(hashBased) {
     })
     return result
 }
+
+/*
+    Alternative implementations for cross-browser support.
+*/
 XV.browserSupport = {}
 XV.checkBrowserSupport = function(){
-    // document.elementsFromPoint
     XV.setElementsFromPoint()
-    // classList.add for SVG
     XV.setClassListAdd()
     XV.setMathSign()
 }
+/* Sign function, sign(-3)=-1, sign(0)=0, sign(3)=1. */
 XV.setMathSign = function(){
     if (Math.sign) {
         XV.mathSign = Math.sign
@@ -221,8 +247,10 @@ XV.setMathSign = function(){
     }
     XV.browserSupport.mathSign = true    
 }
-// Workaround for browsers not supporting elementsFromPoint but elementFromPoint
-// elementsFromPoint does not work properly for some svg element in Opera.
+/*
+    Workaround for browsers not supporting elementsFromPoint but elementFromPoint
+    elementsFromPoint does not work properly for some svg element in Opera.
+*/
 XV.setElementsFromPoint = function(){
     var avail = true
     var fix = false
@@ -258,51 +286,20 @@ XV.setElementsFromPoint = function(){
     XV.browserSupport.elementsFromPoint = avail
     XV.browserSupport.elementsFromPointFix = fix
 }
-// JQuery's addClass does not work with svg elements, so we need
-// to resort to javascript's classList.add.
-// IE does not support classList on svg element, so we need a work-around.
+/*
+    JQuery's addClass does not work with svg elements, so we need
+    to fall-back to javascript's classList.add.
+    But IE does not support classList on svg element either.
+    D3's addClass method seems to work for all browsers.
+*/
 XV.setClassListAdd = function() {
     var avail = true
-    if (document.getElementById("ieSvgClassTest").classList !== undefined){
-        XV.addClass = function(el,clazz) {
-            d3.select(el).classed(clazz,true)//classList.add(clazz) this won't work in old opera...
-        }
-        XV.removeClass = function(el,clazz) {
-            d3.select(el).classed(clazz,false)//el.classList.remove(clazz)
-        }        
+    XV.addClass = function(el,clazz) {
+        d3.select(el).classed(clazz,true)
     }
-    else {
-        // IE fix, d3 works with IE as well        
-        avail = false
-        XV.addClass = function(el,clazz){
-            //var list = {}
-            //list.clazz = true
-            d3.select(el).classed(clazz,true)
-    }        
-        XV.removeClass = function(el,clazz){
-            //var list = {}
-            //list.clazz = false
-            d3.select(el).classed(clazz,false)
-        }        
-        /*
-        XV.addClass = function(el,clazz) {
-            var classList = _.words(el.getAttribute("class")||"",/[^ ]+/g)
-            if (classList.indexOf(clazz)<0) {
-                classList.push(clazz)
-                el.setAttribute("class",classList.join(" "))
-            }
-        }
-        XV.removeClass = function(el,clazz) {
-            var classList = _.words(el.getAttribute("class")||"",/[^ ]+/g)
-            var idx = classList.indexOf(clazz)            
-            if (idx>0) {
-                classList.splice(idx,1)
-                el.setAttribute("class",classList.join(" "))
-            }
-        } 
-        */
-    }    
-    
+    XV.removeClass = function(el,clazz) {
+        d3.select(el).classed(clazz,false)
+    }   
     XV.browserSupport.classListAdd = avail
 }
 XV.elementsFromPointFix = function(x,y){
@@ -322,13 +319,19 @@ XV.elementsFromPointFix = function(x,y){
     }
     return elements
 }
+
+
+/*
+    Type for each action, defaults to GENERAL.
+    Actions with the same type are grouped together visually.
+*/
 XV.actionClass = [
     "GENERAL",   // Abschlussseite
     "GENERAL",   // Callback
-    "GENERAL",  // Datei an Vorgang anhängen
-    "GENERAL",  // Datei ausliefern
+    "GENERAL",   // Datei an Vorgang anhängen
+    "GENERAL",   // Datei ausliefern
     "GENERAL",   // Datenbank SQL
-    "GENERAL",  //  EMail
+    "GENERAL",   // EMail
     "GENERAL",   // Export Persistence
     "GENERAL",   // Export XML
     "GENERAL",   // Externe Resource
@@ -337,7 +340,7 @@ XV.actionClass = [
     "GENERAL",   // PDF Fill
     "GENERAL",   // Post Request
     "GENERAL",   // Plugin ausführen
-    "GENERAL",  // Speichern (Dateisystem)
+    "GENERAL",   // Speichern (Dateisystem)
     "GENERAL",   // Statusänderung
     "GENERAL",   // Textdatei erzeugen
     "GENERAL",   // Upload bereitstellen
@@ -349,8 +352,13 @@ XV.actionClass = [
     "GENERAL",   // Vorgang löschen
     "GENERAL",   // Weiterleitung
     "GENERAL",   // Word Fill
-    "GENERAL"   // XML Einlesen
+    "GENERAL"    // XML Einlesen
 ]
+
+/*
+    Generates a unique ID for each cloned element.
+    IDs are stored in XV.IDS.
+*/
 XV.uniqueID = function(id){
     var newId
     XV.IDS[id] = XV.IDS[id] || []
@@ -358,6 +366,10 @@ XV.uniqueID = function(id){
     XV.IDS[id].push(newId)
     return newId
 }
+
+/*
+    Clones a DOM node and assigns a new, unique ID.
+*/
 XV.clone = function(el,a,b,callback){
     var clone = $(el).clone(a,b)
     clone.find("[id]").addBack(clone.filter("[id]")).each(function(){
@@ -370,11 +382,20 @@ XV.clone = function(el,a,b,callback){
     })
     return clone[0]
 }
+
+/*
+    Returns all DOM elements at the given mouse position,
+    optionally filtered by a selector.
+*/
 XV.allElementsAtMouse = function(clientX,clientY,selector){
     var elements = XV.elementsFromPoint(clientX,clientY)
     return $(elements).filter(selector)
 }
-// Axis-aligned line.
+
+/* 
+    Computes the distance between a horizontal or vertical line
+    and a point (rx,ry).
+*/
 XV.getPointLineDistance = function(rx,ry,line){
     if (line.direction==="vertical"){
         return (ry<line.ymin) ? Math.sqrt((rx-line.xm)*(rx-line.xm)+(ry-line.ymin)*(ry-line.ymin)) : (ry>line.ymax) ? Math.sqrt((rx-line.xm)*(rx-line.xm)+(ry-line.ymax)*(ry-line.ymax)) : Math.abs(rx-line.xm)
@@ -383,7 +404,10 @@ XV.getPointLineDistance = function(rx,ry,line){
         return (rx<line.xmin) ? Math.sqrt((rx-line.xmin)*(rx-line.xmin)+(ry-line.ym)*(ry-line.ym)) : (rx>line.xmax) ? Math.sqrt((rx-line.xmax)*(rx-line.xmax)+(ry-line.ym)*(ry-line.ym)) : Math.abs(ry-line.ym)
     }
 }
-// Axis-aligned bounding box.
+/*
+    Computes the distance between a point (rx,ry)
+    and an axis-aligned rectangle (xmin...xmax,ymin..ymax).
+*/
 XV.getPointBBoxDistance = function(rx,ry,xmin,ymin,xmax,ymax){
     var r1,r2,r3,r4
     var i=0
@@ -397,12 +421,19 @@ XV.getPointBBoxDistance = function(rx,ry,xmin,ymin,xmax,ymax){
     r4 = (rx<xmin) ? Math.sqrt((rx-xmin)*(rx-xmin)+(ry-ymax)*(ry-ymax)) : (rx>xmax) ? Math.sqrt((rx-xmax)*(rx-xmax)+(ry-ymax)*(ry-ymax)) : (Math.abs(ry-ymax) && i++)
     return i===4 ? 0 : Math.min(r1,r2,r3,r4)
 }
+
+/*
+    Utility methods for transforming svg elements.
+*/
+/* Moves element by (dx,dy) relative to its current position. */
 XV.moveElementBy = function(el,dx,dy){
     return XV.setTranslate(el,function(r){return {x:r.x+dx,y:r.y+dy}})
 }
+/* Moves element to the position (x,y). */
 XV.moveElementTo = function(el,x,y,translate0){
     return XV.setTranslate(el,function(r){return {x:x-translate0.x,y:y-translate0.x}})
 }
+/* Returns the current translation as an object with the key x and y. */
 XV.getTranslate = function(el){
     var attr = el.getAttribute("transform") || ""
     var trans
@@ -415,6 +446,7 @@ XV.getTranslate = function(el){
     }
     return trans
 }
+/* Returns the current scale as an object with the keys x and y. */
 XV.getScale = function(el){
     var attr = el.getAttribute("transform") || ""
     var scale
@@ -427,6 +459,10 @@ XV.getScale = function(el){
     }
     return scale
 }
+/*
+    Returns a new string that can be used as the value for the svg transform attribute.
+    Sets the translate or scale factor to value given by the argument.
+*/
 XV.getNewTranslate = function(el,translate){
     var trans, newTransform
     if (el.getAttribute){
@@ -499,6 +535,9 @@ XV.getNewScale = function(el,scale){
 XV.getNewTransform = function(el,translate,scale){
     return XV.getNewScale(XV.getNewTranslate(el,translate),scale)
 }
+/* Sets the svg transform attribute of the given argument to the 
+   given translate or scale factor.
+*/
 XV.setTranslate = function (el,translate){
     el.setAttribute("transform",XV.getNewTranslate(el,translate))
     return el
@@ -512,9 +551,16 @@ XV.setTransform = function(el,translate,scale){
     XV.setScale(el,scale)
     return el
 }
+
+/*
+    Returns true if the ranges [s1...s2] and [q1...q2]
+    share any common points. The ranges are closed ranges.
+    Returns false otherwise.
+*/
 XV.isRangeIntersecting = function(s1,s2,q1,q2){
     return q1>=s1&&q1<=s2 || q2>=s1&&q2<=s2 || s1>=q1&&s1<=q2
 }
+
 // getBBox is broken.
 XV.prototype.getBBoxFix = function(el) {
     if (el.nodeName === "tspan"){ // boundingClientRect for tspan broken in firefox and maybe IE
@@ -528,6 +574,7 @@ XV.prototype.getBBoxFix = function(el) {
     var y = cRectEl.top - cRectSvg.top
     return {xmin:x, ymin: y, xmax: x+width, ymax: y+height, width:width, height:height}
 }
+
 XV.generateTransitionLines = function(edge){
     var lines = []
     var kGraphEdge = edge.kGraphEdge
@@ -595,6 +642,11 @@ XV.mergeElements = function(els){
     }
     return els.first()
 }
+
+/*
+    Converts a token as returned by the CSS parser library
+    to its string represenation. 
+*/
 XV.simpleBlockEndTokens = {'{':'}','[':']','(':')'}
 XV.stringifyCSSToken = function(token){
     if (token instanceof Func) {
@@ -619,6 +671,22 @@ XV.stringifyCSSToken = function(token){
         throw new SyntaxError("cannot parse as css token: " + token)
     }
 }
+
+/*
+    Takes a CSS selector and replaces each selection of any
+    id from <oldSelectors> with a selection of the corresponding class.
+
+    For example, the ID selector
+        #text-title>tspan
+    is replaced with the class selector
+        .text-title>tspan
+
+    One svg file is used as the template for each status node. This program
+    loads the svg file and inserts a clone of the <svg> element into the DOM
+    for each status node. In order to preserve the uniqueness of IDs, a new
+    unique ID needs to be generated for each clone. In order to select all
+    status nodes, each clone gets the same class.
+*/
 XV.convertIdSelectorsToClassSelectors = function(oldSelectors,prefix){
     var delimToken = new DelimToken()
     delimToken.value = "."
@@ -658,13 +726,26 @@ XV.convertIdSelectorsToClassSelectors = function(oldSelectors,prefix){
     }
     return convertSelectors(oldSelectors)
 }
+
+/* Returns true iff |x1-x2|<epsilon. */
 XV.kGraphCoordinateEqual = function(x1,x2) {
     return Math.abs(x1-x2) < 1E-3
 }
+
+/*
+    Returns true if a.x equals b.x and a.y equals b.y as determined by
+    XV.kGraphCoordinatesEqual.
+*/
 XV.kGraphPointsEqual = function(a,b) {
     return XV.kGraphCoordinateEqual(a.x,b.x) && XV.kGraphCoordinateEqual(a.y,b.y) 
 }
-// This function assumes that no transition edge intersects itself.
+
+/*
+    Computes all intersection points between a set lines.
+    Each line consists of horizontal and vertical line segments.
+    Intersections are classified as "Cross" (+) or "Tip" (|-).
+    This function assumes that no transition edge intersects itself.
+*/
 XV.computeEdgeIntersections = function(transitionEdges) {
     var self = this
     var lenEdges = transitionEdges.length
@@ -708,6 +789,16 @@ XV.computeEdgeIntersections = function(transitionEdges) {
     console.log("Computing intersections took " + ((new Date()).getTime()-time)/1000 +"s.")
     return {cross:intersectionsCross,tip:intersectionsTip}
 }
+
+/*
+    For each vertex (intersection point between the edges connecting two status nodes),
+    computes how many inbound and outbound edges it has got. Outbound and inbound
+    edges are further grouped into north, east, south and west depening on the direction
+    they come from.
+
+    This is used for displaying little arrows on each intersection point to 
+    indicate the direction of each edge.
+*/
 XV.computeEdgeNodes = function(transitionEdgesIntersections) {
     var self = this
     var edgeNodes = []
@@ -822,17 +913,35 @@ XV.computeEdgeNodes = function(transitionEdgesIntersections) {
     console.log("Edge node computation took " + ((new Date()).getTime()-time)/1000 + "s.")
     return edgeNodes
 }
+
+/* Returns a CSS string for the given ID. */
 XV.idToSelector = function(id) {
     var hashToken = new HashToken()
     hashToken.value = id
     return hashToken.toSource()
 }
+/* Return a CSS string for the ID of the given element. */
 XV.getElementIDSelector = function(el) {
     return XV.idToSelector(el.id)
 }
+/* Returns a CSS string for given URL. */
+XV.getCssUrl = function(val) {
+    var urlToken = new URLToken()
+    var hashToken = new HashToken()
+    hashToken.value = val
+    urlToken.value = XV.stringifyCSSToken(hashToken)
+    return XV.stringifyCSSToken(urlToken)
+}
+
 XV.getIFrameContentDocument = function(el) {
     return (el.contentWindow) ? el.contentWindow : (el.contentDocument.document) ? el.contentDocument.document : el.contentDocument
 }
+
+/*
+    Returns the position of the mouse in graph coordinates, ie. those
+    used by the main <svg> element of the graph. This is invariant
+    with respect to the current scrolling or zoom level.
+*/
 XV.getPositionFromMouse = function(x,y,svgGNode){
     var translate = XV.getTranslate(svgGNode)
     var scale = XV.getScale(svgGNode)
@@ -841,14 +950,19 @@ XV.getPositionFromMouse = function(x,y,svgGNode){
     var pY = y || d3.event.pageY
     return {x:(pX-offset.left-translate.x)/scale.x,y:(pY-offset.top-translate.y)/scale.y}
 }
-// Parameters:
-//  - bBox : the bounding box of the graph or any other bounding box; {x1,x2,y1,y2}
-//  - svgGNode : the <svg><g> element used for zooming
-//  - zoom: d3 zooming behaviour for this element
-//  - positionX,positionY : how to center the graph, 0 left/top, 1 right/bottom
-//  - scaleXY: do not scale to boundaries but set newScale = oldScale*scaleXY
-//  - callback: called after computing the new transform, for custom animations
-//  - unlockedScales: do not lock zooming factor x and y
+
+/*
+    Computes the zoom and translation values for centering the graph to the current
+    viewport.
+ Parameters:
+  - bBox : the bounding box of the graph or any other bounding box; {x1,x2,y1,y2}
+  - svgGNode : the <svg><g> element used for zooming
+  - zoom: d3 zooming behaviour for this element
+  - positionX,positionY : how to center the graph, 0 left/top, 1 right/bottom
+  - scaleXY: do not scale to boundaries but set newScale = oldScale*scaleXY
+  - callback: called after computing the new transform, for custom animations
+  - unlockedScales: do not lock zooming factor x and y
+*/
 XV.zoomGraphToBoundaries = function (bBox,svgGNode,zoom,positionX,positionY,scaleXY,callback,unlockedRatio) {
     container = svgGNode.parentNode
     positionX = parseFloat(typeof(positionX)==="number" ? positionX : 0.5,10)
@@ -903,14 +1017,11 @@ XV.zoomGraphToBoundaries = function (bBox,svgGNode,zoom,positionX,positionY,scal
     
     return transform
 }
-XV.getCssUrl = function(val) {
-    var urlToken = new URLToken()
-    var hashToken = new HashToken()
-    hashToken.value = val
-    urlToken.value = XV.stringifyCSSToken(hashToken)
-    return XV.stringifyCSSToken(urlToken)
-}
 
+/*
+    A table widget for simplifying the rendering of tables.
+    Used for displaying action details.
+*/
 XV.tableWidget = function(el,displayNames) {
     el = $(el)
     var children = el.children()
@@ -1021,13 +1132,23 @@ XV.tableWidget.prototype._asABC = function(a,b,c,container,clone,setupCallback) 
     return container    
 }
 
+/*
+    Instance methods for this graph.
+/*
+
+/* Returns the dimensions of this graph. */
 XV.prototype.getDimensions = function() {
     var dims = this.dimensionsCallback(this.viewportNode) || {}
     dims.width = dims.width || window.innerWidth
     dims.height = dims.height || window.innerHeight
     return dims
 }
-// Get svg coordinates corresponding to the current mouse position.
+
+/*
+    Get the coordinates for the current mouse position in graph coordiantes,
+    ie. relative to the main <svg> element. This is invariant with respect
+    to the current scroll and scale level.
+*/
 XV.prototype.getPositionFromMouse = function(x,y){
     var svgGNode = this.svgGNode
     var translate = XV.getTranslate(svgGNode)
@@ -1037,9 +1158,12 @@ XV.prototype.getPositionFromMouse = function(x,y){
     var pY = y || d3.event.pageY
     return {x:(pX-offset.left-translate.x)/scale.x,y:(pY-offset.top-translate.y)/scale.y}
 }
+
+/* Returns the url of the given file. Adds the data directory path. */
 XV.prototype.resURL = function (file){
     return this.folder + file
 }
+
 // !! "begin" attribute is not supported !! (used for animations)
 XV.prototype.cleanupDefs = function(defs,svg){
     this.defsID = this.defsID || 0
@@ -1108,6 +1232,7 @@ XV.prototype.cleanupDefs = function(defs,svg){
     })
     return def
 }
+
 XV.prototype.newStatusNodes = function() {
     // Bind data to nodes, and load nodes to DOM.
     var self = this
@@ -1152,6 +1277,7 @@ XV.prototype.newActionNodes = function(statusNode) {
         .attr("id",function(d){return d.ximaAction.id})
         .attr("transform",function(d){return XV.getNewTransform("",d.translate0,d.scale0)})
 }
+
 XV.prototype.setLoadBar = function(text,pct){
     var self = this
     /*
@@ -1177,6 +1303,7 @@ XV.prototype.removeLoadBar = function(callback) {
         callback && callback()
     }
 }
+
 XV.prototype.getKGraphBBox = function(statusNodes, transitionEdges) {
     var self = this
     var statusNodes = statusNodes || self.statusNodes
@@ -1225,6 +1352,7 @@ XV.prototype.getFont = function(id){
     }
     font.loaded = true
 }
+
 XV.prototype.setWrappedText = function(elText,elBBox,elEllipsis,text,callbackMouseover,callbackMouseout){
     var self = this
     callbackMouseover = callbackMouseover || $.noop
@@ -1297,7 +1425,20 @@ XV.prototype.setWrappedText = function(elText,elBBox,elEllipsis,text,callbackMou
 XV.prototype.zoomToKGraphBoundaries = function (positionX,positionY,scaleXY,callback) {
     return XV.zoomGraphToBoundaries(this.kGraphBBox,this.svgGNode,this.svgGZoom,positionX,positionY,scaleXY,callback)
 }
-// Quantized grid for computing all edges within a certain radius quickly.
+
+/*
+    Generates a grid storing pre-computed data used for highlighting
+    transition edges on mouse-over.
+
+    A grid spanning the entire graph is created with a pre-defined spacing
+    between grid points. For each grid point, all transition edges within
+    a pre-defined configurable radius are computed and saved.
+
+    When the user moves the mouse, the nearest grid point is selected and
+    all transition edges it contains are highlighted.
+
+    This provides cross-browser compatibility and is fast.
+*/ 
 XV.prototype.createKGraphEdgeGrid = function() {
     // grid[y][x]
     var self = this
@@ -1378,8 +1519,12 @@ XV.prototype.createKGraphEdgeGrid = function() {
     return grid
 }
 
-// Get the edge closest to the point.
-// Checks edges whose bounding boxes are closest first.
+/*
+    Returns the closest transition edge to the given point (rx,ry).
+    
+    For speed, those edges whose bounding boxes are closest to the
+    point get checked first.
+*/
 XV.prototype.getClosestEdge = function(rx,ry){
     var self = this
     var edges = _.map(self.transitionEdges,function(edge){
@@ -1406,6 +1551,8 @@ XV.prototype.getClosestEdge = function(rx,ry){
     })
     return {distance:dMin, edge:eMin, line:lMin}
 }
+
+/* Returns all edges within a certain radius r of the point (rx,ry). */
 XV.prototype.getAllEdgesWithin = function(rx,ry,r,callbackWithin,callbackOutside){
     var self = this
     var edges = _.map(self.transitionEdges,function(edge){
@@ -1466,7 +1613,11 @@ XV.prototype.modeAllowsStatusToolbar = function(mode){
     return this.mode === XV.MODE_VIEW
 }
 
-// Event callbacks, tooltips, popups etc.
+/*
+    Sets up callbacks for displaying tooltips and
+    popups, dialogs etc. on mouseover.
+    Uses jQueryUI.
+ */
 XV.prototype.setTooltipActionIcon = function(){
     var self = this
     var jTooltip = $('#actionTooltip').detach()
@@ -3056,6 +3207,8 @@ XV.prototype.setupActionsDialog = function() {
         })
     })
 }
+
+/* Unused
 XV.prototype.readSvgFontAsGlyphs = function(data,name) {
     var self = this
     var glyphs = {}
@@ -3075,6 +3228,14 @@ XV.prototype.readSvgFontAsGlyphs = function(data,name) {
     
     return glyphs
 }
+*/
+
+/*
+    data - Contents of an svg file.
+    contentSelector - The <svg> element is filtered by this selector and only these nodes are considered.
+    oldSelectors - ID selectors which will be converted to class selectors.
+    svgElement - Element which will contain the svg nodes.
+*/
 XV.prototype.readSvg = function(data,contentSelector,oldSelectors,svgElement) {
     var self = this
     var svg = {}
@@ -3123,9 +3284,11 @@ XV.prototype.readSvg = function(data,contentSelector,oldSelectors,svgElement) {
     return svg
 }
 
-// Returns the layout for this kind of node.
-// Some nodes (eg. submission, resubmission) have got
-// a different svg image and corresponding metadata.
+/*
+    Returns the layout data for this kind of node.
+    Some nodes (eg. submission, resubmission) have got
+    a different svg image and corresponding metadata.
+*/
 XV.prototype.getStatusNodeLayout = function(node){
     var self = this
     var nodeLayout
@@ -3178,7 +3341,9 @@ XV.prototype.getUrlResource = function(id) {
     return this.resources.url[id]
 }
 
-// Button callback (navigation etc.)
+/*
+    Sets up callback for the buttons on each statusNode.
+*/
 XV.prototype.callbackButtonExpand = function(statusNode){
     if (statusNode.actionsDialog.dialog("isOpen")){
         statusNode.actionsDialog.dialogExtend("restore")
@@ -3214,6 +3379,29 @@ XV.callbacksButton = {
     expand: XV.prototype.callbackButtonExpand,
     editManual: XV.prototype.callbackButtonEditManual
 }
+
+/*
+    Main program rendering the diargram, organized into steps.
+
+    Step 0 - Setup.
+
+        === Main graph with status nodes. ===
+    Step 1 - Read and preprocess svg graphics resource.
+    Step 2 - Create html elements for each status node.
+    Step 3 - Generate the data structure for the kGraph layouter.
+    Step 4 - Run the kGraph layouter.
+    Step 5 - Setup events. (eg. tooltips on mouseover)
+
+        === Sub graphs with action nodes for each status node.    ===
+        === These are the same steps as above for each sub graph. ===
+    Step 6 - Create html elements for each action node.
+    Step 7 - Generate the data structure for the kGraph layouter.
+    Step 8 - Run the kGraph layouter.
+    Step 9 - Setup events. (eg. tooltips on mouseover)
+
+    Step 10 - Finalize, oom in to the graph and display it.
+
+*/
 
 // STEP 0: Load and show loading bar.
 //         Setup zoom and dragging gestures.
@@ -3717,7 +3905,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         actionNodes.forEach(function(actionNode){
             var ximaAction = actionNode.ximaAction
             var actionType = ximaAction.properties["de.xima.fc.action.type"]
-            var actionClass = XV.actionClass[actionType]
+            var actionClass = XV.actionClass[actionType] || "GENERAL"
             actionNode.actionClass = actionClass
             actions[actionClass].push(actionNode)
             if (!actionsUniqueHash[actionClass][actionType]){
