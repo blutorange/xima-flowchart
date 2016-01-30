@@ -3556,7 +3556,11 @@ XV.prototype.prepareLayoutLayered = function () {
  
     // Parse status nodes and add to kGraph.
     // Also add ports to the status node.
-    data.children.forEach(function(node,idx){    
+    data.children.forEach(function(node,idx){ 
+        // Defaults
+        kGraphAllPorts[node.id] = kGraphAllPorts[node.id] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
+        ximaAllPorts[node.id] = ximaAllPorts[node.id] || {MANUAL:[],AUTO:[],TIMED:[],IN:[]}
+        
         var kGraphNode = {}
         var allPorts = kGraphAllPorts[node.id]
         var allPortsArray = []
@@ -3564,6 +3568,7 @@ XV.prototype.prepareLayoutLayered = function () {
         var statusMain = self.getStatusNodeLayout(node)
         var statusMainBBox = statusMain.bBox
         
+        // Setup node data.
         allPortsArray = allPortsArray
             .concat(allPorts.MANUAL)
             .concat(allPorts.AUTO)
@@ -3640,7 +3645,7 @@ XV.prototype.generateMainGraphLayered = function() {
             var kGraphNode = kGraphNodeHash[id]
             node.kGraphNode = kGraphNode
         })
-        
+                
         // Set bendingPoints to empty array in none were needed.
         transitionEdges.forEach(function(edge,idx){
             edge.kGraphEdge.bendPoints = edge.kGraphEdge.bendPoints || []
@@ -3669,7 +3674,7 @@ XV.prototype.generateMainGraphLayered = function() {
         self.updateNodeStatusD3Layered(nodeStatusData)
         self.updateEdgeStatusD3Layered(edgeStatusData)
         self.updateEdgeNodeStatusD3Layered(edgeNodeStatusData)
-        
+
         self.setupGlobalEventsLayered()
     }
     
@@ -3771,7 +3776,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
                 portOutAutoIcon.classed({"port-out-auto-icon-active":true})                
                 portOutAutoMouseover.classed({"port-out-auto-mouseover-active":true})
             }
-            
+
             if (d.ports.TIMED.length===0) {
                 portOutTimed.classed({"port-out-timed-active":false}).style({"visibility":"hidden"})
                 portOutTimedIcon.classed({"port-out-timed-icon-active":false}).style({"visibility":"hidden"})
@@ -3806,6 +3811,7 @@ XV.prototype.updateNodeStatusD3Layered = function(nodeD3){
         portOutTimed.data([d.ximaPorts.TIMED])
         portOutTimedIcon.data([d.ximaPorts.TIMED])
         portOutTimedMouseover.data([d.ximaPorts.TIMED])
+
         portOutManual.data([d.ximaPorts.MANUAL])
         portOutManualIcon.data([d.ximaPorts.MANUAL])
         portOutManualMouseover.data([d.ximaPorts.MANUAL])
@@ -4177,7 +4183,7 @@ XV.prototype.loadActionsNodesToDOMLayered = function() {
     })
 
     d3.select(actionPaperTemplateNode).style("display","none")
-    
+
     // Proceed to next step.
     self.prepareLayoutActionsLayered()
 }
@@ -4426,7 +4432,7 @@ XV.prototype.prepareLayoutActionsLayered = function(){
         statusNode.actionTransitionEdges = transitionEdges
         statusNode.actionsKGraph = kGraph
     })
-    
+
     // Proceed to next step.
     self.generateActionsGraphLayered()
 }
@@ -4440,8 +4446,21 @@ XV.prototype.generateActionsGraphLayered = function() {
     var statusNodesLength = self.statusNodes.length
     var complete = 0
     
+    // Proceed to next step if there are no actions configured at all.
+    if (_.every(self.statusNodes,function(statusNode){return statusNode.actions.length===0})) {
+        self.setupEventsActionsLayered()
+        return
+    }
+
     self.statusNodes.forEach(function(statusNode,statusNodeIdx){
-        if (statusNode.actions.length===0){complete++;return} // no actions configured for this status
+        // Nothing to be done if there are no actions.
+        if (statusNode.actions.length===0){
+            complete++
+            if (complete===statusNodesLength){
+                self.setupEventsActionsLayered()
+            }            
+            return
+        }
         
         var kGraph = statusNode.actionsKGraph
         var transitionEdges = statusNode.actionTransitionEdges
