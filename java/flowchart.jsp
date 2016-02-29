@@ -1068,8 +1068,9 @@
     return ximaId;
   }
 
-  public String addPluginResource(Class clazz, JSONObject pluginResources) {
-    String ximaId = "de.xima.fc.resource.plugin-" + clazz.getCanonicalName();
+  public String addPluginResource(Class clazz, JSONObject pluginResources) {    
+    String canonicalName = clazz==null ? "null" : clazz.getCanonicalName();
+    String ximaId = "de.xima.fc.resource.plugin-" + canonicalName;
     try {
       JSONObject pluginResource = new JSONObject();
       if (clazz!=null){
@@ -1139,7 +1140,12 @@
               condDetails.put("nextAction", "STOP");
               break;
             case KONFIGURIERTE_FOLGEAKTION:
-              condDetails.put("nextAction", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+              if (nextAction==null) {
+                condDetails.put("nextAction", "STOP");
+              }
+              else {
+                condDetails.put("nextAction", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+              }
               break;
             case NAECHSTE_AKTION:
               condDetails.put("nextAction", "NEXT");
@@ -1163,7 +1169,12 @@
               condDetails.put("nextAction", "STOP");
               break;
             case KONFIGURIERTE_FOLGEAKTION:
-              condDetails.put("nextAction", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+              if (nextAction==null) {
+                condDetails.put("nextAction", "STOP");
+              }
+              else {
+                condDetails.put("nextAction", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+              }
               break;
             case NAECHSTE_AKTION:
               condDetails.put("nextAction", "NEXT");
@@ -1392,7 +1403,7 @@
           putStringToJson(DetailsJsonObject,"headerFrom",procEMail.getFrom());
           putStringToJson(DetailsJsonObject,"headerSubject",procEMail.getSubject());
           putStringToJson(DetailsJsonObject,"body",procEMail.getBody());
-          DetailsJsonObject.put("loadFrom", getFileActionIds(procEMail.getAktionsIdErgebnisse()));
+          DetailsJsonObject.put("loadFrom", getFileActionIds(procEMail.getAktionsIdErgebnisse()));    
           break;
         case EXTERNAL_RESOURCE:
           VerarbeitungExterneRessource procExternalResource = (VerarbeitungExterneRessource)(proc);    
@@ -1603,7 +1614,13 @@
           PropJsonObject.put("de.xima.fc.action.onError", "STOP");
           break;
         case KONFIGURIERTE_FOLGEAKTION:
-          PropJsonObject.put("de.xima.fc.action.onError", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+          if (nextAction==null) {
+            // invalid configuration, default 'ABBRUCH'
+            PropJsonObject.put("de.xima.fc.action.onError", "STOP");
+          }
+          else {
+            PropJsonObject.put("de.xima.fc.action.onError", "de.xima.fc.action-" + String.valueOf(nextAction.getId()));
+          }
           break;
       }
       PropJsonObject.put("de.xima.fc.action.stopsWorkflow", stopsWorkflow);

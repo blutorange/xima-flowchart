@@ -1278,30 +1278,10 @@ XV.prototype.newActionNodes = function(statusNode) {
         .attr("transform",function(d){return XV.getNewTransform("",d.translate0,d.scale0)})
 }
 
-XV.prototype.setLoadBar = function(text,pct){
-    var self = this
-    /*
-    self.loadDialog.bar.animate({"opacity":Math.random()*0.3+0.6},500,"swing",function(){
-        self.loadDialog.bar.progressbar("value",pct)
-        self.loadDialog.details.text(text)
-    })
-    */
-    self.loadDialog.bar.progressbar("value",pct)
-    self.loadDialog.details.text(text)
-}
 XV.prototype.removeLoadBar = function(callback) {
     var self=this
-    if (self.loadDialog){
-        self.loadDialog.bar.animate({"opacity":1},500,"swing",function(){
-            self.loadDialog.bar.progressbar("value",100)
-            callback && callback()
-        })
-    }
-    else {
-        $('#loadBlock').hide()
-        $('#loadDialog').hide()
-        callback && callback()
-    }
+    $('#loadBlock').hide()
+    callback && callback()
 }
 
 XV.prototype.getKGraphBBox = function(statusNodes, transitionEdges) {
@@ -3409,38 +3389,9 @@ XV.callbacksButton = {
 // Proceed to step 1.
 XV.prototype.main = function(){
     var self = this
-
-    var loadDialog = $('#loadDialog')
-    var loadLabel = $('#loadDialogLabel')
-    var loadBar = $('#loadDialogBar')
-    var loadDetails = $('#loadDialogDetails')
     var loadBlock = $("#loadBlock")
     var zoom, zoomed
     var lineInterpolator
-    
-    // Load Bar
-    loadDialog.dialog({
-        autoOpen: true,
-        closeOnEscape: false,
-        dialogClass: "dialog-no-close dialogLoad",
-        hide: {
-            effect: "explode",
-            duration: 1000
-        },
-        resizable: false,
-        width: Math.min(window.innerWidth*0.9,800)
-    })
-    loadBar.progressbar({
-        value: 0,
-        max: 100,
-        change: function(){
-            loadLabel.text((loadBar.progressbar("value").toFixed(1))+ "% abgeschlossen")
-        },
-        complete: function(){
-            loadDialog.dialog("close")
-            loadBlock.animate({"opacity":"0"},500,"swing",function(){$(this).hide()})
-        }
-    })
 
     // Zooming & Dragging
     var zoomed = function() {
@@ -3478,7 +3429,6 @@ XV.prototype.main = function(){
         return path = _.map(points,function(r){return r[0] + " " + r[1]}).join("L")
     })
 
-    self.loadDialog = {dialog:loadDialog,bar:loadBar,block:loadBlock,details:loadDetails,steps:5}
     self.lineInterpolator = lineInterpolator    
     self.svgGZoom = zoom
     self.readLayoutSVG()
@@ -3512,8 +3462,6 @@ XV.prototype.readLayoutSVG = function() {
     var promises = []
     var time = (new Date()).getTime()
 
-    self.setLoadBar("Lade Resourcen...",100/self.loadDialog.steps)
-    
     // Read svg file and replace all selectors (eg. #button-expand => .id-button-expand).
     entries.forEach(function(entry,idx){
         var node = entry[0]
@@ -3867,8 +3815,6 @@ XV.prototype.generateMainGraphLayered = function() {
     }
     
     // Start layouter.
-    self.setLoadBar("Berechne Statusknotenlayout...",2*100/self.loadDialog.steps)
-
     var layouter = $klay.layout({
         graph: kGraph,
         options : {},
@@ -4656,7 +4602,6 @@ XV.prototype.generateActionsGraphLayered = function() {
             
         var onSuccess = function(layouted) {
             console.log("Klay layout computation for actions of status node " + statusNodeIdx + " took " + ((new Date().getTime())-time)/1000 + "s.")
-            self.setLoadBar("Berechne Aktionsknodenlayout für Statusknoten " + statusNode.id + "...",(statusNodeIdx/(self.statusNodes.length-1))*100/self.loadDialog.steps+2*100/self.loadDialog.steps)
 
             var actionNodes = statusNode.actions
             var nodeActionD3 = statusNode.nodeActionG.selectAll('g.node-action')
@@ -4868,7 +4813,6 @@ XV.prototype.setupEventsActionsLayered = function(){
 // This is the last step.
 XV.prototype.finalizeLayered = function() {
     var self = this
-    self.setLoadBar("Schließe Ladevorgang ab...",100)
     self.svgG.attr("opacity",0)    
     self.removeLoadBar(function(){
         self.zoomToKGraphBoundaries(null,null,null,function(transform){
